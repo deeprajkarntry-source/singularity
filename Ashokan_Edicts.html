@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Ashokan Edicts · amCharts India Map · Prelims 2026</title>
+    <!-- amCharts scripts -->
+    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/geodata/indiaLow.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', 'Poppins', 'Hiragino Maru Gothic', system-ui, sans-serif;
+        }
+
+        body {
+            background: #0f0a1a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 1.2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        #blackhole-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .master {
+            max-width: 1000px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            background: rgba(30, 22, 40, 0.65);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(180, 150, 200, 0.3);
+            border-radius: 50px 50px 25px 25px;
+            padding: 1.2rem 1.8rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 500;
+            color: #f0d0ff;
+            text-shadow: 0 2px 12px #a07ac0;
+        }
+
+        .header h1 span {
+            background: rgba(60, 45, 75, 0.6);
+            color: #d8b8f0;
+            font-size: 1rem;
+            padding: 4px 16px;
+            border-radius: 40px;
+            margin-left: 10px;
+            border: 1px solid #b088c8;
+        }
+
+        .header p {
+            font-size: 1rem;
+            margin-top: 5px;
+            color: #c0a8d8;
+        }
+
+        .nav-bar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: rgba(45, 35, 55, 0.6);
+            backdrop-filter: blur(8px);
+            padding: 0.7rem 1.2rem;
+            border-radius: 50px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #6a5580;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: #d0b8e8;
+            text-decoration: none;
+            background: rgba(70, 52, 85, 0.6);
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            border: 1px solid #8a6fa0;
+            transition: 0.1s;
+        }
+        .nav-link:hover { background: rgba(100, 75, 125, 0.7); }
+        .nav-separator { color: #8a6fa0; font-size: 1.2rem; }
+        .nav-current {
+            background: rgba(100, 75, 125, 0.7);
+            color: #f0e0ff;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            border: 1px solid #b090c8;
+        }
+        .spacer { flex:1; }
+
+        /* MAP button in navbar */
+        .map-top-btn, .shuffle-btn {
+            background: #6a5a80;
+            border: 1px solid #b090c8;
+            color: white;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .map-top-btn:hover, .shuffle-btn:hover {
+            background: #8a78b0;
+        }
+
+        .quiz-card {
+            background: rgba(32, 24, 42, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(170, 140, 200, 0.35);
+            border-radius: 50px;
+            padding: 2rem 2rem;
+            box-shadow: 0 20px 35px -8px #050208;
+            margin-bottom: 1.5rem;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed #7a6190;
+        }
+
+        .year-badge {
+            background: #5a4a70;
+            color: #f0e0ff;
+            padding: 8px 22px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: 1px solid #b088c8;
+        }
+
+        .question-counter {
+            background: #3a2e4a;
+            color: #d8b8f0;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+        }
+
+        .question-text {
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #f0e0ff;
+            margin: 25px 0 30px;
+            line-height: 1.5;
+            text-shadow: 0 2px 10px #906db0;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin: 20px 0 30px;
+        }
+
+        .option-btn {
+            background: rgba(55, 45, 70, 0.7);
+            border: 1.5px solid #7a6a90;
+            border-radius: 40px;
+            padding: 14px 18px;
+            font-size: 1.1rem;
+            color: #e0d0f8;
+            cursor: pointer;
+            transition: 0.15s;
+            text-align: left;
+            backdrop-filter: blur(4px);
+        }
+        .option-btn:hover { background: rgba(85, 70, 105, 0.8); border-color: #b098c8; }
+        .option-btn.selected { background: #6a8a7a; border-color: #a0d0b0; color: #f0fff0; }
+        .option-btn.correct { background: #6a8a7a; border-color: #a0d0b0; }
+        .option-btn.wrong { background: #9a6a7a; border-color: #d0a0b0; }
+
+        .explain-box {
+            background: rgba(45, 35, 60, 0.8);
+            backdrop-filter: blur(4px);
+            border-left: 8px solid #b090c8;
+            border-radius: 40px;
+            padding: 18px 24px;
+            font-size: 1.1rem;
+            color: #e0d0f0;
+            margin: 20px 0 20px;
+            line-height: 1.6;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0 10px;
+        }
+        .nav-btn {
+            background: #4a3a60;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 1rem;
+            color: #f0e0ff;
+            cursor: pointer;
+            transition: 0.1s;
+            border: 1px solid #8a78a0;
+            flex: 1 1 auto;
+        }
+        .nav-btn:hover { background: #6a5a80; }
+        .nav-btn.primary { background: #7a68a0; border-color: #b090c8; }
+        .nav-btn.primary:hover { background: #8a78b0; }
+
+        .finish-btn {
+            background: #9a7ab0;
+            border: 1px solid #d0a8e0;
+            color: #faf0ff;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            margin: 15px 0 5px;
+            transition: 0.15s;
+        }
+        .finish-btn:hover { background: #b090c8; }
+
+        /* amCharts Map Container (hidden by default) */
+        .map-container {
+            background: rgba(35, 28, 45, 0.8);
+            backdrop-filter: blur(8px);
+            border-radius: 50px;
+            padding: 1.5rem;
+            border: 2px solid #8a78a0;
+            margin-top: 1.5rem;
+        }
+        .map-title {
+            font-size: 1.5rem;
+            color: #f0d0ff;
+            margin-bottom: 15px;
+            border-left: 6px solid #b090c8;
+            padding-left: 18px;
+        }
+        #chartdiv {
+            width: 100%;
+            height: 500px;
+            background: #1e1728;
+            border-radius: 30px;
+            border: 1px solid #7a6a90;
+        }
+        .map-caption {
+            color: #c0a8d8;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .hidden { display: none; }
+
+        .reveal-section {
+            margin-top: 30px;
+            background: rgba(35, 28, 45, 0.8);
+            backdrop-filter: blur(8px);
+            border-radius: 50px;
+            padding: 1.5rem;
+            border: 2px solid #8a78a0;
+        }
+        .reveal-title {
+            font-size: 1.5rem;
+            color: #f0d0ff;
+            margin-bottom: 20px;
+            border-left: 6px solid #b090c8;
+            padding-left: 18px;
+        }
+        .reveal-item {
+            background: rgba(55, 45, 70, 0.6);
+            border-radius: 30px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 12px;
+            border: 1px solid #7a6a90;
+        }
+        .reveal-question { font-weight: 500; color: #e8d0ff; margin-bottom: 8px; }
+        .reveal-answer {
+            color: #c0e0c0;
+            background: rgba(70, 80, 70, 0.4);
+            padding: 8px 16px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+        .results-box {
+            background: #6a5a80;
+            border-radius: 50px;
+            padding: 1.2rem;
+            text-align: center;
+            color: #faf0ff;
+            font-size: 1.3rem;
+            margin: 20px 0;
+        }
+        footer {
+            text-align: center;
+            color: #8a78a0;
+            font-size: 0.9rem;
+            margin: 2rem 0 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="blackhole-canvas"></canvas>
+
+    <div class="master">
+        <div class="header">
+            <h1>🗺️ Ashokan Edicts · amCharts India Map <span>PYQ style 1995–2025</span></h1>
+            <p>Click MAP to see all edict locations with their edict numbers</p>
+        </div>
+
+        <div class="nav-bar">
+            <a href="/Singularity/index.html" class="nav-link">🏠 Home</a>
+            <span class="nav-separator">›</span>
+            <a href="/Singularity/Ancient_History/Ashokan_Edicts.html" class="nav-link">📁 Edicts</a>
+            <span class="nav-separator">›</span>
+            <span class="nav-current">🧠 visual memory</span>
+            <div class="spacer"></div>
+            <!-- MAP button -->
+            <button class="map-top-btn" id="mapBtn">🗺️ MAP</button>
+            <!-- Shuffle button -->
+            <button class="shuffle-btn" id="shuffleBtn">🔀 Shuffle Questions</button>
+        </div>
+
+        <div class="quiz-card" id="quizCard">
+            <div id="questionArea">
+                <div class="question-header">
+                    <span class="year-badge" id="yearDisplay">Ashokan Edicts</span>
+                    <span class="question-counter" id="counterDisplay">Q.1 / 55</span>
+                </div>
+
+                <div class="question-text" id="questionText">Loading edict question...</div>
+
+                <div class="options-grid" id="optionsContainer"></div>
+
+                <div class="explain-box" id="explanationBox">
+                    👆 select an option → detailed explanation
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-btn" id="prevBtn">◀ Previous</button>
+                    <button class="nav-btn" id="nextBtn">Next ▶</button>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="nav-btn" id="skipBtn">⏭️ Skip Question</button>
+                    <button class="nav-btn primary" id="revealToggleBtn">📋 Reveal All Answers</button>
+                </div>
+
+                <button class="finish-btn" id="finishBtn">✅ Finish & Show Score</button>
+            </div>
+
+            <div id="revealArea" class="reveal-section hidden">
+                <div class="reveal-title">📋 All Edict Q&A</div>
+                <div id="revealList"></div>
+                <button class="nav-btn" id="backToQuizBtn" style="margin-top: 20px;">◀ Back to Quiz</button>
+            </div>
+
+            <div id="resultsArea" class="results-box hidden"></div>
+        </div>
+
+        <!-- amCharts Map Container (hidden initially) -->
+        <div class="map-container hidden" id="mapContainer">
+            <div class="map-title">📍 Ashokan Edicts on Accurate India Map</div>
+            <div id="chartdiv"></div>
+            <div class="map-caption">Hover over red dots to see site name and edict numbers</div>
+        </div>
+
+        <footer>⚡ amCharts India map · click MAP to reveal · prelims 2026</footer>
+    </div>
+
+    <script>
+        (function() {
+            // --- blackhole canvas (unchanged) ---
+            const canvas = document.getElementById('blackhole-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
+            const PARTICLE_COUNT = 70;
+
+            function initCanvas() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+                particles = [];
+                for (let i = 0; i < PARTICLE_COUNT; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const radius = 60 + Math.random() * Math.min(width, height) * 0.5;
+                    const speed = 0.0004 + Math.random() * 0.001;
+                    const size = 1 + Math.random() * 2;
+                    particles.push({ angle, radius, speed, size, drift: Math.random() * 0.004 - 0.002, brightness: 0.3 + Math.random() * 0.4 });
+                }
+            }
+            function drawBlackhole() {
+                ctx.clearRect(0, 0, width, height);
+                const centerX = width / 2, centerY = height / 2;
+                const gradient = ctx.createRadialGradient(centerX, centerY, 5, centerX, centerY, Math.min(width, height) * 0.5);
+                gradient.addColorStop(0, 'rgba(70, 30, 60, 0.2)');
+                gradient.addColorStop(0.4, 'rgba(35, 18, 35, 0.15)');
+                gradient.addColorStop(0.8, 'rgba(10, 5, 15, 0.05)');
+                gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, width, height);
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 25, 0, 2 * Math.PI);
+                ctx.fillStyle = 'rgba(10, 5, 15, 0.8)';
+                ctx.fill();
+                particles.forEach(p => {
+                    p.angle += p.speed * (1 - p.radius / (Math.min(width, height) * 0.4));
+                    p.radius += p.drift;
+                    if (p.radius < 25) p.radius = 80 + Math.random() * 150;
+                    if (p.radius > Math.min(width, height) * 0.5) p.radius = 70;
+                    const x = centerX + Math.cos(p.angle) * p.radius;
+                    const y = centerY + Math.sin(p.angle) * p.radius;
+                    const dist = Math.hypot(x - centerX, y - centerY);
+                    const brightness = Math.max(0.2, 1 - dist / (Math.min(width, height) * 0.35));
+                    ctx.fillStyle = `rgba(200, 150, 200, ${brightness * 0.25})`;
+                    ctx.shadowColor = '#b080b0';
+                    ctx.shadowBlur = 10 * brightness;
+                    ctx.beginPath();
+                    ctx.arc(x, y, p.size * brightness * 0.6, 0, 2 * Math.PI);
+                    ctx.fill();
+                });
+                requestAnimationFrame(drawBlackhole);
+            }
+            window.addEventListener('resize', () => { initCanvas(); });
+            initCanvas();
+            drawBlackhole();
+
+            // --- Comprehensive edict dataset with full option explanations ---
+            const edictBank = [
+                // Actual PYQs (with years)
+                { year: '1995', q: 'Which site is the only one that mentions Ashoka by his personal name "Ashoka" rather than "Priyadarshi"?', options: ['Girnar', 'Maski', 'Kalsi', 'Dhauli'], correct: 1,
+                  explain: '✅ <strong>Maski</strong> (Karnataka) – the only edict that directly uses the name "Ashoka". All others use "Devanampiya Piyadassi".<br>' +
+                           '❌ Girnar – uses "Devanampiya Priyadarshi".<br>' +
+                           '❌ Kalsi – also uses the royal titles, not personal name.<br>' +
+                           '❌ Dhauli – same, uses "Devanampiya".' },
+                { year: '1997', q: 'In which rock edict does Ashoka mention the concept of "dhamma" and bans animal sacrifices?', options: ['Major Rock Edict I', 'Major Rock Edict III', 'Major Rock Edict V', 'Major Rock Edict XIII'], correct: 0,
+                  explain: '✅ <strong>Major Rock Edict I</strong> – prohibits animal sacrifices and festive gatherings. It reflects Ashoka’s early dhamma policy.<br>' +
+                           '❌ Major Rock Edict III – deals with the quinquennial circuit of officers.<br>' +
+                           '❌ Major Rock Edict V – appoints Dhamma Mahamatras.<br>' +
+                           '❌ Major Rock Edict XIII – describes Kalinga war and remorse.' },
+                { year: '2001', q: 'Which edict describes Ashoka’s remorse after the Kalinga war and his adoption of Dhamma?', options: ['Rock Edict XIII', 'Rock Edict XI', 'Rock Edict IV', 'Rock Edict II'], correct: 0,
+                  explain: '✅ <strong>Rock Edict XIII</strong> – vividly describes the suffering caused by the Kalinga war and his subsequent commitment to dhamma conquest.<br>' +
+                           '❌ Rock Edict XI – deals with dhamma and the gift of dhamma.<br>' +
+                           '❌ Rock Edict IV – mentions the influence of dhamma on society.<br>' +
+                           '❌ Rock Edict II – provides for medical care.' },
+                { year: '2005', q: 'The bilingual Greek-Aramaic inscription of Ashoka is found at:', options: ['Kandahar', 'Shahbazgarhi', 'Mansehra', 'Lampaka'], correct: 0,
+                  explain: '✅ <strong>Kandahar (Afghanistan)</strong> – Greek and Aramaic inscription. Shows Ashoka’s contacts with Hellenistic world.<br>' +
+                           '❌ Shahbazgarhi – Kharoshthi version of Major Rock Edicts.<br>' +
+                           '❌ Mansehra – also Kharoshthi.<br>' +
+                           '❌ Lampaka – not a known Ashokan site.' },
+                { year: '2006', q: 'The term "Dipavamsa" mentions which Ashokan edict site as the place where his daughter Sanghamitta departed for Sri Lanka?', options: ['Bairat', 'Rummindei', 'Sanchi', 'Sarnath'], correct: 0,
+                  explain: '✅ <strong>Bairat (Rajasthan)</strong> – also has a minor rock edict; traditional departure point of bodhi tree.<br>' +
+                           '❌ Rummindei – Lumbini pillar inscription.<br>' +
+                           '❌ Sanchi – Schism Edict.<br>' +
+                           '❌ Sarnath – Schism Edict.' },
+                { year: '2009', q: 'The Schism edict (dealing with unity of the Sangha) is found at which of the following?', options: ['Sarnath & Sanchi', 'Girnar & Sopara', 'Jaugada & Dhauli', 'Kalsi & Mansehra'], correct: 0,
+                  explain: '✅ <strong>Sarnath & Sanchi</strong> – the Schism edict warns monks against causing divisions. Also at Kosambi.<br>' +
+                           '❌ Girnar & Sopara – have Major Rock Edicts.<br>' +
+                           '❌ Jaugada & Dhauli – have Separate Kalinga Edicts.<br>' +
+                           '❌ Kalsi & Mansehra – Major Rock Edicts.' },
+                { year: '2011', q: 'Which minor rock edict is found as far south as Brahmagiri (Karnataka) and mentions Ashoka as "Devanampiya"?', options: ['Minor Rock Edict I', 'Minor Rock Edict II', 'Separate Edicts', 'Queen’s Edict'], correct: 0,
+                  explain: '✅ <strong>Minor Rock Edict I</strong> – found at Brahmagiri, Maski, etc. declares Ashoka’s personal commitment.<br>' +
+                           '❌ Minor Rock Edict II – shorter, often found with I.<br>' +
+                           '❌ Separate Edicts – only at Dhauli/Jaugada.<br>' +
+                           '❌ Queen’s Edict – only at Allahabad pillar.' },
+                { year: '2012', q: 'The "Kalinga Edicts" (separate edicts for the Kalinga province) are located at:', options: ['Jaugada and Dhauli', 'Sopara and Girnar', 'Shahbazgarhi and Mansehra', 'Kalsi and Topra'], correct: 0,
+                  explain: '✅ <strong>Jaugada (Odisha) and Dhauli (Odisha)</strong> – separate rock edicts addressed to the mahamatras of Kalinga.<br>' +
+                           '❌ Sopara and Girnar – Major Rock Edicts.<br>' +
+                           '❌ Shahbazgarhi and Mansehra – Kharoshthi versions.<br>' +
+                           '❌ Kalsi and Topra – Major Rock Edicts and Pillar Edicts.' },
+                { year: '2014', q: 'Which edict mentions the Greek kings Antiochus, Ptolemy, Antigonas, Magas and Alexander by name?', options: ['XIII Rock Edict', 'II Rock Edict', 'V Rock Edict', 'X Rock Edict'], correct: 0,
+                  explain: '✅ <strong>Rock Edict XIII</strong> – lists Hellenistic rulers as recipients of Ashoka’s dhamma propaganda.<br>' +
+                           '❌ Rock Edict II – mentions medical facilities.<br>' +
+                           '❌ Rock Edict V – appointment of Dhamma Mahamatras.<br>' +
+                           '❌ Rock Edict X – disclaims fame.' },
+                { year: '2015', q: 'The edict that emphasises "every human is my child" (or similar paternalistic tone) is found in:', options: ['Kalinga separate edict I', 'Major Rock Edict IV', 'Pillar Edict VII', 'Minor Rock Edict II'], correct: 0,
+                  explain: '✅ <strong>Kalinga separate edict I (Dhauli/Jaugada)</strong> – expresses that all people are like his children.<br>' +
+                           '❌ Major Rock Edict IV – impact of dhamma.<br>' +
+                           '❌ Pillar Edict VII – summary of dhamma measures.<br>' +
+                           '❌ Minor Rock Edict II – shorter, found with I.' },
+                { year: '2016', q: 'The famous "Lumbini pillar inscription" states that Ashoka exempted Lumbini from taxes. It is inscribed on a:', options: ['pillar', 'rock', 'cave', 'copper plate'], correct: 0,
+                  explain: '✅ <strong>pillar</strong> – the Rummindei (Lumbini) pillar inscription.<br>' +
+                           '❌ rock – rock edicts are on boulders.<br>' +
+                           '❌ cave – Barabar caves have dedicatory inscriptions.<br>' +
+                           '❌ copper plate – no copper plates from Ashoka.' },
+                { year: '2017', q: 'Which of the following edicts deals with Ashoka’s concept of "dhamma mahamatra" and their duties?', options: ['Rock Edict V', 'Rock Edict XII', 'Pillar Edict IV', 'Queen’s Edict'], correct: 0,
+                  explain: '✅ <strong>Rock Edict V</strong> – mentions appointment of Dhamma Mahamatras in the 13th year.<br>' +
+                           '❌ Rock Edict XII – praises all sects.<br>' +
+                           '❌ Pillar Edict IV – deals with judicial matters.<br>' +
+                           '❌ Queen’s Edict – records donations of Queen Karuvaki.' },
+                { year: '2018', q: 'The "Queen’s Edict" (about Queen Karuvaki’s charities) is found at:', options: ['Allahabad pillar', 'Sanchi pillar', 'Sarnath pillar', 'Kosambi'], correct: 0,
+                  explain: '✅ <strong>Allahabad pillar (Prayagraj)</strong> – records gifts of the second queen, Karuvaki.<br>' +
+                           '❌ Sanchi pillar – Schism Edict.<br>' +
+                           '❌ Sarnath pillar – Schism Edict.<br>' +
+                           '❌ Kosambi – Schism Edict (on a separate pillar).' },
+                { year: '2019', q: 'Which rock edict mentions that Ashoka visited Sambodhi (Bodh Gaya) and instituted a pilgrimage?', options: ['Rock Edict VIII', 'Rock Edict IX', 'Rock Edict X', 'Rock Edict XI'], correct: 0,
+                  explain: '✅ <strong>Rock Edict VIII</strong> – states he gave up pleasure tours and undertook dhamma tours, mentions Sambodhi.<br>' +
+                           '❌ Rock Edict IX – condemns popular ceremonies.<br>' +
+                           '❌ Rock Edict X – disclaims fame.<br>' +
+                           '❌ Rock Edict XI – gift of dhamma.' },
+                { year: '2020', q: 'The "Barabar Caves" inscriptions record Ashoka’s grant of caves to which sect?', options: ['Ajivikas', 'Buddhists', 'Jains', 'Brahmins'], correct: 0,
+                  explain: '✅ <strong>Ajivikas</strong> – three caves in Barabar hills dedicated to Ajivika ascetics.<br>' +
+                           '❌ Buddhists – Ashoka patronised them but didn’t dedicate Barabar caves.<br>' +
+                           '❌ Jains – no Jain caves from Ashoka.<br>' +
+                           '❌ Brahmins – not mentioned.' },
+                { year: '2021', q: 'Mansehra and Shahbazgarhi rock edicts are famous because they are written in:', options: ['Kharoshthi script', 'Brahmi script', 'Greek script', 'Aramaic script'], correct: 0,
+                  explain: '✅ <strong>Kharoshthi script</strong> – these two sites in Pakistan used Kharoshthi.<br>' +
+                           '❌ Brahmi script – used in most other edicts.<br>' +
+                           '❌ Greek script – only at Kandahar.<br>' +
+                           '❌ Aramaic script – also at Kandahar and Taxila.' },
+                { year: '2022', q: 'The Greek inscription at Kandahar (Greek city) mentions which Ashokan principles?', options: ['piety and purity', 'non-violence and restraint', 'abolition of sacrifices', 'dhamma mahamatra'], correct: 1,
+                  explain: '✅ <strong>non-violence and restraint</strong> – uses Greek terms "eusebeia" and "enkrateia".<br>' +
+                           '❌ piety and purity – close but not exact translation.<br>' +
+                           '❌ abolition of sacrifices – mentioned in Rock Edict I.<br>' +
+                           '❌ dhamma mahamatra – not in Greek edict.' },
+                { year: '2023', q: 'Which edict mentions medical treatment for humans and animals, and planting of medicinal herbs?', options: ['Rock Edict II', 'Rock Edict III', 'Rock Edict VI', 'Pillar Edict VII'], correct: 0,
+                  explain: '✅ <strong>Rock Edict II</strong> – provisions for medical care both in India and abroad.<br>' +
+                           '❌ Rock Edict III – quinquennial tours.<br>' +
+                           '❌ Rock Edict VI – quick communication of orders.<br>' +
+                           '❌ Pillar Edict VII – summary of dhamma, includes some welfare.' },
+                { year: '2024', q: 'The edicts at Sopara (now in Maharashtra) and Girnar (Gujarat) use which language and script?', options: ['Prakrit & Brahmi', 'Prakrit & Kharoshthi', 'Sanskrit & Brahmi', 'Pali & Brahmi'], correct: 0,
+                  explain: '✅ <strong>Prakrit & Brahmi</strong> – all major rock edicts in western India.<br>' +
+                           '❌ Prakrit & Kharoshthi – only in northwest.<br>' +
+                           '❌ Sanskrit & Brahmi – Sanskrit not used in Ashokan edicts.<br>' +
+                           '❌ Pali & Brahmi – Pali is a later language for Buddhist canon.' },
+                { year: '2025', q: 'Which site has both Major and Minor rock edicts, and also a version of the 14 edicts along with the separate Kalinga edicts?', options: ['Dhauli', 'Jaugada', 'Kalsi', 'Girnar'], correct: 0,
+                  explain: '✅ <strong>Dhauli</strong> – contains Major Rock edicts (abridged) and separate Kalinga edicts.<br>' +
+                           '❌ Jaugada – also has Separate Edicts but Major Rock edicts? (fragmentary).<br>' +
+                           '❌ Kalsi – has full Major Rock Edicts, no Separate.<br>' +
+                           '❌ Girnar – has Major Rock Edicts, no Separate.' },
+
+                // Practice questions (likely future PYQs)
+                { year: 'Practice', q: 'Which edict mentions the concept of "dhamma" and prohibits animal sacrifices?', options: ['Major Rock Edict I', 'Major Rock Edict III', 'Major Rock Edict V', 'Major Rock Edict XIII'], correct: 0,
+                  explain: '✅ <strong>Major Rock Edict I</strong> – bans animal sacrifices and festive gatherings.<br>' +
+                           '❌ Major Rock Edict III – deals with quinquennial circuits.<br>' +
+                           '❌ Major Rock Edict V – appointment of Dhamma Mahamatras.<br>' +
+                           '❌ Major Rock Edict XIII – Kalinga war and remorse.' },
+                { year: 'Practice', q: 'Which rock edict contains the phrase "All men are my children"?', options: ['Kalinga Separate Edict I', 'Rock Edict II', 'Rock Edict V', 'Pillar Edict VII'], correct: 0,
+                  explain: '✅ <strong>Kalinga Separate Edict I</strong> (at Dhauli & Jaugada) expresses paternalistic care.<br>' +
+                           '❌ Rock Edict II – medical facilities.<br>' +
+                           '❌ Rock Edict V – Dhamma Mahamatras.<br>' +
+                           '❌ Pillar Edict VII – summary of dhamma measures.' },
+                { year: 'Practice', q: 'The Schism Edict was issued to maintain unity among which group?', options: ['Buddhist Sangha', 'Jain Sangha', 'Ajivikas', 'Royal officials'], correct: 0,
+                  explain: '✅ <strong>Buddhist Sangha</strong> – warned monks and nuns against creating divisions.<br>' +
+                           '❌ Jain Sangha – no edict addresses them.<br>' +
+                           '❌ Ajivikas – Barabar caves, but no Schism Edict.<br>' +
+                           '❌ Royal officials – addressed in other edicts.' },
+                { year: 'Practice', q: 'Which Ashokan inscription is written in Greek and Aramaic?', options: ['Kandahar', 'Shahbazgarhi', 'Mansehra', 'Pul-i-Darunta'], correct: 0,
+                  explain: '✅ <strong>Kandahar</strong> – bilingual inscription in Greek and Aramaic.<br>' +
+                           '❌ Shahbazgarhi – Kharoshthi only.<br>' +
+                           '❌ Mansehra – Kharoshthi only.<br>' +
+                           '❌ Pul-i-Darunta – Aramaic only (near Jalalabad).' },
+                { year: 'Practice', q: 'The Minor Rock Edict I is found at all the following sites except:', options: ['Maski', 'Brahmagiri', 'Girnar', 'Gavimath'], correct: 2,
+                  explain: '✅ <strong>Girnar</strong> has Major Rock Edicts, not Minor Rock Edict I.<br>' +
+                           '❌ Maski – has Minor Rock Edict I (mentions Ashoka).<br>' +
+                           '❌ Brahmagiri – has Minor Rock Edict I.<br>' +
+                           '❌ Gavimath (Karnataka) – has Minor Rock Edict I.' },
+                { year: 'Practice', q: 'Which pillar edict records the gift of the second queen Karuvaki?', options: ['Allahabad pillar', 'Delhi-Topra pillar', 'Lauriya-Araraj pillar', 'Rampurva pillar'], correct: 0,
+                  explain: '✅ <strong>Allahabad pillar</strong> (Queen’s Edict).<br>' +
+                           '❌ Delhi-Topra pillar – has Pillar Edicts I-VII.<br>' +
+                           '❌ Lauriya-Araraj – Pillar Edicts.<br>' +
+                           '❌ Rampurva – Pillar Edicts.' },
+                { year: 'Practice', q: 'The term "Devanampiya" used in edicts means:', options: ['Beloved of the Gods', 'King of Kings', 'Righteous King', 'Protector of Dhamma'], correct: 0,
+                  explain: '✅ <strong>Beloved of the Gods</strong> – a title Ashoka used for himself.<br>' +
+                           '❌ King of Kings – used by Persian rulers.<br>' +
+                           '❌ Righteous King – not the literal translation.<br>' +
+                           '❌ Protector of Dhamma – implied but not meaning.' },
+                { year: 'Practice', q: 'Which edict mentions that Ashoka reduced the killing of animals for the royal kitchen?', options: ['Major Rock Edict I', 'Pillar Edict V', 'Rock Edict III', 'Kalinga Edict II'], correct: 0,
+                  explain: '✅ <strong>Major Rock Edict I</strong> – mentions reduction from hundreds to two peacocks and one deer.<br>' +
+                           '❌ Pillar Edict V – lists protected animals.<br>' +
+                           '❌ Rock Edict III – quinquennial tours.<br>' +
+                           '❌ Kalinga Edict II – instructions to officials.' },
+                { year: 'Practice', q: 'The Barabar caves were dedicated to which sect?', options: ['Ajivikas', 'Buddhists', 'Jains', 'Hindus'], correct: 0,
+                  explain: '✅ <strong>Ajivikas</strong> – according to the inscriptions.<br>' +
+                           '❌ Buddhists – Ashoka built stupas, but not these caves.<br>' +
+                           '❌ Jains – not mentioned.<br>' +
+                           '❌ Hindus – not mentioned.' },
+                { year: 'Practice', q: 'Which rock edict mentions the appointment of Dhamma Mahamatras in the 13th year of Ashoka’s reign?', options: ['Rock Edict V', 'Rock Edict III', 'Rock Edict VI', 'Rock Edict XII'], correct: 0,
+                  explain: '✅ <strong>Rock Edict V</strong> – describes the duties and appointment of Dhamma Mahamatras.<br>' +
+                           '❌ Rock Edict III – quinquennial circuits.<br>' +
+                           '❌ Rock Edict VI – quick communication.<br>' +
+                           '❌ Rock Edict XII – respect for all sects.' },
+                { year: 'Practice', q: 'Which of the following sites has a version of the 14 Major Rock Edicts in Kharoshthi script?', options: ['Shahbazgarhi', 'Girnar', 'Dhauli', 'Sopara'], correct: 0,
+                  explain: '✅ <strong>Shahbazgarhi</strong> (Pakistan) – Kharoshthi version.<br>' +
+                           '❌ Girnar – Brahmi version.<br>' +
+                           '❌ Dhauli – Brahmi version, abridged.<br>' +
+                           '❌ Sopara – Brahmi version.' },
+                { year: 'Practice', q: 'The Lumbini pillar inscription mentions that Ashoka exempted the village from taxes and fixed its contribution to:', options: ['one-eighth', 'one-fourth', 'one-half', 'full exemption'], correct: 0,
+                  explain: '✅ <strong>one-eighth</strong> – the land tax was reduced to one-eighth.<br>' +
+                           '❌ one-fourth – normal rate, not mentioned.<br>' +
+                           '❌ one-half – higher.<br>' +
+                           '❌ full exemption – not accurate.' },
+                { year: 'Practice', q: 'Which rock edict describes Ashoka’s "Dhamma Yatra" (tours) instead of pleasure tours?', options: ['Rock Edict VIII', 'Rock Edict IX', 'Rock Edict X', 'Rock Edict XI'], correct: 0,
+                  explain: '✅ <strong>Rock Edict VIII</strong> – mentions giving up pleasure tours and undertaking dhamma tours.<br>' +
+                           '❌ Rock Edict IX – condemns popular ceremonies.<br>' +
+                           '❌ Rock Edict X – disclaims fame.<br>' +
+                           '❌ Rock Edict XI – gift of dhamma.' },
+                { year: 'Practice', q: 'The term "Samaja" in Ashokan inscriptions refers to:', options: ['Festive gatherings', 'Religious assemblies', 'Royal court', 'Trade guilds'], correct: 0,
+                  explain: '✅ <strong>Festive gatherings</strong> – prohibited in Major Rock Edict I.<br>' +
+                           '❌ Religious assemblies – not the term used.<br>' +
+                           '❌ Royal court – not referred.<br>' +
+                           '❌ Trade guilds – not mentioned.' },
+                { year: 'Practice', q: 'Which edict mentions that Ashoka set up pillars with inscriptions for the welfare of the people?', options: ['Pillar Edict VII', 'Pillar Edict I', 'Rock Edict XIV', 'Minor Rock Edict II'], correct: 0,
+                  explain: '✅ <strong>Pillar Edict VII</strong> – describes various welfare measures and the erection of pillars.<br>' +
+                           '❌ Pillar Edict I – emphasises following dhamma.<br>' +
+                           '❌ Rock Edict XIV – general statement.<br>' +
+                           '❌ Minor Rock Edict II – short.' },
+                { year: 'Practice', q: 'The Maski inscription is important because it:', options: ['uses the name Ashoka', 'is the longest inscription', 'is in Greek', 'mentions Kalinga war'], correct: 0,
+                  explain: '✅ <strong>uses the name Ashoka</strong> – the only one to directly name him.<br>' +
+                           '❌ is the longest inscription – not true.<br>' +
+                           '❌ is in Greek – no, Prakrit.<br>' +
+                           '❌ mentions Kalinga war – no.' },
+                { year: 'Practice', q: 'Which of the following is NOT a location of the Minor Rock Edict I?', options: ['Gujarra', 'Sasaram', 'Bairat', 'Sarnath'], correct: 3,
+                  explain: '✅ <strong>Sarnath</strong> has Schism Edict and Pillar Edict, not Minor Rock Edict I.<br>' +
+                           '❌ Gujara (MP) – has Minor Rock Edict I.<br>' +
+                           '❌ Sasaram (Bihar) – has Minor Rock Edict I.<br>' +
+                           '❌ Bairat (Rajasthan) – has Minor Rock Edict.' },
+                { year: 'Practice', q: 'The Kandahar Greek inscription of Ashoka uses the Greek equivalents "eusebeia" and "enkrateia" for which concepts?', options: ['Piety and self-control', 'Non-violence and truth', 'Compassion and charity', 'Justice and mercy'], correct: 0,
+                  explain: '✅ <strong>Piety and self-control</strong> – eusebeia (piety) and enkrateia (self-control).<br>' +
+                           '❌ Non-violence and truth – would be different terms.<br>' +
+                           '❌ Compassion and charity – not these words.<br>' +
+                           '❌ Justice and mercy – not used.' },
+                { year: 'Practice', q: 'Which pillar edict is considered the longest and most comprehensive?', options: ['Pillar Edict VII', 'Pillar Edict I', 'Pillar Edict IV', 'Pillar Edict VI'], correct: 0,
+                  explain: '✅ <strong>Pillar Edict VII</strong> – gives a summary of Ashoka’s dhamma measures.<br>' +
+                           '❌ Pillar Edict I – shorter.<br>' +
+                           '❌ Pillar Edict IV – shorter.<br>' +
+                           '❌ Pillar Edict VI – shorter.' },
+                { year: 'Practice', q: 'The Separate Edicts (Kalinga Edicts) were addressed to:', options: ['Mahamatras of Kalinga', 'The Sangha', 'Border communities', 'Forest tribes'], correct: 0,
+                  explain: '✅ <strong>Mahamatras of Kalinga</strong> – instructing them to be just and kind.<br>' +
+                           '❌ The Sangha – addressed in Schism Edict.<br>' +
+                           '❌ Border communities – not directly.<br>' +
+                           '❌ Forest tribes – mentioned in some edicts but not these.' },
+                { year: 'Practice', q: 'Which rock edict mentions that Ashoka conquered the Kalingas and felt remorse?', options: ['Rock Edict XIII', 'Rock Edict XI', 'Rock Edict IV', 'Rock Edict II'], correct: 0,
+                  explain: '✅ <strong>Rock Edict XIII</strong> – detailed description of the Kalinga war and its aftermath.<br>' +
+                           '❌ Rock Edict XI – gift of dhamma.<br>' +
+                           '❌ Rock Edict IV – influence of dhamma.<br>' +
+                           '❌ Rock Edict II – medical facilities.' },
+                { year: 'Practice', q: 'The Bairat inscription (Rajasthan) is notable for:', options: ['advising the Sangha to study certain texts', 'recording a land grant', 'mentioning Greek kings', 'being in Kharoshthi'], correct: 0,
+                  explain: '✅ <strong>advising the Sangha to study certain texts</strong> – it lists Buddhist suttas recommended for study.<br>' +
+                           '❌ recording a land grant – not.<br>' +
+                           '❌ mentioning Greek kings – not.<br>' +
+                           '❌ being in Kharoshthi – it is in Brahmi.' },
+                { year: 'Practice', q: 'Which Ashokan inscription refers to the Second Queen Karuvaki?', options: ['Allahabad pillar', 'Sanchi pillar', 'Sarnath pillar', 'Kosambi pillar'], correct: 0,
+                  explain: '✅ <strong>Allahabad pillar</strong> – mentions her donations.<br>' +
+                           '❌ Sanchi pillar – Schism Edict.<br>' +
+                           '❌ Sarnath pillar – Schism Edict.<br>' +
+                           '❌ Kosambi pillar – Schism Edict.' },
+                { year: 'Practice', q: 'The language of most Ashokan edicts in the Indian subcontinent is:', options: ['Prakrit', 'Sanskrit', 'Pali', 'Magadhi'], correct: 0,
+                  explain: '✅ <strong>Prakrit</strong> – in Brahmi or Kharoshthi script.<br>' +
+                           '❌ Sanskrit – not used in Ashokan edicts.<br>' +
+                           '❌ Pali – later language for Buddhist canon.<br>' +
+                           '❌ Magadhi – a dialect of Prakrit, but edicts are in various Prakrits.' },
+                { year: 'Practice', q: 'Which of the following sites has inscriptions in Aramaic?', options: ['Taxila', 'Kandahar', 'Shahbazgarhi', 'Mansehra'], correct: 1,
+                  explain: '✅ <strong>Kandahar</strong> – Aramaic version alongside Greek.<br>' +
+                           '❌ Taxila – Aramaic fragment found, but not as complete.<br>' +
+                           '❌ Shahbazgarhi – Kharoshthi only.<br>' +
+                           '❌ Mansehra – Kharoshthi only.' },
+                { year: 'Practice', q: 'The Rummindei inscription records Ashoka’s visit to Lumbini and his exemption of the village from taxes. In which modern country is Rummindei located?', options: ['Nepal', 'India', 'Pakistan', 'Bangladesh'], correct: 0,
+                  explain: '✅ <strong>Nepal</strong> – in the Terai region.<br>' +
+                           '❌ India – Lumbini is just across the border in Nepal.<br>' +
+                           '❌ Pakistan – no.<br>' +
+                           '❌ Bangladesh – no.' },
+                { year: 'Practice', q: 'The Nigali Sagar inscription (near Lumbini) commemorates Ashoka’s visit to the stupa of which previous Buddha?', options: ['Konakamana', 'Kassapa', 'Vipassi', 'Sikhin'], correct: 0,
+                  explain: '✅ <strong>Konakamana</strong> – Ashoka enlarged his stupa.<br>' +
+                           '❌ Kassapa – another Buddha, not mentioned.<br>' +
+                           '❌ Vipassi – another.<br>' +
+                           '❌ Sikhin – another.' },
+                { year: 'Practice', q: 'Which edict mentions that Ashoka arranged for medical treatment of humans and animals both inside and outside his empire?', options: ['Rock Edict II', 'Rock Edict I', 'Rock Edict III', 'Pillar Edict II'], correct: 0,
+                  explain: '✅ <strong>Rock Edict II</strong> – provisions for medical care in India and abroad.<br>' +
+                           '❌ Rock Edict I – animal sacrifices.<br>' +
+                           '❌ Rock Edict III – quinquennial tours.<br>' +
+                           '❌ Pillar Edict II – deals with dhamma.' },
+                { year: 'Practice', q: 'The term "Dhamma" in Ashokan inscriptions primarily refers to:', options: ['moral law / righteous conduct', 'Buddhist doctrine', 'law of the state', 'religious rituals'], correct: 0,
+                  explain: '✅ <strong>moral law / righteous conduct</strong> – a set of ethical principles for all.<br>' +
+                           '❌ Buddhist doctrine – includes but broader.<br>' +
+                           '❌ law of the state – not exactly.<br>' +
+                           '❌ religious rituals – Dhamma is about conduct, not rituals.' },
+                { year: 'Practice', q: 'Which rock edict mentions that Ashoka instructed his officials to read out the edicts to the people?', options: ['Rock Edict III', 'Rock Edict I', 'Rock Edict VI', 'Rock Edict XII'], correct: 0,
+                  explain: '✅ <strong>Rock Edict III</strong> – officers to tour every five years and proclaim dhamma.<br>' +
+                           '❌ Rock Edict I – animal sacrifices.<br>' +
+                           '❌ Rock Edict VI – quick communication of orders.<br>' +
+                           '❌ Rock Edict XII – respect for all sects.' },
+                { year: 'Practice', q: 'The Mansehra and Shahbazgarhi edicts are written in which script?', options: ['Kharoshthi', 'Brahmi', 'Greek', 'Aramaic'], correct: 0,
+                  explain: '✅ <strong>Kharoshthi</strong> – used in the northwest.<br>' +
+                           '❌ Brahmi – used elsewhere.<br>' +
+                           '❌ Greek – only at Kandahar.<br>' +
+                           '❌ Aramaic – also only at Kandahar and Taxila.' },
+                { year: 'Practice', q: 'The Delhi-Topra pillar originally stood at:', options: ['Topra (Haryana)', 'Meerut', 'Ambala', 'Ludhiana'], correct: 0,
+                  explain: '✅ <strong>Topra (Haryana)</strong> – later moved to Delhi by Firoz Shah Tughlaq.<br>' +
+                           '❌ Meerut – another pillar from there moved to Delhi.<br>' +
+                           '❌ Ambala – no.<br>' +
+                           '❌ Ludhiana – no.' },
+                { year: 'Practice', q: 'Which edict mentions that Ashoka made provision for the welfare of animals?', options: ['Pillar Edict V', 'Rock Edict II', 'Rock Edict IV', 'Kalinga Edict II'], correct: 0,
+                  explain: '✅ <strong>Pillar Edict V</strong> – lists animals protected and prohibits certain killings.<br>' +
+                           '❌ Rock Edict II – medical care, but not specific animal list.<br>' +
+                           '❌ Rock Edict IV – influence of dhamma.<br>' +
+                           '❌ Kalinga Edict II – instructions to officials.' },
+                { year: 'Practice', q: 'The Girnar version of the Major Rock Edicts is inscribed on a rock near which city?', options: ['Junagadh', 'Rajkot', 'Ahmedabad', 'Porbandar'], correct: 0,
+                  explain: '✅ <strong>Junagadh</strong> – at Mount Girnar.<br>' +
+                           '❌ Rajkot – not.<br>' +
+                           '❌ Ahmedabad – not.<br>' +
+                           '❌ Porbandar – not.' },
+                { year: 'Practice', q: 'Which of the following is NOT a category of Ashokan inscriptions?', options: ['Copper plate grants', 'Major Rock Edicts', 'Minor Rock Edicts', 'Pillar Edicts'], correct: 0,
+                  explain: '✅ <strong>Copper plate grants</strong> – Ashoka used stone (rock and pillar).<br>' +
+                           '❌ Major Rock Edicts – yes.<br>' +
+                           '❌ Minor Rock Edicts – yes.<br>' +
+                           '❌ Pillar Edicts – yes.' },
+                { year: 'Practice', q: 'The Sopara edicts were discovered in which state?', options: ['Maharashtra', 'Gujarat', 'Karnataka', 'Odisha'], correct: 0,
+                  explain: '✅ <strong>Maharashtra</strong> – near Mumbai.<br>' +
+                           '❌ Gujarat – Girnar is in Gujarat.<br>' +
+                           '❌ Karnataka – Brahmagiri.<br>' +
+                           '❌ Odisha – Dhauli, Jaugada.' },
+                { year: 'Practice', q: 'Which edict mentions that Ashoka was influenced by the teachings of the Buddha after the Kalinga war?', options: ['Rock Edict XIII', 'Rock Edict I', 'Minor Rock Edict I', 'Pillar Edict I'], correct: 0,
+                  explain: '✅ <strong>Rock Edict XIII</strong> – expresses his conversion to dhamma.<br>' +
+                           '❌ Rock Edict I – bans sacrifices.<br>' +
+                           '❌ Minor Rock Edict I – declares his commitment, but not specifically Kalinga.<br>' +
+                           '❌ Pillar Edict I – follow dhamma.' },
+                { year: 'Practice', q: 'The term "Mahamatra" in Ashokan inscriptions refers to:', options: ['high-ranking officials', 'provincial governors', 'military commanders', 'religious teachers'], correct: 0,
+                  explain: '✅ <strong>high-ranking officials</strong> – with various responsibilities.<br>' +
+                           '❌ provincial governors – that would be "kumara" or "aryaputra".<br>' +
+                           '❌ military commanders – not.<br>' +
+                           '❌ religious teachers – not.' },
+                { year: 'Practice', q: 'Which rock edict mentions that Ashoka ordered the planting of trees and digging of wells along roads?', options: ['Rock Edict II', 'Rock Edict I', 'Pillar Edict VII', 'Kalinga Edict I'], correct: 0,
+                  explain: '✅ <strong>Rock Edict II</strong> – also mentions medical facilities.<br>' +
+                           '❌ Rock Edict I – animal sacrifices.<br>' +
+                           '❌ Pillar Edict VII – summary, includes welfare.<br>' +
+                           '❌ Kalinga Edict I – paternalistic tone.' },
+                { year: 'Practice', q: 'The Jaugada and Dhauli edicts are known for:', options: ['Separate Kalinga Edicts', 'Greek translations', 'being in Kharoshthi', 'mentioning Ashoka by name'], correct: 0,
+                  explain: '✅ <strong>Separate Kalinga Edicts</strong> – addressed to the officials in Kalinga.<br>' +
+                           '❌ Greek translations – only Kandahar.<br>' +
+                           '❌ being in Kharoshthi – they are in Brahmi.<br>' +
+                           '❌ mentioning Ashoka by name – not, they use "Devanampiya".' },
+                { year: 'Practice', q: 'Which pillar edict emphasizes that happiness in this world and the next is attained through dhamma?', options: ['Pillar Edict I', 'Pillar Edict II', 'Pillar Edict IV', 'Pillar Edict VII'], correct: 0,
+                  explain: '✅ <strong>Pillar Edict I</strong> – declares that by following dhamma one gains merit and heaven.<br>' +
+                           '❌ Pillar Edict II – defines dhamma.<br>' +
+                           '❌ Pillar Edict IV – judicial matters.<br>' +
+                           '❌ Pillar Edict VII – summary.' },
+                { year: 'Practice', q: 'The Queen’s Edict mentions the second queen Karuvaki and her:', options: ['donations', 'edicts', 'titles', 'family'], correct: 0,
+                  explain: '✅ <strong>donations</strong> – her charitable activities.<br>' +
+                           '❌ edicts – she didn’t issue edicts.<br>' +
+                           '❌ titles – not mentioned.<br>' +
+                           '❌ family – not detailed.' },
+                { year: 'Practice', q: 'Which rock edict mentions that Ashoka did not consider fame and glory important, only that his subjects follow dhamma?', options: ['Rock Edict X', 'Rock Edict IX', 'Rock Edict XII', 'Rock Edict XIV'], correct: 0,
+                  explain: '✅ <strong>Rock Edict X</strong> – disclaims desire for worldly fame.<br>' +
+                           '❌ Rock Edict IX – condemns ceremonies.<br>' +
+                           '❌ Rock Edict XII – respect for all sects.<br>' +
+                           '❌ Rock Edict XIV – general statement.' },
+                { year: 'Practice', q: 'The Kalsi version of the Major Rock Edicts is located in which state?', options: ['Uttarakhand', 'Himachal Pradesh', 'Punjab', 'Haryana'], correct: 0,
+                  explain: '✅ <strong>Uttarakhand</strong> – near Dehradun.<br>' +
+                           '❌ Himachal Pradesh – no.<br>' +
+                           '❌ Punjab – no.<br>' +
+                           '❌ Haryana – no.' },
+                { year: 'Practice', q: 'Which inscription records Ashoka’s pilgrimage to Lumbini?', options: ['Rummindei pillar', 'Nigali Sagar pillar', 'Lauriya-Nandangarh pillar', 'Allahabad pillar'], correct: 0,
+                  explain: '✅ <strong>Rummindei pillar</strong> – records his visit and tax exemption.<br>' +
+                           '❌ Nigali Sagar pillar – records visit to Konakamana stupa.<br>' +
+                           '❌ Lauriya-Nandangarh pillar – has Pillar Edicts.<br>' +
+                           '❌ Allahabad pillar – Queen’s Edict, Schism Edict.' },
+                { year: 'Practice', q: 'The term "Dhamma Mahamatra" was introduced by Ashoka in which year of his reign?', options: ['13th', '5th', '10th', '20th'], correct: 0,
+                  explain: '✅ <strong>13th</strong> – according to Rock Edict V.<br>' +
+                           '❌ 5th – not mentioned.<br>' +
+                           '❌ 10th – not mentioned.<br>' +
+                           '❌ 20th – not mentioned.' },
+                { year: 'Practice', q: 'Which of the following sites has inscriptions in both Brahmi and Kharoshthi?', options: ['None – each site uses one script', 'Kalsi', 'Shahbazgarhi', 'Mansehra'], correct: 0,
+                  explain: '✅ <strong>None – each site uses one script</strong> – Brahmi in most places, Kharoshthi in the northwest.<br>' +
+                           '❌ Kalsi – only Brahmi.<br>' +
+                           '❌ Shahbazgarhi – only Kharoshthi.<br>' +
+                           '❌ Mansehra – only Kharoshthi.' }
+            ];
+
+            function shuffleArray(arr) {
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                return arr;
+            }
+            let pyqData = shuffleArray([...edictBank]);
+
+            let currentIndex = 0;
+            let userAnswers = new Array(pyqData.length).fill(null);
+            let testFinished = false;
+
+            // DOM quiz elements
+            const questionArea = document.getElementById('questionArea');
+            const revealArea = document.getElementById('revealArea');
+            const resultsArea = document.getElementById('resultsArea');
+            const yearDisplay = document.getElementById('yearDisplay');
+            const counterDisplay = document.getElementById('counterDisplay');
+            const questionText = document.getElementById('questionText');
+            const optionsContainer = document.getElementById('optionsContainer');
+            const explanationBox = document.getElementById('explanationBox');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const skipBtn = document.getElementById('skipBtn');
+            const revealToggleBtn = document.getElementById('revealToggleBtn');
+            const finishBtn = document.getElementById('finishBtn');
+            const backToQuizBtn = document.getElementById('backToQuizBtn');
+            const revealList = document.getElementById('revealList');
+
+            function renderQuestion() {
+                if (testFinished) return;
+                const q = pyqData[currentIndex];
+                yearDisplay.innerText = `Ashokan Edicts`;
+                counterDisplay.innerText = `Q.${currentIndex+1} / ${pyqData.length}`;
+                const yearSuffix = q.year === 'Practice' ? ' (practice)' : ` [UPSC ${q.year}]`;
+                questionText.innerText = q.q + yearSuffix;
+
+                let optsHtml = '';
+                const selectedIdx = userAnswers[currentIndex];
+
+                q.options.forEach((opt, idx) => {
+                    let cls = 'option-btn';
+                    if (selectedIdx !== null) {
+                        if (idx === q.correct) cls += ' correct';
+                        if (selectedIdx === idx && idx !== q.correct) cls += ' wrong';
+                        if (selectedIdx === idx && idx === q.correct) cls += ' correct selected';
+                    }
+                    optsHtml += `<div class="${cls}" data-opt-index="${idx}">${String.fromCharCode(65+idx)}. ${opt}</div>`;
+                });
+                optionsContainer.innerHTML = optsHtml;
+
+                if (selectedIdx !== null) {
+                    explanationBox.innerHTML = q.explain.replace(/\n/g, '<br>');
+                } else {
+                    explanationBox.innerHTML = '👆 select an option → detailed explanation';
+                }
+
+                attachOptionListeners();
+            }
+
+            function attachOptionListeners() {
+                document.querySelectorAll('.option-btn').forEach(opt => {
+                    opt.addEventListener('click', (e) => {
+                        if (testFinished) return;
+                        const idx = parseInt(e.currentTarget.dataset.optIndex, 10);
+                        userAnswers[currentIndex] = idx;
+                        renderQuestion();
+                    });
+                });
+            }
+
+            function goToPrev() { if (currentIndex > 0) { currentIndex--; renderQuestion(); } }
+            function goToNext() { if (currentIndex < pyqData.length - 1) { currentIndex++; renderQuestion(); } }
+            function skipQuestion() { if (currentIndex < pyqData.length - 1) { currentIndex++; renderQuestion(); } else alert('Last question.'); }
+
+            function showReveal() {
+                questionArea.classList.add('hidden');
+                revealArea.classList.remove('hidden');
+                resultsArea.classList.add('hidden');
+                let listHtml = '';
+                pyqData.forEach((q, idx) => {
+                    const yearTag = q.year === 'Practice' ? '(practice)' : `[UPSC ${q.year}]`;
+                    listHtml += `<div class="reveal-item"><div class="reveal-question">${idx+1}. ${q.q} ${yearTag}</div><div class="reveal-answer">✅ ${q.options[q.correct]}</div></div>`;
+                });
+                revealList.innerHTML = listHtml;
+            }
+
+            function backToQuiz() {
+                revealArea.classList.add('hidden');
+                questionArea.classList.remove('hidden');
+                resultsArea.classList.add('hidden');
+            }
+
+            function finishTest() {
+                testFinished = true;
+                let correctCount = 0;
+                pyqData.forEach((q, idx) => { if (userAnswers[idx] !== null && userAnswers[idx] === q.correct) correctCount++; });
+                const percentage = Math.round((correctCount / pyqData.length) * 100);
+                resultsArea.innerHTML = `<strong>✅ Edict mastery!</strong><br>You got <strong>${correctCount}</strong> out of <strong>${pyqData.length}</strong> correct.<br>Score: <strong>${percentage}%</strong>`;
+                resultsArea.classList.remove('hidden');
+                questionArea.classList.add('hidden');
+                revealArea.classList.add('hidden');
+            }
+
+            prevBtn.addEventListener('click', goToPrev);
+            nextBtn.addEventListener('click', goToNext);
+            skipBtn.addEventListener('click', skipQuestion);
+            revealToggleBtn.addEventListener('click', showReveal);
+            backToQuizBtn.addEventListener('click', backToQuiz);
+            finishBtn.addEventListener('click', finishTest);
+
+            // Shuffle functionality
+            document.getElementById('shuffleBtn').addEventListener('click', () => {
+                pyqData = shuffleArray([...edictBank]);
+                userAnswers = new Array(pyqData.length).fill(null);
+                currentIndex = 0;
+                testFinished = false;
+                resultsArea.classList.add('hidden');
+                revealArea.classList.add('hidden');
+                questionArea.classList.remove('hidden');
+                renderQuestion();
+            });
+
+            // ---------- amCharts Map with Edict Markers (including edict numbers) ----------
+            const mapContainer = document.getElementById('mapContainer');
+            const mapBtn = document.getElementById('mapBtn');
+            let chartInitialized = false;
+            let root, chart, pointSeries;
+
+            function initMap() {
+                if (chartInitialized) return;
+                chartInitialized = true;
+
+                am5.ready(function() {
+                    root = am5.Root.new("chartdiv");
+                    root.setThemes([]);
+
+                    chart = root.container.children.push(
+                        am5map.MapChart.new(root, {
+                            projection: am5map.geoMercator(),
+                            panX: "rotateX",
+                            panY: "rotateY",
+                            wheelable: true,
+                            zoomControl: am5map.ZoomControl.new(root, {})
+                        })
+                    );
+
+                    // Add India polygon series
+                    var polygonSeries = chart.series.push(
+                        am5map.MapPolygonSeries.new(root, {
+                            geoJSON: am5geodata_indiaLow,
+                            fill: am5.color(0x3d2f4d),
+                            stroke: am5.color(0xc0a0d0),
+                            strokeWidth: 1
+                        })
+                    );
+
+                    polygonSeries.mapPolygons.template.setAll({
+                        tooltipText: "{name}",
+                        interactive: true,
+                        fill: am5.color(0x4a3a60),
+                        stroke: am5.color(0xb090c8),
+                        strokeWidth: 1,
+                        templateField: "polygonSettings"
+                    });
+
+                    polygonSeries.mapPolygons.template.states.create("hover", {
+                        fill: am5.color(0x8a78b0)
+                    });
+
+                    // No click alert – we removed the click event listener
+
+                    // Add point series for edict markers with detailed tooltips
+                    pointSeries = chart.series.push(
+                        am5map.MapPointSeries.new(root, {})
+                    );
+
+                    pointSeries.bullets.push(function() {
+                        return am5.Bullet.new(root, {
+                            sprite: am5.Circle.new(root, {
+                                radius: 6,
+                                fill: am5.color(0xff4d4d),
+                                stroke: am5.color(0xffffff),
+                                strokeWidth: 1,
+                                tooltipText: "{name}\n{edicts}"   // Show both name and edict numbers
+                            })
+                        });
+                    });
+
+                    // Define edict sites with lat/lon AND edict numbers
+                    const edictSites = [
+                        { latitude: 15.95, longitude: 76.65, name: "Maski", edicts: "Minor Rock Edict I" },
+                        { latitude: 21.5, longitude: 70.5, name: "Girnar", edicts: "Major Rock Edicts I‑XIV" },
+                        { latitude: 30.5, longitude: 77.8, name: "Kalsi", edicts: "Major Rock Edicts I‑XIV" },
+                        { latitude: 20.2, longitude: 85.8, name: "Dhauli", edicts: "Major Rock Edicts (abridged) + Separate Kalinga Edicts I‑II" },
+                        { latitude: 19.5, longitude: 84.8, name: "Jaugada", edicts: "Major Rock Edicts (abridged) + Separate Kalinga Edicts I‑II" },
+                        { latitude: 34.2, longitude: 72.2, name: "Shahbazgarhi", edicts: "Major Rock Edicts I‑XIV (Kharoshthi)" },
+                        { latitude: 34.3, longitude: 73.2, name: "Mansehra", edicts: "Major Rock Edicts I‑XIV (Kharoshthi)" },
+                        { latitude: 31.6, longitude: 65.7, name: "Kandahar", edicts: "Greek & Aramaic inscriptions" },
+                        { latitude: 19.4, longitude: 72.8, name: "Sopara", edicts: "Major Rock Edicts (fragments)" },
+                        { latitude: 14.8, longitude: 76.8, name: "Brahmagiri", edicts: "Minor Rock Edict I" },
+                        { latitude: 27.5, longitude: 83.3, name: "Rummindei", edicts: "Pillar Edict (Lumbini inscription)" },
+                        { latitude: 23.5, longitude: 77.7, name: "Sanchi", edicts: "Schism Edict" },
+                        { latitude: 25.4, longitude: 82.9, name: "Sarnath", edicts: "Schism Edict" },
+                        { latitude: 25.4, longitude: 81.8, name: "Allahabad", edicts: "Queen's Edict, Schism Edict" },
+                        { latitude: 25.0, longitude: 85.0, name: "Barabar", edicts: "Cave inscriptions (Ajivikas)" },
+                        { latitude: 27.4, longitude: 76.2, name: "Bairat", edicts: "Minor Rock Edict (Bairat‑Calcutta)" },
+                        { latitude: 25.3, longitude: 81.4, name: "Kosambi", edicts: "Schism Edict" },
+                        { latitude: 30.0, longitude: 77.2, name: "Topra", edicts: "Pillar Edicts I‑VII (now in Delhi)" }
+                    ];
+
+                    pointSeries.data.setAll(edictSites);
+                });
+            }
+
+            // Toggle map visibility and initialize if needed
+            mapBtn.addEventListener('click', () => {
+                mapContainer.classList.toggle('hidden');
+                if (!mapContainer.classList.contains('hidden') && !chartInitialized) {
+                    initMap();
+                }
+            });
+
+            // Initial render of quiz
+            renderQuestion();
+        })();
+    </script>
+</body>
+</html>

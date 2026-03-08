@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Ancient India · Pre Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', 'Poppins', 'Hiragino Maru Gothic', system-ui, sans-serif;
+        }
+
+        body {
+            background: #0f0a1f;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1.2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* blackhole canvas – now visible, dense, with pink accretion (same as main) */
+        #blackhole-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.9;          /* nice & visible */
+        }
+
+        .master {
+            max-width: 1300px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* header – dreamy anime/cosmic blend */
+        .hero {
+            background: rgba(25, 15, 35, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(255, 200, 220, 0.25);
+            color: #f0d0ff;
+            padding: 2rem 2rem;
+            border-radius: 70px 70px 30px 30px;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 35px -5px rgba(0,0,0,0.8), 0 0 40px rgba(180, 130, 220, 0.2);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 40%, rgba(255, 180, 210, 0.1), transparent 70%);
+            animation: rotateGlow 25s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotateGlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #ffffff, #f0c0ff, #ffb6d1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 150, 200, 0.3);
+        }
+
+        .hero h1 span {
+            background: rgba(30, 20, 45, 0.7);
+            backdrop-filter: blur(4px);
+            color: #ffc0e0;
+            font-size: 1.2rem;
+            padding: 8px 28px;
+            border-radius: 60px;
+            display: inline-block;
+            margin-top: 15px;
+            border: 1.5px solid #ffb0d0;
+            -webkit-text-fill-color: #ffc0e0;
+            font-weight: 400;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-top: 18px;
+            opacity: 0.9;
+            color: #d8b0ff;
+        }
+
+        /* back navigation – subtle link */
+        .back-nav {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .back-link {
+            background: rgba(20, 10, 25, 0.6);
+            backdrop-filter: blur(8px);
+            padding: 10px 24px;
+            border-radius: 60px;
+            color: #f0c0ff;
+            text-decoration: none;
+            border: 1.5px solid #b070b0;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+        .back-link:hover {
+            background: rgba(50, 30, 60, 0.7);
+            border-color: #ffa0d0;
+            box-shadow: 0 0 18px #ffa0d080;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 400;
+            color: #ffc0e0;
+            margin: 15px 0 25px 10px;
+            border-left: 5px solid #ffa5c3;
+            padding-left: 20px;
+            text-shadow: 0 0 15px #ffa5c3a0;
+        }
+
+        /* 5‑button grid – refined aesthetic */
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 on desktop, wraps for 5 */
+            gap: 20px;
+            margin: 20px 0 40px;
+        }
+
+        .test-card {
+            background: rgba(28, 20, 38, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(255, 180, 210, 0.3);
+            border-radius: 40px;
+            padding: 1.5rem 1rem 1.2rem 1rem;
+            box-shadow: 0 12px 28px -8px #000000cc, 0 0 20px rgba(200, 130, 200, 0.15);
+            transition: 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            min-height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .test-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 70% 20%, rgba(255, 200, 230, 0.1), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .test-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 160, 200, 0.7);
+            background: rgba(38, 28, 52, 0.75);
+            box-shadow: 0 20px 32px -8px #000, 0 0 30px rgba(210, 130, 220, 0.3);
+        }
+
+        .test-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 4px 10px #b880c0);
+            opacity: 0.95;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #f0d0ff;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            text-shadow: 0 2px 8px #b070b0a0;
+        }
+
+        .card-desc {
+            font-size: 1rem;
+            color: #c0a0d0;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1.5px dashed #8866a0;
+            padding-top: 12px;
+            font-weight: 400;
+        }
+
+        .q-count {
+            background: rgba(0,0,0,0.35);
+            backdrop-filter: blur(2px);
+            padding: 5px 16px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            color: #e0b0ff;
+            border: 1px solid #a070b0;
+        }
+
+        .play-badge {
+            background: #a06a9a;
+            border-radius: 40px;
+            padding: 6px 22px;
+            font-weight: 500;
+            color: #ffe0ff;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px #381c30;
+            transition: 0.2s;
+            border: none;
+        }
+
+        .test-card:hover .play-badge {
+            background: #b880b8;
+            box-shadow: 0 6px 14px #503850;
+        }
+
+        footer {
+            text-align: center;
+            margin: 2.5rem 0 0.8rem;
+            color: #b090c0;
+            font-weight: 400;
+            font-size: 1rem;
+            backdrop-filter: blur(4px);
+            padding: 1rem;
+            border-radius: 60px;
+            background: rgba(0,0,0,0.25);
+            border: 1px solid #8866a0;
+        }
+
+        /* responsive: 5 cards */
+        @media (max-width: 900px) {
+            .test-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            .test-grid {
+                grid-template-columns: 1fr;
+            }
+            .test-card {
+                min-height: 170px;
+            }
+            .card-title {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- SAME VISIBLE BLACKHOLE CANVAS (identical to main page) with dense pink core -->
+    <canvas id="blackhole-canvas"></canvas>
+
+    <div class="master">
+        <!-- header: Ancient India focus -->
+        <div class="hero">
+            <h1>🏺 Ancient India <span>syllabus · pre test</span></h1>
+            <p>𓃀 ages, edicts, mahajanapadas & more</p>
+        </div>
+
+        <!-- navigation back to main index (adjust href if needed) -->
+        <div class="back-nav">
+            <a href="/Singularity/index.html" class="back-link">← back to all tests</a>
+        </div>
+
+        <div class="section-title">🔍 explore ancient modules</div>
+
+        <!-- exactly the five buttons requested -->
+        <div class="test-grid" id="ancientGrid">
+            <!-- 1. Ages sites and features -->
+            <a href="#" class="test-card" data-topic="ages">
+                <div class="card-icon">⏳</div>
+                <div class="card-title">Ages sites & features</div>
+                <div class="card-desc">Stone Age, Palaeolithic, Mesolithic, Neolithic – key sites & tools</div>
+                <div class="card-meta">
+                    <span class="q-count">75+ q</span>
+                    <span class="play-badge">▶ start</span>
+                </div>
+            </a>
+
+            <!-- 2. IVC sites and features -->
+            <a href="/Singularity/Ancient_History/IVC_Pyqs.html" class="test-card" data-topic="ivc">
+                <div class="card-icon">🏺</div>
+                <div class="card-title">IVC sites & features</div>
+                <div class="card-desc">Harappa, Mohenjo‑daro, Dholavira – town planning, artefacts</div>
+                <div class="card-meta">
+                    <span class="q-count">110+ q</span>
+                    <span class="play-badge">▶ start</span>
+                </div>
+            </a>
+
+            <!-- 3. Mahajanapadas -->
+            <a href="/Singularity/Ancient_History/Mahajanpadas_PYQs.html" class="test-card" data-topic="mahajanapadas">
+                <div class="card-icon">⚔️</div>
+                <div class="card-title">Mahajanapadas</div>
+                <div class="card-desc">16 great kingdoms – capitals, rulers, economic & political setup</div>
+                <div class="card-meta">
+                    <span class="q-count">92 q</span>
+                    <span class="play-badge">▶ start</span>
+                </div>
+            </a>
+
+            <!-- 4. Ashokan Edicts -->
+            <a href="Ashokan_Edicts.html" class="test-card" data-topic="ashokan">
+                <div class="card-icon">🪨</div>
+                <div class="card-title">Ashokan Edicts</div>
+                <div class="card-desc">Major & minor rock edicts, pillar inscriptions, contents & locations</div>
+                <div class="card-meta">
+                    <span class="q-count">68 q</span>
+                    <span class="play-badge">▶ start</span>
+                </div>
+            </a>
+
+            <!-- 5. Sangam -->
+            <a href="/Singularity/Ancient_History/Sangam.html" class="test-card" data-topic="sangam">
+                <div class="card-icon">📖</div>
+                <div class="card-title">Sangam</div>
+                <div class="card-desc">Sangam literature, polity, society – Cheras, Cholas, Pandyas</div>
+                <div class="card-meta">
+                    <span class="q-count">84 q</span>
+                    <span class="play-badge">▶ start</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- subtle note for expansion / placeholders -->
+        <div style="background: rgba(30,20,40,0.5); backdrop-filter: blur(8px); border-radius: 60px; padding: 1.2rem; margin: 30px 0; text-align: center; border: 1.5px solid #a070b0;">
+            <p style="font-size:1.2rem; color:#ffc0e0;">📌 each module will open a dedicated question set</p>
+        </div>
+
+        <footer>
+            ⚡ ancient history deep dive · question files go in same folder
+        </footer>
+    </div>
+
+    <script>
+(function() {
+    // --- ENHANCED BLACKHOLE with visible core & accretion (same as main page) ---
+    const canvas = document.getElementById('blackhole-canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let particles = [];
+    const PARTICLE_COUNT = 240; // dense for visibility
+
+    let corePulse = 0;
+
+    function initCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+
+        particles = [];
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            let radius;
+            if (Math.random() < 0.6) {
+                radius = 30 + Math.random() * 100;   // inner bright region
+            } else {
+                radius = 130 + Math.random() * 220;  // outer faint
+            }
+            const speed = 0.0008 + Math.random() * 0.003;
+            const size = 1.5 + Math.random() * 3.5;
+            particles.push({
+                angle: angle,
+                radius: radius,
+                baseRadius: radius,
+                speed: speed,
+                size: size,
+                drift: (Math.random() - 0.5) * 0.004,
+                color: `rgba(255, ${160 + Math.random()*50}, 220, 0.6)`
+            });
+        }
+    }
+
+    function drawBlackhole() {
+        ctx.clearRect(0, 0, width, height);
+        const centerX = width / 2;
+        const centerY = height / 2;
+
+        // core pulse
+        corePulse = (corePulse + 0.01) % (Math.PI * 2);
+        
+        // outer glow
+        ctx.shadowColor = "#ffa0d0";
+        ctx.shadowBlur = 40;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 32, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(30, 10, 20, 0)"; // transparent, just shadow
+        ctx.fill();
+
+        // dark core (the blackhole itself)
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = "#b04080";
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 26, 0, Math.PI * 2);
+        ctx.fillStyle = "#0a0512";
+        ctx.fill();
+
+        // inner photon ring
+        ctx.shadowBlur = 30;
+        ctx.shadowColor = "#ffb0d0";
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 28, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(255, 200, 230, 0.7)";
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        // particles (accretion disk)
+        ctx.shadowBlur = 16;
+        ctx.shadowColor = "#ffb0d0";
+
+        particles.forEach(p => {
+            p.angle += p.speed;
+            p.radius += p.drift;
+
+            if (p.radius < 28) p.radius = 30 + Math.random() * 30;
+            if (p.radius > 360) p.radius = 200 + Math.random() * 80;
+
+            const x = centerX + Math.cos(p.angle) * p.radius;
+            const y = centerY + Math.sin(p.angle) * p.radius * 0.9; // flatten slightly
+
+            // color based on radius
+            let r, g, b, a;
+            if (p.radius < 100) {
+                r = 255; g = 160 + Math.random()*40; b = 210; a = 0.7;
+            } else {
+                r = 210; g = 140; b = 230; a = 0.4;
+            }
+            ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
+
+            ctx.beginPath();
+            ctx.arc(x, y, p.size * (1 + 0.2 * Math.sin(p.angle * 2)), 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        // spiral streaks
+        ctx.shadowBlur = 24;
+        ctx.shadowColor = "#ffa0c0";
+        for (let i = 0; i < 4; i++) {
+            const spiralAngle = Date.now() * 0.0005 + i * 1.5;
+            for (let r = 40; r < 200; r += 35) {
+                const x = centerX + Math.cos(spiralAngle + r * 0.03) * r;
+                const y = centerY + Math.sin(spiralAngle + r * 0.03) * r * 0.9;
+                ctx.beginPath();
+                ctx.arc(x, y, 3.5 - r/150, 0, 2 * Math.PI);
+                ctx.fillStyle = `rgba(255, 180, 220, 0.15)`;
+                ctx.fill();
+            }
+        }
+
+        // bright inner rim
+        ctx.shadowBlur = 50;
+        ctx.shadowColor = "#ff70b0";
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 18, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(40, 10, 20, 0)";
+        ctx.fill();
+
+        requestAnimationFrame(drawBlackhole);
+    }
+
+    window.addEventListener('resize', initCanvas);
+    initCanvas();
+    drawBlackhole();
+
+    // --- interactive handling for placeholder cards (href="#") ---
+    const placeholderCards = document.querySelectorAll('.test-card[href="#"]');
+
+    placeholderCards.forEach(card => {
+        card.addEventListener('click', (e) => {
+            e.preventDefault();
+            const titleElem = card.querySelector('.card-title');
+            const topic = titleElem ? titleElem.innerText : 'this module';
+            alert(`🌀 "${topic}" — ready when you create the MCQ file. link can be updated in href.`);
+        });
+    });
+})();
+    </script>
+</body>
+</html>

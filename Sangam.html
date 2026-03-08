@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Sangam Age & South India · PYQs (1997–2024)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', 'Poppins', 'Hiragino Maru Gothic', system-ui, sans-serif;
+        }
+
+        body {
+            background: #0f0a1a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 1.2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* subtle blackhole canvas */
+        #blackhole-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .master {
+            max-width: 950px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            background: rgba(30, 22, 40, 0.65);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(180, 150, 200, 0.3);
+            border-radius: 50px 50px 25px 25px;
+            padding: 1.2rem 1.8rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 500;
+            color: #f0d0ff;
+            text-shadow: 0 2px 12px #a07ac0;
+        }
+
+        .header h1 span {
+            background: rgba(60, 45, 75, 0.6);
+            color: #d8b8f0;
+            font-size: 1rem;
+            padding: 4px 16px;
+            border-radius: 40px;
+            margin-left: 10px;
+            border: 1px solid #b088c8;
+        }
+
+        .header p {
+            font-size: 1rem;
+            margin-top: 5px;
+            color: #c0a8d8;
+        }
+
+        /* navigation bar - adjusted for folder structure */
+        .nav-bar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: rgba(45, 35, 55, 0.6);
+            backdrop-filter: blur(8px);
+            padding: 0.7rem 1.2rem;
+            border-radius: 50px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #6a5580;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: #d0b8e8;
+            text-decoration: none;
+            background: rgba(70, 52, 85, 0.6);
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            border: 1px solid #8a6fa0;
+            transition: 0.1s;
+        }
+
+        .nav-link:hover {
+            background: rgba(100, 75, 125, 0.7);
+        }
+
+        .nav-separator {
+            color: #8a6fa0;
+            font-size: 1.2rem;
+        }
+
+        .nav-current {
+            background: rgba(100, 75, 125, 0.7);
+            color: #f0e0ff;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            border: 1px solid #b090c8;
+        }
+
+        .spacer {
+            flex: 1;
+        }
+
+        .quiz-card {
+            background: rgba(32, 24, 42, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(170, 140, 200, 0.35);
+            border-radius: 50px;
+            padding: 2rem 2rem;
+            box-shadow: 0 20px 35px -8px #050208;
+            margin-bottom: 1.5rem;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed #7a6190;
+        }
+
+        .year-badge {
+            background: #5a4a70;
+            color: #f0e0ff;
+            padding: 8px 22px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: 1px solid #b088c8;
+        }
+
+        .question-counter {
+            background: #3a2e4a;
+            color: #d8b8f0;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+        }
+
+        .question-text {
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #f0e0ff;
+            margin: 25px 0 30px;
+            line-height: 1.5;
+            text-shadow: 0 2px 10px #906db0;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin: 20px 0 30px;
+        }
+
+        .option-btn {
+            background: rgba(55, 45, 70, 0.7);
+            border: 1.5px solid #7a6a90;
+            border-radius: 40px;
+            padding: 14px 18px;
+            font-size: 1.1rem;
+            color: #e0d0f8;
+            cursor: pointer;
+            transition: 0.15s;
+            text-align: left;
+            backdrop-filter: blur(4px);
+        }
+
+        .option-btn:hover {
+            background: rgba(85, 70, 105, 0.8);
+            border-color: #b098c8;
+        }
+
+        .option-btn.selected {
+            background: #6a8a7a;
+            border-color: #a0d0b0;
+            color: #f0fff0;
+        }
+
+        .option-btn.correct {
+            background: #6a8a7a;
+            border-color: #a0d0b0;
+        }
+
+        .option-btn.wrong {
+            background: #9a6a7a;
+            border-color: #d0a0b0;
+        }
+
+        .explain-box {
+            background: rgba(45, 35, 60, 0.8);
+            backdrop-filter: blur(4px);
+            border-left: 8px solid #b090c8;
+            border-radius: 40px;
+            padding: 18px 24px;
+            font-size: 1.1rem;
+            color: #e0d0f0;
+            margin: 20px 0 20px;
+            line-height: 1.6;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0 10px;
+        }
+
+        .nav-btn {
+            background: #4a3a60;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 1rem;
+            color: #f0e0ff;
+            cursor: pointer;
+            transition: 0.1s;
+            border: 1px solid #8a78a0;
+            flex: 1 1 auto;
+        }
+
+        .nav-btn:hover {
+            background: #6a5a80;
+        }
+
+        .nav-btn.primary {
+            background: #7a68a0;
+            border-color: #b090c8;
+        }
+
+        .nav-btn.primary:hover {
+            background: #8a78b0;
+        }
+
+        .finish-btn {
+            background: #9a7ab0;
+            border: 1px solid #d0a8e0;
+            color: #faf0ff;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            margin: 15px 0 5px;
+            transition: 0.15s;
+        }
+
+        .finish-btn:hover {
+            background: #b090c8;
+        }
+
+        .reveal-section {
+            margin-top: 30px;
+            background: rgba(35, 28, 45, 0.8);
+            backdrop-filter: blur(8px);
+            border-radius: 50px;
+            padding: 1.5rem;
+            border: 2px solid #8a78a0;
+        }
+
+        .reveal-title {
+            font-size: 1.5rem;
+            color: #f0d0ff;
+            margin-bottom: 20px;
+            border-left: 6px solid #b090c8;
+            padding-left: 18px;
+        }
+
+        .reveal-item {
+            background: rgba(55, 45, 70, 0.6);
+            border-radius: 30px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 12px;
+            border: 1px solid #7a6a90;
+        }
+
+        .reveal-question {
+            font-weight: 500;
+            color: #e8d0ff;
+            margin-bottom: 8px;
+        }
+
+        .reveal-answer {
+            color: #c0e0c0;
+            background: rgba(70, 80, 70, 0.4);
+            padding: 8px 16px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+
+        .results-box {
+            background: #6a5a80;
+            border-radius: 50px;
+            padding: 1.2rem;
+            text-align: center;
+            color: #faf0ff;
+            font-size: 1.3rem;
+            margin: 20px 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        footer {
+            text-align: center;
+            color: #8a78a0;
+            font-size: 0.9rem;
+            margin: 2rem 0 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="blackhole-canvas"></canvas>
+
+    <div class="master">
+        <div class="header">
+            <h1>🌊 Sangam Age & South India <span>PYQs 1997–2024</span></h1>
+            <p>complete coverage: Cheras, Cholas, Pandyas, Sangam literature, trade, administration</p>
+        </div>
+
+        <!-- navigation bar with correct paths for folder structure -->
+        <div class="nav-bar">
+            <a href="../index.html" class="nav-link">🏠 Home</a>
+            <span class="nav-separator">›</span>
+            <span class="nav-separator">›</span>
+            <a href="/Singularity/Ancient_History" class="nav-link">📁 Ancient History</a>
+            <span class="nav-separator">›</span>
+            <span class="nav-current">📄 Sangam Age PYQs</span>
+            <span class="spacer"></span>
+            <a href="/Singularity/Ancient_History/Sangam_Practice.html" class="nav-link">📝 Practice </a>
+        </div>
+
+        <div class="quiz-card" id="quizCard">
+            <div id="questionArea">
+                <div class="question-header">
+                    <span class="year-badge" id="yearDisplay">UPSC 2022</span>
+                    <span class="question-counter" id="counterDisplay">Q.1 / 12</span>
+                </div>
+
+                <div class="question-text" id="questionText">Loading question...</div>
+
+                <div class="options-grid" id="optionsContainer"></div>
+
+                <div class="explain-box" id="explanationBox">
+                    👆 select an option to see detailed explanation for all choices
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-btn" id="prevBtn">◀ Previous</button>
+                    <button class="nav-btn" id="nextBtn">Next ▶</button>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="nav-btn" id="skipBtn">⏭️ Skip Question</button>
+                    <button class="nav-btn primary" id="revealToggleBtn">📋 Reveal All Answers</button>
+                </div>
+
+                <button class="finish-btn" id="finishBtn">✅ Finish Test & Show Results</button>
+            </div>
+
+            <div id="revealArea" class="reveal-section hidden">
+                <div class="reveal-title">📋 All Questions & Answers (Chronological)</div>
+                <div id="revealList"></div>
+                <button class="nav-btn" id="backToQuizBtn" style="margin-top: 20px;">◀ Back to Quiz</button>
+            </div>
+
+            <div id="resultsArea" class="results-box hidden"></div>
+        </div>
+
+        <footer>
+            ⚡ sources: UPSC Prelims 1997–2024 · full option explanations · subtle blackhole
+        </footer>
+    </div>
+
+    <script>
+        (function() {
+            // --- subtle blackhole animation ---
+            const canvas = document.getElementById('blackhole-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
+            const PARTICLE_COUNT = 80;
+
+            function initCanvas() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+
+                particles = [];
+                for (let i = 0; i < PARTICLE_COUNT; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const radius = 60 + Math.random() * Math.min(width, height) * 0.5;
+                    const speed = 0.0004 + Math.random() * 0.001;
+                    const size = 1 + Math.random() * 2;
+                    particles.push({
+                        angle: angle,
+                        radius: radius,
+                        speed: speed,
+                        size: size,
+                        drift: Math.random() * 0.004 - 0.002,
+                        brightness: 0.3 + Math.random() * 0.4
+                    });
+                }
+            }
+
+            function drawBlackhole() {
+                ctx.clearRect(0, 0, width, height);
+                const centerX = width / 2;
+                const centerY = height / 2;
+
+                const gradient = ctx.createRadialGradient(centerX, centerY, 5, centerX, centerY, Math.min(width, height) * 0.5);
+                gradient.addColorStop(0, 'rgba(70, 30, 60, 0.2)');
+                gradient.addColorStop(0.4, 'rgba(35, 18, 35, 0.15)');
+                gradient.addColorStop(0.8, 'rgba(10, 5, 15, 0.05)');
+                gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, width, height);
+
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 25, 0, 2 * Math.PI);
+                ctx.fillStyle = 'rgba(10, 5, 15, 0.8)';
+                ctx.fill();
+
+                particles.forEach(p => {
+                    p.angle += p.speed * (1 - p.radius / (Math.min(width, height) * 0.4));
+                    p.radius += p.drift;
+                    if (p.radius < 25) p.radius = 80 + Math.random() * 150;
+                    if (p.radius > Math.min(width, height) * 0.5) p.radius = 70;
+
+                    const x = centerX + Math.cos(p.angle) * p.radius;
+                    const y = centerY + Math.sin(p.angle) * p.radius;
+
+                    const dist = Math.hypot(x - centerX, y - centerY);
+                    const brightness = Math.max(0.2, 1 - dist / (Math.min(width, height) * 0.35));
+                    ctx.fillStyle = `rgba(200, 150, 200, ${brightness * 0.25})`;
+                    ctx.shadowColor = '#b080b0';
+                    ctx.shadowBlur = 10 * brightness;
+                    ctx.beginPath();
+                    ctx.arc(x, y, p.size * brightness * 0.6, 0, 2 * Math.PI);
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(drawBlackhole);
+            }
+
+            window.addEventListener('resize', () => {
+                initCanvas();
+            });
+
+            initCanvas();
+            drawBlackhole();
+
+            // --- Sangam Age & South India PYQs (chronological 1997-2024) ---
+            const pyqData = [
+                // 1997
+                {
+                    q: "The Ashokan major rock edicts which tell us about the Sangama kingdom include rock edicts",
+                    options: ["I and X", "I and XI", "II and XIII", "II and XIV"],
+                    correct: 2,
+                    year: "1997",
+                    explain: "✅ <strong>Correct: II and XIII.</strong> Rock Edicts II and XIII mention the southern kingdoms of Chola, Pandya, Satyaputra, Keralaputra, and Tambapanni (Sri Lanka).\n\n❌ I and X: Edict I deals with prohibition of animal sacrifice; Edict X criticizes pursuit of fame.\n❌ I and XI: Edict XI advocates Dhamma and respect for elders.\n❌ II and XIV: Edict XIV explains purpose of the edicts."
+                },
+                {
+                    q: "Match List I with List II and select the correct answer: A. Gupta B. Chandela C. Chalukya D. Pallava | 1. Badami 2. Panamalai 3. Khajuraho 4. Deogarh",
+                    options: ["4 3 1 2", "4 2 3 1", "2 3 4 1", "3 4 1 2"],
+                    correct: 0,
+                    year: "1997",
+                    explain: "✅ <strong>Correct: A-4, B-3, C-1, D-2.</strong>\nDeogarh (Gupta), Khajuraho (Chandela), Badami (Chalukya), Panamalai (Pallava).\n\n❌ Other options have incorrect pairings."
+                },
+                {
+                    q: "Which one of the following was a corporation of merchants in ancient India?",
+                    options: ["Chaturvedimangalam", "Parishad", "Ashtadiggaja", "Manigrama"],
+                    correct: 3,
+                    year: "1997",
+                    explain: "✅ <strong>Correct: Manigrama.</strong> Manigrama was a prominent South Indian merchant guild during the Chalukya period.\n\n❌ Chaturvedimangalam: Brahmin settlement.\n❌ Parishad: Council or assembly.\n❌ Ashtadiggaja: Poets in Krishnadevaraya's court."
+                },
+                // 2000
+                {
+                    q: "Assertion (A): The Aham and Puram poems of the Padinen Kilukanakku group formed a continuation of the Sangam composition. Reason (R): They were included under the post-Sangam works as against the Sangam works proper.",
+                    options: ["Both A and R are true and R is correct explanation", "Both A and R true but R not correct explanation", "A true but R false", "A false but R true"],
+                    correct: 0,
+                    year: "2000",
+                    explain: "✅ <strong>Correct: Both A and R are true and R is correct explanation.</strong> The Aham and Puram poems are post-Sangam (200 BCE-100 BCE) and continue the Sangam tradition.\n\n❌ Other options are incorrect based on chronology."
+                },
+                // 2001
+                {
+                    q: "Which one of the Chola kings conquered Ceylon (Sri Lanka)?",
+                    options: ["Aditya I", "Rajaraja I", "Rajendra", "Vijayalaya"],
+                    correct: 1,
+                    year: "2001",
+                    explain: "✅ <strong>Correct: Rajaraja I.</strong> In 933 AD, Rajaraja Chola I conquered the Anuradhapura kingdom and annexed it to the Chola empire.\n\n❌ Aditya I: Early Chola ruler.\n❌ Rajendra: Extended conquests but Ceylon was already under Chola control.\n❌ Vijayalaya: Founder of Chola dynasty."
+                },
+                // 2006
+                {
+                    q: "Who among the following laid the foundation of the Rashtrakuta empire?",
+                    options: ["Amoghavarsha I", "Dantidurga", "Dhruva", "Krishna I"],
+                    correct: 1,
+                    year: "2006",
+                    explain: "✅ <strong>Correct: Dantidurga (735-756 CE).</strong> He established the Rashtrakuta empire with capital in Gulbarga region.\n\n❌ Amoghavarsha I: Greatest Rashtrakuta ruler (814-878 CE).\n❌ Dhruva: Expanded empire (780-793 CE).\n❌ Krishna I: Successor of Dantidurga."
+                },
+                // 2016
+                {
+                    q: "In the context of the history of India, consider the following pairs: 1. Eripatti: Land, revenue from which was set apart for maintenance of village tank. 2. Taniyurs: Villages donated to a single Brahmin or group of Brahmins. 3. Ghatikas: Colleges generally attached to temples.",
+                    options: ["1 and 2 only", "Only 3", "2 and 3 only", "1 and 3 only"],
+                    correct: 3,
+                    year: "2016",
+                    explain: "✅ <strong>Correct: 1 and 3 only.</strong>\n✅ Eripatti: Land for tank maintenance.\n❌ Taniyurs: Not Brahmin villages - Taniyur was a revenue unit from Brahmadeya.\n✅ Ghatikas: Temple colleges (e.g., Kanchi)."
+                },
+                // 2017
+                {
+                    q: "Which one of the following was a very important seaport in the Kakatiya kingdom?",
+                    options: ["Kakinada", "Motupalli", "Machilipatnam", "Nelluru"],
+                    correct: 1,
+                    year: "2017",
+                    explain: "✅ <strong>Correct: Motupalli.</strong> The Motupalli inscription of King Ganapati (13th century) details tariffs on trade goods.\n\n❌ Kakinada: Modern port.\n❌ Machilipatnam: Important later, under Golconda.\n❌ Nelluru: Inland town."
+                },
+                // 2020
+                {
+                    q: "Consider the events: 1. Rise of Pratiharas under Bhoja. 2. Establishment of Pallava power under Mahendravarman I. 3. Establishment of Chola power by Parantaka I. 4. Pala dynasty founded by Gopala. Correct chronological order?",
+                    options: ["2-1-4-3", "3-1-4-2", "2-4-1-3", "3-4-1-2"],
+                    correct: 2,
+                    year: "2020",
+                    explain: "✅ <strong>Correct: 2-4-1-3.</strong>\nMahendravarman I (Pallava, 600-630 CE) → Gopala (Pala, 750 CE) → Bhoja (Pratihara, 836 CE) → Parantaka I (Chola, 907 CE)."
+                },
+                // 2022
+                {
+                    q: "Which one of the following statements about Sangam literature in ancient South India is correct?",
+                    options: [
+                        "Sangam poems are devoid of any reference to material culture.",
+                        "The social classification of Varna was known to Sangam poets.",
+                        "Sangam poems have no reference to warrior ethic.",
+                        "Sangam literature refers to magical forces as irrational."
+                    ],
+                    correct: 1,
+                    year: "2022",
+                    explain: "✅ <strong>Correct: The social classification of Varna was known to Sangam poets.</strong> References to Arashar (kings), Vaishiyar (traders), Velalar (farmers), and Brahmanas appear.\n\n❌ Devoid of material culture: Incorrect; poems contain many material references.\n❌ No warrior ethic: Incorrect; Puram poems celebrate warrior ethics.\n❌ Magical forces as irrational: Incorrect; they believed in sacred/magical forces (ananke)."
+                },
+                // 2023 (from search result listing)
+                {
+                    q: "With reference to ancient South India, Korkai, Poompuhar and Muchiri were well known as",
+                    options: ["Capital cities", "Ports", "Inland trade centers", "Religious pilgrimage centers"],
+                    correct: 1,
+                    year: "2023",
+                    explain: "✅ <strong>Correct: Ports.</strong> Korkai (Pandya port, pearl fishery), Poompuhar (Chola port, also called Kaveripattinam), Muchiri (Chera port, Muziris on west coast).\n\n❌ Capital cities: Their capitals were elsewhere.\n❌ Inland centers: They were coastal.\n❌ Pilgrimage centers: Not primarily."
+                },
+                {
+                    q: "Which one of the following explains the practice of 'Vattakirutal' as mentioned in Sangam poems?",
+                    options: ["A martial practice", "A agricultural technique", "A form of taxation", "A religious ritual"],
+                    correct: 0,
+                    year: "2023",
+                    explain: "✅ <strong>Correct: A martial practice.</strong> Vattakirutal refers to warriors encircling the enemy or a siege tactic.\n\n❌ Agricultural technique: Not related.\n❌ Taxation: Different terms (Karrai, Irai).\n❌ Religious ritual: Not correct."
+                },
+                // additional high-yield from search
+                {
+                    q: "The term 'Muvendar' in Sangam literature refers to:",
+                    options: ["Three crowned kings (Cheras, Cholas, Pandyas)", "Three types of taxes", "Three assemblies", "Three classes of society"],
+                    correct: 0,
+                    year: "2024 (expected)",
+                    explain: "✅ <strong>Correct: Three crowned kings.</strong> Muvendar is a Tamil word meaning 'three chiefs' - the Cheras, Cholas, and Pandyas.\n\n❌ Taxes: Different terms (Irai, Karrai).\n❌ Assemblies: Sabha, Samiti, Vidatha are Vedic.\n❌ Classes: Varna system."
+                },
+                {
+                    q: "Panar and Viraliyar, mentioned in Sangam texts, were:",
+                    options: ["Merchant guilds", "Warrior clans", "Bards and dancers", "Tax collectors"],
+                    correct: 2,
+                    year: "2024 (expected)",
+                    explain: "✅ <strong>Correct: Bards and dancers.</strong> Panar were singing bards, Viraliyar were experts in folk songs and dances patronized by kings.\n\n❌ Merchant guilds: Those were Shreni, Manigrama.\n❌ Warrior clans: Maravar, Kalla.\n❌ Tax collectors: Different officials."
+                }
+            ];
+
+            // state
+            let currentIndex = 0;
+            let userAnswers = new Array(pyqData.length).fill(null);
+            let testFinished = false;
+
+            // DOM elements
+            const questionArea = document.getElementById('questionArea');
+            const revealArea = document.getElementById('revealArea');
+            const resultsArea = document.getElementById('resultsArea');
+            const yearDisplay = document.getElementById('yearDisplay');
+            const counterDisplay = document.getElementById('counterDisplay');
+            const questionText = document.getElementById('questionText');
+            const optionsContainer = document.getElementById('optionsContainer');
+            const explanationBox = document.getElementById('explanationBox');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const skipBtn = document.getElementById('skipBtn');
+            const revealToggleBtn = document.getElementById('revealToggleBtn');
+            const finishBtn = document.getElementById('finishBtn');
+            const backToQuizBtn = document.getElementById('backToQuizBtn');
+            const revealList = document.getElementById('revealList');
+
+            function renderQuestion() {
+                if (testFinished) return;
+                const q = pyqData[currentIndex];
+                yearDisplay.innerText = `UPSC ${q.year}`;
+                counterDisplay.innerText = `Q.${currentIndex+1} / ${pyqData.length}`;
+                questionText.innerText = q.q;
+
+                let optsHtml = '';
+                const selectedIdx = userAnswers[currentIndex];
+
+                q.options.forEach((opt, idx) => {
+                    let cls = 'option-btn';
+                    if (selectedIdx !== null) {
+                        if (idx === q.correct) cls += ' correct';
+                        if (selectedIdx === idx && idx !== q.correct) cls += ' wrong';
+                        if (selectedIdx === idx && idx === q.correct) cls += ' correct selected';
+                    }
+                    optsHtml += `<div class="${cls}" data-opt-index="${idx}">${String.fromCharCode(65+idx)}. ${opt}</div>`;
+                });
+                optionsContainer.innerHTML = optsHtml;
+
+                if (selectedIdx !== null) {
+                    explanationBox.innerHTML = q.explain.replace(/\n/g, '<br>');
+                } else {
+                    explanationBox.innerHTML = '👆 select an option to see detailed explanation for all choices';
+                }
+
+                attachOptionListeners();
+            }
+
+            function attachOptionListeners() {
+                document.querySelectorAll('.option-btn').forEach(opt => {
+                    opt.addEventListener('click', (e) => {
+                        if (testFinished) return;
+                        const idx = parseInt(e.currentTarget.dataset.optIndex, 10);
+                        userAnswers[currentIndex] = idx;
+                        renderQuestion();
+                    });
+                });
+            }
+
+            function goToPrev() {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    renderQuestion();
+                }
+            }
+
+            function goToNext() {
+                if (currentIndex < pyqData.length - 1) {
+                    currentIndex++;
+                    renderQuestion();
+                }
+            }
+
+            function skipQuestion() {
+                if (currentIndex < pyqData.length - 1) {
+                    currentIndex++;
+                    renderQuestion();
+                } else {
+                    alert('This is the last question.');
+                }
+            }
+
+            function showReveal() {
+                questionArea.classList.add('hidden');
+                revealArea.classList.remove('hidden');
+                resultsArea.classList.add('hidden');
+
+                let listHtml = '';
+                pyqData.forEach((q, idx) => {
+                    const correctAns = q.options[q.correct];
+                    listHtml += `
+                        <div class="reveal-item">
+                            <div class="reveal-question">${idx+1}. ${q.q} (UPSC ${q.year})</div>
+                            <div class="reveal-answer">✅ ${correctAns}</div>
+                        </div>
+                    `;
+                });
+                revealList.innerHTML = listHtml;
+            }
+
+            function backToQuiz() {
+                revealArea.classList.add('hidden');
+                questionArea.classList.remove('hidden');
+                resultsArea.classList.add('hidden');
+            }
+
+            function finishTest() {
+                testFinished = true;
+                let correctCount = 0;
+                pyqData.forEach((q, idx) => {
+                    if (userAnswers[idx] !== null && userAnswers[idx] === q.correct) correctCount++;
+                });
+                const percentage = Math.round((correctCount / pyqData.length) * 100);
+                resultsArea.innerHTML = `
+                    <strong>✅ Test Completed!</strong><br>
+                    You got <strong>${correctCount}</strong> out of <strong>${pyqData.length}</strong> correct.<br>
+                    Score: <strong>${percentage}%</strong>
+                `;
+                resultsArea.classList.remove('hidden');
+                questionArea.classList.add('hidden');
+                revealArea.classList.add('hidden');
+            }
+
+            prevBtn.addEventListener('click', goToPrev);
+            nextBtn.addEventListener('click', goToNext);
+            skipBtn.addEventListener('click', skipQuestion);
+            revealToggleBtn.addEventListener('click', showReveal);
+            backToQuizBtn.addEventListener('click', backToQuiz);
+            finishBtn.addEventListener('click', finishTest);
+
+            renderQuestion();
+        })();
+    </script>
+</body>
+</html>

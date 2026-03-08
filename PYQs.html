@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Ancient History Terminologies · PYQs (1995–2025)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', 'Poppins', 'Hiragino Maru Gothic', system-ui, sans-serif;
+        }
+
+        body {
+            background: #0f0a1a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 1.2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* subtle blackhole canvas */
+        #blackhole-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.3; /* very subtle */
+        }
+
+        .master {
+            max-width: 950px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            background: rgba(30, 22, 40, 0.65);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(180, 150, 200, 0.3);
+            border-radius: 50px 50px 25px 25px;
+            padding: 1.2rem 1.8rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 500;
+            color: #f0d0ff;
+            text-shadow: 0 2px 12px #a07ac0;
+        }
+
+        .header h1 span {
+            background: rgba(60, 45, 75, 0.6);
+            color: #d8b8f0;
+            font-size: 1rem;
+            padding: 4px 16px;
+            border-radius: 40px;
+            margin-left: 10px;
+            border: 1px solid #b088c8;
+        }
+
+        .header p {
+            font-size: 1rem;
+            margin-top: 5px;
+            color: #c0a8d8;
+        }
+
+        .nav-bar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: rgba(45, 35, 55, 0.6);
+            backdrop-filter: blur(8px);
+            padding: 0.7rem 1.2rem;
+            border-radius: 50px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #6a5580;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: #d0b8e8;
+            text-decoration: none;
+            background: rgba(70, 52, 85, 0.6);
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            border: 1px solid #8a6fa0;
+            transition: 0.1s;
+        }
+
+        .nav-link:hover {
+            background: rgba(100, 75, 125, 0.7);
+        }
+
+        .nav-separator {
+            color: #8a6fa0;
+            font-size: 1.2rem;
+        }
+
+        .nav-current {
+            background: rgba(100, 75, 125, 0.7);
+            color: #f0e0ff;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            border: 1px solid #b090c8;
+        }
+
+        .spacer {
+            flex: 1;
+        }
+
+        .quiz-card {
+            background: rgba(32, 24, 42, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(170, 140, 200, 0.35);
+            border-radius: 50px;
+            padding: 2rem 2rem;
+            box-shadow: 0 20px 35px -8px #050208;
+            margin-bottom: 1.5rem;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed #7a6190;
+        }
+
+        .year-badge {
+            background: #5a4a70;
+            color: #f0e0ff;
+            padding: 8px 22px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: 1px solid #b088c8;
+        }
+
+        .question-counter {
+            background: #3a2e4a;
+            color: #d8b8f0;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+        }
+
+        .question-text {
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #f0e0ff;
+            margin: 25px 0 30px;
+            line-height: 1.5;
+            text-shadow: 0 2px 10px #906db0;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin: 20px 0 30px;
+        }
+
+        .option-btn {
+            background: rgba(55, 45, 70, 0.7);
+            border: 1.5px solid #7a6a90;
+            border-radius: 40px;
+            padding: 14px 18px;
+            font-size: 1.1rem;
+            color: #e0d0f8;
+            cursor: pointer;
+            transition: 0.15s;
+            text-align: left;
+            backdrop-filter: blur(4px);
+        }
+
+        .option-btn:hover {
+            background: rgba(85, 70, 105, 0.8);
+            border-color: #b098c8;
+        }
+
+        .option-btn.selected {
+            background: #6a8a7a;
+            border-color: #a0d0b0;
+            color: #f0fff0;
+        }
+
+        .option-btn.correct {
+            background: #6a8a7a;
+            border-color: #a0d0b0;
+        }
+
+        .option-btn.wrong {
+            background: #9a6a7a;
+            border-color: #d0a0b0;
+        }
+
+        .explain-box {
+            background: rgba(45, 35, 60, 0.8);
+            backdrop-filter: blur(4px);
+            border-left: 8px solid #b090c8;
+            border-radius: 40px;
+            padding: 18px 24px;
+            font-size: 1.1rem;
+            color: #e0d0f0;
+            margin: 20px 0 20px;
+            line-height: 1.6;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0 10px;
+        }
+
+        .nav-btn {
+            background: #4a3a60;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 1rem;
+            color: #f0e0ff;
+            cursor: pointer;
+            transition: 0.1s;
+            border: 1px solid #8a78a0;
+            flex: 1 1 auto;
+        }
+
+        .nav-btn:hover {
+            background: #6a5a80;
+        }
+
+        .nav-btn.primary {
+            background: #7a68a0;
+            border-color: #b090c8;
+        }
+
+        .nav-btn.primary:hover {
+            background: #8a78b0;
+        }
+
+        .finish-btn {
+            background: #9a7ab0;
+            border: 1px solid #d0a8e0;
+            color: #faf0ff;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            margin: 15px 0 5px;
+            transition: 0.15s;
+        }
+
+        .finish-btn:hover {
+            background: #b090c8;
+        }
+
+        .reveal-section {
+            margin-top: 30px;
+            background: rgba(35, 28, 45, 0.8);
+            backdrop-filter: blur(8px);
+            border-radius: 50px;
+            padding: 1.5rem;
+            border: 2px solid #8a78a0;
+        }
+
+        .reveal-title {
+            font-size: 1.5rem;
+            color: #f0d0ff;
+            margin-bottom: 20px;
+            border-left: 6px solid #b090c8;
+            padding-left: 18px;
+        }
+
+        .reveal-item {
+            background: rgba(55, 45, 70, 0.6);
+            border-radius: 30px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 12px;
+            border: 1px solid #7a6a90;
+        }
+
+        .reveal-question {
+            font-weight: 500;
+            color: #e8d0ff;
+            margin-bottom: 8px;
+        }
+
+        .reveal-answer {
+            color: #c0e0c0;
+            background: rgba(70, 80, 70, 0.4);
+            padding: 8px 16px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+
+        .results-box {
+            background: #6a5a80;
+            border-radius: 50px;
+            padding: 1.2rem;
+            text-align: center;
+            color: #faf0ff;
+            font-size: 1.3rem;
+            margin: 20px 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        footer {
+            text-align: center;
+            color: #8a78a0;
+            font-size: 0.9rem;
+            margin: 2rem 0 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="blackhole-canvas"></canvas>
+
+    <div class="master">
+        <div class="header">
+            <h1>📜 Ancient History Terminologies <span>PYQs 1995–2025</span></h1>
+            <p>chronological · terminology-focused · with option explanations</p>
+        </div>
+
+        <div class="nav-bar">
+            <a href="/Singularity/index.html" class="nav-link">🏠 Home</a>
+            <span class="nav-separator">›</span>
+            <a href="/Singularity/Ancient_History_Terminologies/PYQs.html" class="nav-link">📁 Ancient History Terminologies</a>
+            <span class="nav-separator">›</span>
+            <span class="nav-current">📄 PYQs</span>
+            <span class="spacer"></span>
+            <a href="/Singularity/Ancient_History_Terminologies/Practice.html" class="nav-link">📝 Practice</a>
+        </div>
+
+        <div class="quiz-card" id="quizCard">
+            <div id="questionArea">
+                <div class="question-header">
+                    <span class="year-badge" id="yearDisplay">UPSC 1995</span>
+                    <span class="question-counter" id="counterDisplay">Q.1 / 25</span>
+                </div>
+
+                <div class="question-text" id="questionText">Loading question...</div>
+
+                <div class="options-grid" id="optionsContainer"></div>
+
+                <div class="explain-box" id="explanationBox">
+                    👆 select an option to see detailed explanation for all choices
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-btn" id="prevBtn">◀ Previous</button>
+                    <button class="nav-btn" id="nextBtn">Next ▶</button>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="nav-btn" id="skipBtn">⏭️ Skip Question</button>
+                    <button class="nav-btn primary" id="revealToggleBtn">📋 Reveal All Answers</button>
+                </div>
+
+                <button class="finish-btn" id="finishBtn">✅ Finish Test & Show Results</button>
+            </div>
+
+            <div id="revealArea" class="reveal-section hidden">
+                <div class="reveal-title">📋 All Questions & Answers (Chronological)</div>
+                <div id="revealList"></div>
+                <button class="nav-btn" id="backToQuizBtn" style="margin-top: 20px;">◀ Back to Quiz</button>
+            </div>
+
+            <div id="resultsArea" class="results-box hidden"></div>
+        </div>
+
+        <footer>
+            ⚡ subtle blackhole · terminology-focused PYQs 1995→2025
+        </footer>
+    </div>
+
+    <script>
+        (function() {
+            // --- subtle blackhole animation ---
+            const canvas = document.getElementById('blackhole-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
+            const PARTICLE_COUNT = 80;
+
+            function initCanvas() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+
+                particles = [];
+                for (let i = 0; i < PARTICLE_COUNT; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const radius = 60 + Math.random() * Math.min(width, height) * 0.5;
+                    const speed = 0.0004 + Math.random() * 0.001;
+                    const size = 1 + Math.random() * 2;
+                    particles.push({
+                        angle: angle,
+                        radius: radius,
+                        speed: speed,
+                        size: size,
+                        drift: Math.random() * 0.004 - 0.002,
+                        brightness: 0.3 + Math.random() * 0.4
+                    });
+                }
+            }
+
+            function drawBlackhole() {
+                ctx.clearRect(0, 0, width, height);
+                const centerX = width / 2;
+                const centerY = height / 2;
+
+                const gradient = ctx.createRadialGradient(centerX, centerY, 5, centerX, centerY, Math.min(width, height) * 0.5);
+                gradient.addColorStop(0, 'rgba(70, 30, 60, 0.2)');
+                gradient.addColorStop(0.4, 'rgba(35, 18, 35, 0.15)');
+                gradient.addColorStop(0.8, 'rgba(10, 5, 15, 0.05)');
+                gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, width, height);
+
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 25, 0, 2 * Math.PI);
+                ctx.fillStyle = 'rgba(10, 5, 15, 0.8)';
+                ctx.fill();
+
+                particles.forEach(p => {
+                    p.angle += p.speed * (1 - p.radius / (Math.min(width, height) * 0.4));
+                    p.radius += p.drift;
+                    if (p.radius < 25) p.radius = 80 + Math.random() * 150;
+                    if (p.radius > Math.min(width, height) * 0.5) p.radius = 70;
+
+                    const x = centerX + Math.cos(p.angle) * p.radius;
+                    const y = centerY + Math.sin(p.angle) * p.radius;
+
+                    const dist = Math.hypot(x - centerX, y - centerY);
+                    const brightness = Math.max(0.2, 1 - dist / (Math.min(width, height) * 0.35));
+                    ctx.fillStyle = `rgba(200, 150, 200, ${brightness * 0.25})`;
+                    ctx.shadowColor = '#b080b0';
+                    ctx.shadowBlur = 10 * brightness;
+                    ctx.beginPath();
+                    ctx.arc(x, y, p.size * brightness * 0.6, 0, 2 * Math.PI);
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(drawBlackhole);
+            }
+
+            window.addEventListener('resize', () => {
+                initCanvas();
+            });
+
+            initCanvas();
+            drawBlackhole();
+
+            // --- PYQ data: terminology-focused, chronological 1995→2025 ---
+            const pyqData = [
+                // 1995
+                {
+                    q: "The name 'Priyadarshi' was used for which ruler in his inscriptions?",
+                    options: ["Bindusara", "Ashoka", "Chandragupta Maurya", "Dasharatha Maurya"],
+                    correct: 1,
+                    year: "1995",
+                    explain: "✅ <strong>Correct: Ashoka.</strong> He is referred to as 'Devanam Priyadarshi' in inscriptions. The Maski edict uniquely confirms his personal name as Ashoka.\n\n❌ Bindusara: Father of Ashoka, never called Priyadarshi.\n❌ Chandragupta Maurya: Founder of dynasty, not Priyadarshi.\n❌ Dasharatha Maurya: Later Mauryan ruler, not associated with this title."
+                },
+                {
+                    q: "The term 'Yavanapriya' mentioned in ancient Sanskrit texts denoted:",
+                    options: ["A type of silk", "Pepper", "A Greek ambassador", "Gold coin"],
+                    correct: 1,
+                    year: "1995",
+                    explain: "✅ <strong>Correct: Pepper.</strong> 'Yavanapriya' literally means 'dear to Greeks' and was a specific term for pepper, a highly sought-after commodity in Indo-Roman trade.\n\n❌ A type of silk: Silk was 'chinamsuka'.\n❌ A Greek ambassador: That was 'Yavanaduta'.\n❌ Gold coin: That was Nishka or Suvarna."
+                },
+                // 1997
+                {
+                    q: "Which rock edict site is unique for mentioning Ashoka by his personal name?",
+                    options: ["Girnar", "Kalsi", "Maski", "Dhauli"],
+                    correct: 2,
+                    year: "1997",
+                    explain: "✅ <strong>Correct: Maski.</strong> It is the only edict that mentions 'Ashoka' by name rather than just 'Priyadarshi'.\n\n❌ Girnar: Important edict site in Gujarat, but not with personal name.\n❌ Kalsi: Major edict site in Uttarakhand, not with personal name.\n❌ Dhauli: Edict site in Odisha, not with personal name."
+                },
+                // 2000
+                {
+                    q: "'Nishka' in ancient India was a term for:",
+                    options: ["A silver coin", "A gold coin", "A copper weight", "A land measure"],
+                    correct: 1,
+                    year: "2000",
+                    explain: "✅ <strong>Correct: A gold coin.</strong> Nishka was a gold coin or ornament used as currency in Vedic times, also a weight unit.\n\n❌ A silver coin: That was Pana or Karshapana.\n❌ A copper weight: Copper had different units.\n❌ A land measure: Land was measured in 'nivartana' or 'kulyavapa'."
+                },
+                // 2005
+                {
+                    q: "In the Mauryan administration, 'Rajukas' were associated with which function?",
+                    options: ["Tax collection", "Military command", "Judicial and reward powers", "Trade regulation"],
+                    correct: 2,
+                    year: "2005",
+                    explain: "✅ <strong>Correct: Judicial and reward powers.</strong> Rajukas were officers vested with authority to reward and punish people, playing a key role in rural administration.\n\n❌ Tax collection: Done by Samharta.\n❌ Military command: Handled by Senapati.\n❌ Trade regulation: Oversee by panyadhyaksha."
+                },
+                // 2010
+                {
+                    q: "The term 'Sannidhata' in the Mauryan period referred to:",
+                    options: ["Collector of revenue", "Treasurer", "Commander of army", "Chief justice"],
+                    correct: 1,
+                    year: "2010",
+                    explain: "✅ <strong>Correct: Treasurer.</strong> Sannidhata was in charge of the state treasury, while Samharta was the Collector of Revenue.\n\n❌ Collector of revenue: That was Samharta.\n❌ Commander of army: That was Senapati.\n❌ Chief justice: No such designation in Mauryan records."
+                },
+                // 2012
+                {
+                    q: "The term 'Sandhivigrahika' under the Guptas meant:",
+                    options: ["Minister of War and Peace", "Chief of the army", "Revenue minister", "Chief justice"],
+                    correct: 0,
+                    year: "2012",
+                    explain: "✅ <strong>Correct: Minister of War and Peace.</strong> Sandhi (peace) + Vigraha (war) – this designation first appeared under Samudragupta.\n\n❌ Chief of army: That was Senapati.\n❌ Revenue minister: Different official.\n❌ Chief justice: Not the correct meaning."
+                },
+                // 2015
+                {
+                    q: "Which of the following was a provincial governor directly appointed by the king in the Gupta period?",
+                    options: ["Kumaramtya", "Uparika", "Vishayapati", "Gopta"],
+                    correct: 1,
+                    year: "2015",
+                    explain: "✅ <strong>Correct: Uparika.</strong> Uparika was governor of a province (Bhukti), directly appointed by the king.\n\n❌ Kumaramtya: High-ranking officials at the court.\n❌ Vishayapati: District-level officer.\n❌ Gopta: Not a standard Gupta title for governor."
+                },
+                // 2016
+                {
+                    q: "What was 'Brahmadeya' during the Chola period?",
+                    options: ["Land gifted to temples", "Land gifted to Brahmins", "Tax on merchants", "Village assembly"],
+                    correct: 1,
+                    year: "2016",
+                    explain: "✅ <strong>Correct: Land gifted to Brahmins.</strong> Brahmadeya villages were often tax-exempt and could be independent of local administration (Taniyurs).\n\n❌ Land gifted to temples: That was Devadana.\n❌ Tax on merchants: That was different levies.\n❌ Village assembly: That was Sabha or Ur."
+                },
+                {
+                    q: "The term 'Eripatti' in Chola inscriptions refers to:",
+                    options: ["Land for village tank maintenance", "Land for temples", "Military land", "Royal land"],
+                    correct: 0,
+                    year: "2016",
+                    explain: "✅ <strong>Correct: Land for village tank maintenance.</strong> Eri = tank, patti = land – revenue from this land was set apart for maintaining the village tank.\n\n❌ Land for temples: That's Devadana.\n❌ Military land: Not a Chola land category.\n❌ Royal land: That was 'vellanvagai'."
+                },
+                {
+                    q: "The term 'Ghatikas' in ancient South India were:",
+                    options: ["Market places", "Centers of higher learning", "Military barracks", "Tax collection centres"],
+                    correct: 1,
+                    year: "2016",
+                    explain: "✅ <strong>Correct: Centers of higher learning.</strong> Ghatikas were attached to temples, such as the famous Ghatika at Kanchi.\n\n❌ Market places: Those were 'nagaram'.\n❌ Military barracks: Not correct.\n❌ Tax collection centres: Not the meaning."
+                },
+                // 2018
+                {
+                    q: "Which assembly in the Chola period was specifically for Brahmin landowners?",
+                    options: ["Ur", "Sabha", "Nagaram", "Mandalam"],
+                    correct: 1,
+                    year: "2018",
+                    explain: "✅ <strong>Correct: Sabha.</strong> Sabha was the assembly of Brahmin landowners in the Chola administration.\n\n❌ Ur: Assembly of non-Brahmin landowners.\n❌ Nagaram: Assembly of merchants.\n❌ Mandalam: A province, not an assembly."
+                },
+                // 2019
+                {
+                    q: "'Vishti' in the context of the Gupta period refers to:",
+                    options: ["A type of tax", "Forced labour", "A land grant", "A village council"],
+                    correct: 1,
+                    year: "2019",
+                    explain: "✅ <strong>Correct: Forced labour.</strong> Vishti was forced labour, considered a source of income for the state – a tax paid through labour.\n\n❌ A type of tax: Broad term, but Vishti specifically meant labour tax.\n❌ A land grant: That was Brahmadeya or Agrahara.\n❌ A village council: Different institution."
+                },
+                // 2020
+                {
+                    q: "Which of the following refers to a bill of exchange in ancient India?",
+                    options: ["Hundi", "Pana", "Karshapana", "Bhaga"],
+                    correct: 0,
+                    year: "2020",
+                    explain: "✅ <strong>Correct: Hundi.</strong> Hundi was a financial instrument used as a bill of exchange for remitting funds and as a credit instrument.\n\n❌ Pana: A coin or weight.\n❌ Karshapana: A punch-marked silver coin.\n❌ Bhaga: Share of produce (tax)."
+                },
+                // 2025 terminology questions only
+                {
+                    q: "With reference to ancient India (600–322 BC), consider the following pairs: Territorial region — River\nI. Asmaka — Godavari\nII. Kamboja — Vipas\nIII. Avanti — Mahanadi\nIV. Kosala — Sarayu\nHow many of the pairs given above are correctly matched?",
+                    options: ["Only one", "Only two", "Only three", "All four"],
+                    correct: 1,
+                    year: "2025",
+                    explain: "✅ <strong>Correct: Only two</strong> (I and IV).\n\n✅ I. Asmaka – Godavari: Correct. Asmaka was in the Godavari valley.\n❌ II. Kamboja – Vipas: Incorrect. Kamboja was near Jhelum, not Beas.\n❌ III. Avanti – Mahanadi: Incorrect. Avanti was in Malwa (Kshipra river).\n✅ IV. Kosala – Sarayu: Correct. Kosala was on Sarayu river."
+                },
+                {
+                    q: "Ashokan inscriptions suggest that the 'Pradesika', 'Rajuka' and 'Yukta' were important officers at the",
+                    options: ["village-level administration", "district-level administration", "provincial administration", "level of the central administration"],
+                    correct: 1,
+                    year: "2025",
+                    explain: "✅ <strong>Correct: district-level administration.</strong>\nThese officers were key at the district level. Pradesika oversaw districts, Rajuka handled revenue/judicial duties, and Yukta assisted with records.\n\n❌ Village-level: They were above village level.\n❌ Provincial: Provincial governors were higher (Kumara).\n❌ Central: These were field-level officers, not at the imperial court."
+                },
+                {
+                    q: "Who among the following rulers in ancient India had assumed the titles 'Mattavilasa', 'Vichitrachitta' and 'Gunabharata'?",
+                    options: ["Mahendravarman I", "Simhavishnu", "Narasimhavarman I", "Simhavarman"],
+                    correct: 0,
+                    year: "2025",
+                    explain: "✅ <strong>Correct: Mahendravarman I (Pallava).</strong>\nHe was known for these titles and authored 'Mattavilasa Prahasana'.\n\n❌ Simhavishnu: Father of Mahendravarman I, did not use these titles.\n❌ Narasimhavarman I: Son of Mahendravarman I, known as Mamalla.\n❌ Simhavarman: Another Pallava ruler, not associated with these titles."
+                },
+                {
+                    q: "The irrigation device called 'Araghatta' was",
+                    options: ["a water bag made of leather pulled over a pulley", "a large wheel with earthen pots tied to the outer ends of its spokes", "a larger earthen pot driven by bullocks", "a large water bucket pulled up by rope directly by hand"],
+                    correct: 1,
+                    year: "2025",
+                    explain: "✅ <strong>Correct: a large wheel with earthen pots.</strong>\nAraghatta was an ancient water-lifting device using a wheel and pots (also called 'ghati yantra'), mentioned in Panchatantra and Rajatarangini.\n\n❌ Leather bag: That was 'pur' or 'mot'.\n❌ Bullock-driven pot: Not the standard definition.\n❌ Hand-pulled bucket: Too primitive for the term 'Araghatta'."
+                }
+            ];
+
+            // state
+            let currentIndex = 0;
+            let userAnswers = new Array(pyqData.length).fill(null);
+            let testFinished = false;
+
+            // DOM elements
+            const questionArea = document.getElementById('questionArea');
+            const revealArea = document.getElementById('revealArea');
+            const resultsArea = document.getElementById('resultsArea');
+            const yearDisplay = document.getElementById('yearDisplay');
+            const counterDisplay = document.getElementById('counterDisplay');
+            const questionText = document.getElementById('questionText');
+            const optionsContainer = document.getElementById('optionsContainer');
+            const explanationBox = document.getElementById('explanationBox');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const skipBtn = document.getElementById('skipBtn');
+            const revealToggleBtn = document.getElementById('revealToggleBtn');
+            const finishBtn = document.getElementById('finishBtn');
+            const backToQuizBtn = document.getElementById('backToQuizBtn');
+            const revealList = document.getElementById('revealList');
+
+            function renderQuestion() {
+                if (testFinished) return;
+                const q = pyqData[currentIndex];
+                yearDisplay.innerText = `UPSC ${q.year}`;
+                counterDisplay.innerText = `Q.${currentIndex+1} / ${pyqData.length}`;
+                questionText.innerText = q.q;
+
+                let optsHtml = '';
+                const selectedIdx = userAnswers[currentIndex];
+
+                q.options.forEach((opt, idx) => {
+                    let cls = 'option-btn';
+                    if (selectedIdx !== null) {
+                        if (idx === q.correct) cls += ' correct';
+                        if (selectedIdx === idx && idx !== q.correct) cls += ' wrong';
+                        if (selectedIdx === idx && idx === q.correct) cls += ' correct selected';
+                    }
+                    optsHtml += `<div class="${cls}" data-opt-index="${idx}">${String.fromCharCode(65+idx)}. ${opt}</div>`;
+                });
+                optionsContainer.innerHTML = optsHtml;
+
+                if (selectedIdx !== null) {
+                    explanationBox.innerHTML = q.explain.replace(/\n/g, '<br>');
+                } else {
+                    explanationBox.innerHTML = '👆 select an option to see detailed explanation for all choices';
+                }
+
+                attachOptionListeners();
+            }
+
+            function attachOptionListeners() {
+                document.querySelectorAll('.option-btn').forEach(opt => {
+                    opt.addEventListener('click', (e) => {
+                        if (testFinished) return;
+                        const idx = parseInt(e.currentTarget.dataset.optIndex, 10);
+                        userAnswers[currentIndex] = idx;
+                        renderQuestion();
+                    });
+                });
+            }
+
+            function goToPrev() {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    renderQuestion();
+                }
+            }
+
+            function goToNext() {
+                if (currentIndex < pyqData.length - 1) {
+                    currentIndex++;
+                    renderQuestion();
+                }
+            }
+
+            function skipQuestion() {
+                if (currentIndex < pyqData.length - 1) {
+                    currentIndex++;
+                    renderQuestion();
+                } else {
+                    alert('This is the last question.');
+                }
+            }
+
+            function showReveal() {
+                questionArea.classList.add('hidden');
+                revealArea.classList.remove('hidden');
+                resultsArea.classList.add('hidden');
+
+                let listHtml = '';
+                pyqData.forEach((q, idx) => {
+                    const correctAns = q.options[q.correct];
+                    listHtml += `
+                        <div class="reveal-item">
+                            <div class="reveal-question">${idx+1}. ${q.q} (UPSC ${q.year})</div>
+                            <div class="reveal-answer">✅ ${correctAns}</div>
+                        </div>
+                    `;
+                });
+                revealList.innerHTML = listHtml;
+            }
+
+            function backToQuiz() {
+                revealArea.classList.add('hidden');
+                questionArea.classList.remove('hidden');
+                resultsArea.classList.add('hidden');
+            }
+
+            function finishTest() {
+                testFinished = true;
+                let correctCount = 0;
+                pyqData.forEach((q, idx) => {
+                    if (userAnswers[idx] !== null && userAnswers[idx] === q.correct) correctCount++;
+                });
+                const percentage = Math.round((correctCount / pyqData.length) * 100);
+                resultsArea.innerHTML = `
+                    <strong>✅ Test Completed!</strong><br>
+                    You got <strong>${correctCount}</strong> out of <strong>${pyqData.length}</strong> correct.<br>
+                    Score: <strong>${percentage}%</strong>
+                `;
+                resultsArea.classList.remove('hidden');
+                questionArea.classList.add('hidden');
+                revealArea.classList.add('hidden');
+            }
+
+            prevBtn.addEventListener('click', goToPrev);
+            nextBtn.addEventListener('click', goToNext);
+            skipBtn.addEventListener('click', skipQuestion);
+            revealToggleBtn.addEventListener('click', showReveal);
+            backToQuizBtn.addEventListener('click', backToQuiz);
+            finishBtn.addEventListener('click', finishTest);
+
+            renderQuestion();
+        })();
+    </script>
+</body>
+</html>

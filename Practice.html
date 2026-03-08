@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Ancient History Terminologies · Practice + Glossary</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', 'Poppins', 'Hiragino Maru Gothic', system-ui, sans-serif;
+        }
+
+        body {
+            background: #0f0a1a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 1.2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* subtle blackhole canvas */
+        #blackhole-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .master {
+            max-width: 950px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            background: rgba(30, 22, 40, 0.65);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(180, 150, 200, 0.3);
+            border-radius: 50px 50px 25px 25px;
+            padding: 1.2rem 1.8rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 500;
+            color: #f0d0ff;
+            text-shadow: 0 2px 12px #a07ac0;
+        }
+
+        .header h1 span {
+            background: rgba(60, 45, 75, 0.6);
+            color: #d8b8f0;
+            font-size: 1rem;
+            padding: 4px 16px;
+            border-radius: 40px;
+            margin-left: 10px;
+            border: 1px solid #b088c8;
+        }
+
+        .header p {
+            font-size: 1rem;
+            margin-top: 5px;
+            color: #c0a8d8;
+        }
+
+        .nav-bar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: rgba(45, 35, 55, 0.6);
+            backdrop-filter: blur(8px);
+            padding: 0.7rem 1.2rem;
+            border-radius: 50px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #6a5580;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: #d0b8e8;
+            text-decoration: none;
+            background: rgba(70, 52, 85, 0.6);
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            border: 1px solid #8a6fa0;
+            transition: 0.1s;
+        }
+
+        .nav-link:hover {
+            background: rgba(100, 75, 125, 0.7);
+        }
+
+        .nav-separator {
+            color: #8a6fa0;
+            font-size: 1.2rem;
+        }
+
+        .nav-current {
+            background: rgba(100, 75, 125, 0.7);
+            color: #f0e0ff;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            border: 1px solid #b090c8;
+        }
+
+        .spacer {
+            flex: 1;
+        }
+
+        .quiz-card {
+            background: rgba(32, 24, 42, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(170, 140, 200, 0.35);
+            border-radius: 50px;
+            padding: 2rem 2rem;
+            box-shadow: 0 20px 35px -8px #050208;
+            margin-bottom: 1.5rem;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed #7a6190;
+        }
+
+        .category-badge {
+            background: #6a4a7a;
+            color: #f0d0ff;
+            padding: 8px 22px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: 1px solid #b088c8;
+        }
+
+        .question-counter {
+            background: #3a2e4a;
+            color: #d8b8f0;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+        }
+
+        .question-text {
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #f0e0ff;
+            margin: 25px 0 30px;
+            line-height: 1.5;
+            text-shadow: 0 2px 10px #906db0;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin: 20px 0 30px;
+        }
+
+        .option-btn {
+            background: rgba(55, 45, 70, 0.7);
+            border: 1.5px solid #7a6a90;
+            border-radius: 40px;
+            padding: 14px 18px;
+            font-size: 1.1rem;
+            color: #e0d0f8;
+            cursor: pointer;
+            transition: 0.15s;
+            text-align: left;
+            backdrop-filter: blur(4px);
+        }
+
+        .option-btn:hover {
+            background: rgba(85, 70, 105, 0.8);
+            border-color: #b098c8;
+        }
+
+        .option-btn.selected {
+            background: #6a8a7a;
+            border-color: #a0d0b0;
+            color: #f0fff0;
+        }
+
+        .option-btn.correct {
+            background: #6a8a7a;
+            border-color: #a0d0b0;
+        }
+
+        .option-btn.wrong {
+            background: #9a6a7a;
+            border-color: #d0a0b0;
+        }
+
+        .explain-box {
+            background: rgba(45, 35, 60, 0.8);
+            backdrop-filter: blur(4px);
+            border-left: 8px solid #b090c8;
+            border-radius: 40px;
+            padding: 18px 24px;
+            font-size: 1.1rem;
+            color: #e0d0f0;
+            margin: 20px 0 20px;
+            line-height: 1.6;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0 10px;
+        }
+
+        .nav-btn {
+            background: #4a3a60;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 1rem;
+            color: #f0e0ff;
+            cursor: pointer;
+            transition: 0.1s;
+            border: 1px solid #8a78a0;
+            flex: 1 1 auto;
+        }
+
+        .nav-btn:hover {
+            background: #6a5a80;
+        }
+
+        .nav-btn.primary {
+            background: #7a68a0;
+            border-color: #b090c8;
+        }
+
+        .nav-btn.primary:hover {
+            background: #8a78b0;
+        }
+
+        .study-btn {
+            background: #5a6a8a;
+            border-color: #8a9ac0;
+        }
+
+        .study-btn:hover {
+            background: #7a8aa8;
+        }
+
+        .new-test-btn {
+            background: #9a7ab0;
+            border: 1px solid #d0a8e0;
+            color: #faf0ff;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            margin: 15px 0 5px;
+            transition: 0.15s;
+        }
+
+        .new-test-btn:hover {
+            background: #b090c8;
+        }
+
+        /* glossary view */
+        .glossary-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .glossary-category {
+            margin-bottom: 25px;
+        }
+
+        .glossary-category h3 {
+            color: #f0c0ff;
+            font-size: 1.4rem;
+            border-left: 6px solid #b090c8;
+            padding-left: 15px;
+            margin-bottom: 15px;
+        }
+
+        .glossary-item {
+            background: rgba(55, 45, 70, 0.5);
+            border-radius: 30px;
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            border: 1px solid #7a6a90;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+        }
+
+        .glossary-term {
+            font-weight: 600;
+            color: #ffd0ff;
+            font-size: 1.2rem;
+            min-width: 140px;
+        }
+
+        .glossary-meaning {
+            color: #d0c0e0;
+            flex: 2;
+            margin: 0 10px;
+        }
+
+        .glossary-clue {
+            color: #b0a0c0;
+            font-style: italic;
+            font-size: 0.9rem;
+            background: rgba(0,0,0,0.3);
+            padding: 4px 12px;
+            border-radius: 30px;
+            white-space: nowrap;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .footer-note {
+            text-align: center;
+            color: #8a78a0;
+            font-size: 0.9rem;
+            margin: 2rem 0 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="blackhole-canvas"></canvas>
+
+    <div class="master">
+        <div class="header">
+            <h1>📜 Ancient History Terminologies <span>Practice + Glossary</span></h1>
+            <p>randomized tests · study mode · detailed option explanations</p>
+        </div>
+
+        <div class="nav-bar">
+            <a href="index.html" class="nav-link">🏠 Home</a>
+            <span class="nav-separator">›</span>
+            <a href="index.html" class="nav-link">📁 Ancient History Terminologies</a>
+            <span class="nav-separator">›</span>
+            <span class="nav-current">📝 Practice</span>
+            <span class="spacer"></span>
+            <a href="pyqs.html" class="nav-link">📄 PYQs</a>
+        </div>
+
+        <div class="quiz-card" id="quizCard">
+            <!-- Practice mode (visible by default) -->
+            <div id="questionArea">
+                <div class="question-header">
+                    <span class="category-badge" id="categoryDisplay">Vedic Polity</span>
+                    <span class="question-counter" id="counterDisplay">Q.1 / 10</span>
+                </div>
+
+                <div class="question-text" id="questionText">Loading question...</div>
+
+                <div class="options-grid" id="optionsContainer"></div>
+
+                <div class="explain-box" id="explanationBox">
+                    👆 select an option to see detailed explanation for all choices
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-btn" id="prevBtn">◀ Previous</button>
+                    <button class="nav-btn" id="nextBtn">Next ▶</button>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+                    <button class="nav-btn" id="skipBtn">⏭️ Skip Question</button>
+                    <button class="nav-btn study-btn" id="studyBtn">📚 Study Glossary</button>
+                    <button class="nav-btn primary" id="newTestBtn">🔄 New Random Test</button>
+                </div>
+            </div>
+
+            <!-- Glossary mode (hidden initially) -->
+            <div id="glossaryArea" class="hidden">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color:#f0d0ff;">📖 Terminology Glossary</h2>
+                    <button class="nav-btn" id="backToPracticeBtn">◀ Back to Practice</button>
+                </div>
+                <div class="glossary-container" id="glossaryContainer">
+                    <!-- populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            ⚡ study first, then test yourself with random questions
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // --- subtle blackhole animation (same as before) ---
+            const canvas = document.getElementById('blackhole-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
+            const PARTICLE_COUNT = 80;
+
+            function initCanvas() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+
+                particles = [];
+                for (let i = 0; i < PARTICLE_COUNT; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const radius = 60 + Math.random() * Math.min(width, height) * 0.5;
+                    const speed = 0.0004 + Math.random() * 0.001;
+                    const size = 1 + Math.random() * 2;
+                    particles.push({
+                        angle: angle,
+                        radius: radius,
+                        speed: speed,
+                        size: size,
+                        drift: Math.random() * 0.004 - 0.002,
+                        brightness: 0.3 + Math.random() * 0.4
+                    });
+                }
+            }
+
+            function drawBlackhole() {
+                ctx.clearRect(0, 0, width, height);
+                const centerX = width / 2;
+                const centerY = height / 2;
+
+                const gradient = ctx.createRadialGradient(centerX, centerY, 5, centerX, centerY, Math.min(width, height) * 0.5);
+                gradient.addColorStop(0, 'rgba(70, 30, 60, 0.2)');
+                gradient.addColorStop(0.4, 'rgba(35, 18, 35, 0.15)');
+                gradient.addColorStop(0.8, 'rgba(10, 5, 15, 0.05)');
+                gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, width, height);
+
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 25, 0, 2 * Math.PI);
+                ctx.fillStyle = 'rgba(10, 5, 15, 0.8)';
+                ctx.fill();
+
+                particles.forEach(p => {
+                    p.angle += p.speed * (1 - p.radius / (Math.min(width, height) * 0.4));
+                    p.radius += p.drift;
+                    if (p.radius < 25) p.radius = 80 + Math.random() * 150;
+                    if (p.radius > Math.min(width, height) * 0.5) p.radius = 70;
+
+                    const x = centerX + Math.cos(p.angle) * p.radius;
+                    const y = centerY + Math.sin(p.angle) * p.radius;
+
+                    const dist = Math.hypot(x - centerX, y - centerY);
+                    const brightness = Math.max(0.2, 1 - dist / (Math.min(width, height) * 0.35));
+                    ctx.fillStyle = `rgba(200, 150, 200, ${brightness * 0.25})`;
+                    ctx.shadowColor = '#b080b0';
+                    ctx.shadowBlur = 10 * brightness;
+                    ctx.beginPath();
+                    ctx.arc(x, y, p.size * brightness * 0.6, 0, 2 * Math.PI);
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(drawBlackhole);
+            }
+
+            window.addEventListener('resize', () => {
+                initCanvas();
+            });
+
+            initCanvas();
+            drawBlackhole();
+
+            // --- PRACTICE QUESTION BANK (same as before, 50+ questions) ---
+            const practiceBank = [
+                // Vedic Polity & Social Organization
+                {
+                    q: "In the Rigvedic period, the term 'Rajan' referred to:",
+                    options: ["An absolute monarch", "A tribal chief", "An elected king with divine right", "A military dictator"],
+                    correct: 1,
+                    category: "Vedic Polity",
+                    explain: "✅ <strong>Correct: A tribal chief.</strong> The Rigvedic rajan was not an absolute monarch but a tribal chief whose authority was limited by assemblies like the Sabha and Samiti.\n\n❌ An absolute monarch: Incorrect – kingship was not absolute in early Vedic period.\n❌ An elected king with divine right: Divine right emerged later; election wasn't formal.\n❌ A military dictator: No such concept in Vedic polity."
+                },
+                {
+                    q: "Which assembly in the Rigvedic period was known as the 'Council of Elders'?",
+                    options: ["Samiti", "Sabha", "Vidatha", "Gana"],
+                    correct: 1,
+                    category: "Vedic Polity",
+                    explain: "✅ <strong>Correct: Sabha.</strong> Sabha was the council of elders, representing the aristocratic element in Vedic polity.\n\n❌ Samiti: A popular tribal assembly with broader participation.\n❌ Vidatha: Earliest assembly with social, military, and religious functions.\n❌ Gana: Tribal republic, more common in later period."
+                },
+                {
+                    q: "The term 'Gramani' in the Vedic period referred to:",
+                    options: ["Head of a village", "Commander of army", "Chief priest", "Leader of the tribe"],
+                    correct: 0,
+                    category: "Vedic Polity",
+                    explain: "✅ <strong>Correct: Head of a village.</strong> Gramani was the village headman, responsible for local administration.\n\n❌ Commander of army: That was Senani.\n❌ Chief priest: That was Purohita.\n❌ Leader of the tribe: That was Rajan."
+                },
+                {
+                    q: "The Rigvedic term 'Vis' referred to:",
+                    options: ["The entire tribe", "A clan within the tribe", "The royal family", "The priestly class"],
+                    correct: 1,
+                    category: "Vedic Polity",
+                    explain: "✅ <strong>Correct: A clan within the tribe.</strong> Vis was a clan or group of families within the larger tribe (Jana).\n\n❌ The entire tribe: That was Jana.\n❌ The royal family: That was a smaller unit.\n❌ The priestly class: That was a functional division, not Vis."
+                },
+                {
+                    q: "The earliest tribal assembly mentioned in the Rigveda is:",
+                    options: ["Sabha", "Samiti", "Vidatha", "Gana"],
+                    correct: 2,
+                    category: "Vedic Polity",
+                    explain: "✅ <strong>Correct: Vidatha.</strong> Vidatha was the most ancient assembly, performing social, military, and religious functions.\n\n❌ Sabha: Council of elders, later importance.\n❌ Samiti: Popular assembly, later importance.\n❌ Gana: Republican assembly, more prominent in post-Vedic period."
+                },
+
+                // Vedic Economy & Taxation
+                {
+                    q: "The term 'Gavishti' in the Rigveda means:",
+                    options: ["A cattle raid or war", "A type of tax", "A religious ceremony", "A trade caravan"],
+                    correct: 0,
+                    category: "Vedic Economy",
+                    explain: "✅ <strong>Correct: A cattle raid or war.</strong> Gavishti literally means 'desire for cows' and refers to cattle raids, reflecting the pastoral economy.\n\n❌ A type of tax: Taxes were called Bali, Bhaga, etc.\n❌ A religious ceremony: Not correct.\n❌ A trade caravan: That was Sarthavaha."
+                },
+                {
+                    q: "In the Vedic period, 'Bali' referred to:",
+                    options: ["Voluntary tribute or offering to the king", "Compulsory land tax", "Tax on trade", "Religious donation"],
+                    correct: 0,
+                    category: "Vedic Economy",
+                    explain: "✅ <strong>Correct: Voluntary tribute or offering to the king.</strong> Bali was originally voluntary but later became a regular tax.\n\n❌ Compulsory land tax: That developed later.\n❌ Tax on trade: Trade taxes came later.\n❌ Religious donation: That was Dakshina."
+                },
+                {
+                    q: "The term 'Bhaga' in ancient Indian taxation referred to:",
+                    options: ["Share of agricultural produce", "Toll tax on roads", "Forced labour", "Tax on merchants"],
+                    correct: 0,
+                    category: "Vedic Economy",
+                    explain: "✅ <strong>Correct: Share of agricultural produce.</strong> Bhaga was the king's share of crops, usually 1/6th (shadbhaga).\n\n❌ Toll tax on roads: That was Shulka.\n❌ Forced labour: That was Vishti.\n❌ Tax on merchants: That was different levies."
+                },
+                {
+                    q: "The Rigvedic term 'Pani' referred to:",
+                    options: ["A merchant or trader group", "A type of tax", "A priestly class", "A warrior clan"],
+                    correct: 0,
+                    category: "Vedic Economy",
+                    explain: "✅ <strong>Correct: A merchant or trader group.</strong> Panis were traders, sometimes depicted as hostile to the Aryans.\n\n❌ A type of tax: Not correct.\n❌ A priestly class: That was Brahmins.\n❌ A warrior clan: That was Kshatriyas."
+                },
+                {
+                    q: "In the Vedic period, 'Nishka' was used as:",
+                    options: ["A gold ornament used as currency", "A copper coin", "A unit of land measurement", "A type of tax"],
+                    correct: 0,
+                    category: "Vedic Economy",
+                    explain: "✅ <strong>Correct: A gold ornament used as currency.</strong> Nishka was a gold ornament that served as a medium of exchange before coinage.\n\n❌ A copper coin: Copper coins came later (Mashaka).\n❌ A unit of land measurement: Land was measured differently.\n❌ A type of tax: Not correct."
+                },
+
+                // Agriculture & Land Terms
+                {
+                    q: "The Sanskrit term 'Urvara' means:",
+                    options: ["Fertile land", "Wasteland", "Ploughed field", "Irrigated land"],
+                    correct: 0,
+                    category: "Agriculture",
+                    explain: "✅ <strong>Correct: Fertile land.</strong> Urvara refers to productive, fertile soil.\n\n❌ Wasteland: That was Khila.\n❌ Ploughed field: That was Langala or Sita.\n❌ Irrigated land: Not specifically."
+                },
+                {
+                    q: "The term 'Khila' in ancient Indian agriculture referred to:",
+                    options: ["Waste or uncultivated land", "Fertile land", "Irrigation canal", "Granary"],
+                    correct: 0,
+                    category: "Agriculture",
+                    explain: "✅ <strong>Correct: Waste or uncultivated land.</strong> Khila was land not under cultivation.\n\n❌ Fertile land: That was Urvara.\n❌ Irrigation canal: That was different.\n❌ Granary: Not correct."
+                },
+                {
+                    q: "'Langala' was the ancient Indian term for:",
+                    options: ["Plough", "Sickle", "Irrigation pot", "Granary"],
+                    correct: 0,
+                    category: "Agriculture",
+                    explain: "✅ <strong>Correct: Plough.</strong> Langala was the plough, a key agricultural implement.\n\n❌ Sickle: Different tool.\n❌ Irrigation pot: That was Ghati.\n❌ Granary: Not correct."
+                },
+                {
+                    q: "In Vedic texts, 'Sita' referred to:",
+                    options: ["Furrow made by plough", "Goddess of wealth", "Tax on agriculture", "Irrigation channel"],
+                    correct: 0,
+                    category: "Agriculture",
+                    explain: "✅ <strong>Correct: Furrow made by plough.</strong> Sita was the furrow, and later became a goddess in agricultural rituals.\n\n❌ Goddess of wealth: That was Lakshmi.\n❌ Tax on agriculture: That was Bhaga.\n❌ Irrigation channel: Not correct."
+                },
+
+                // Vedic Religion & Priests
+                {
+                    q: "In Vedic sacrifices, the Hotri priest was associated with which Veda?",
+                    options: ["Rigveda", "Yajurveda", "Samaveda", "Atharvaveda"],
+                    correct: 0,
+                    category: "Vedic Religion",
+                    explain: "✅ <strong>Correct: Rigveda.</strong> Hotri recited hymns from the Rigveda during sacrifices.\n\n❌ Yajurveda: Associated with Adhvaryu priest.\n❌ Samaveda: Associated with Udgatri priest.\n❌ Atharvaveda: Not part of the main sacrificial tradition."
+                },
+                {
+                    q: "The priest responsible for performing rituals in the Yajurveda was:",
+                    options: ["Hotri", "Adhvaryu", "Udgatri", "Brahma"],
+                    correct: 1,
+                    category: "Vedic Religion",
+                    explain: "✅ <strong>Correct: Adhvaryu.</strong> Adhvaryu performed the physical rituals and recited the Yajurveda.\n\n❌ Hotri: Associated with Rigveda.\n❌ Udgatri: Associated with Samaveda.\n❌ Brahma: Supervising priest."
+                },
+                {
+                    q: "The Udgatri priest was associated with chanting hymns from which Veda?",
+                    options: ["Rigveda", "Yajurveda", "Samaveda", "Atharvaveda"],
+                    correct: 2,
+                    category: "Vedic Religion",
+                    explain: "✅ <strong>Correct: Samaveda.</strong> Udgatri chanted the Samaveda during sacrifices.\n\n❌ Rigveda: Hotri.\n❌ Yajurveda: Adhvaryu.\n❌ Atharvaveda: Not sacrificial."
+                },
+                {
+                    q: "In Vedic sacrifices, the 'Brahma' priest's role was to:",
+                    options: ["Supervise the entire ritual", "Recite Rigveda hymns", "Perform physical rituals", "Chant Samaveda"],
+                    correct: 0,
+                    category: "Vedic Religion",
+                    explain: "✅ <strong>Correct: Supervise the entire ritual.</strong> Brahma was the overseeing priest who corrected mistakes.\n\n❌ Recite Rigveda: Hotri.\n❌ Perform physical rituals: Adhvaryu.\n❌ Chant Samaveda: Udgatri."
+                },
+
+                // Trade, Guilds & Urban Terms
+                {
+                    q: "The term 'Shreni' in ancient India referred to:",
+                    options: ["Guild of merchants or artisans", "Market place", "Caravan leader", "Trade route"],
+                    correct: 0,
+                    category: "Trade & Guilds",
+                    explain: "✅ <strong>Correct: Guild of merchants or artisans.</strong> Shreni was a professional association that regulated trade and crafts.\n\n❌ Market place: That was Nigama.\n❌ Caravan leader: That was Sarthavaha.\n❌ Trade route: That was Patha."
+                },
+                {
+                    q: "A 'Sarthavaha' in ancient India was a:",
+                    options: ["Caravan leader", "Merchant guild", "Market town", "Tax collector"],
+                    correct: 0,
+                    category: "Trade & Guilds",
+                    explain: "✅ <strong>Correct: Caravan leader.</strong> Sarthavaha led long-distance trade caravans.\n\n❌ Merchant guild: That was Shreni.\n❌ Market town: That was Nigama.\n❌ Tax collector: That was different."
+                },
+                {
+                    q: "The term 'Nigama' in ancient Indian context referred to:",
+                    options: ["A market town or commercial settlement", "A guild", "A trade route", "A royal edict"],
+                    correct: 0,
+                    category: "Trade & Guilds",
+                    explain: "✅ <strong>Correct: A market town or commercial settlement.</strong> Nigama was an urban center for trade and commerce.\n\n❌ A guild: That was Shreni.\n❌ A trade route: That was different.\n❌ A royal edict: That was Shasana."
+                },
+                {
+                    q: "Which term refers to an association of traders similar to Shreni?",
+                    options: ["Puga", "Nigama", "Sarthavaha", "Gramani"],
+                    correct: 0,
+                    category: "Trade & Guilds",
+                    explain: "✅ <strong>Correct: Puga.</strong> Puga was another term for a guild or association of traders.\n\n❌ Nigama: Market town.\n❌ Sarthavaha: Caravan leader.\n❌ Gramani: Village head."
+                },
+
+                // Coins & Currency (Mahajanapada Period)
+                {
+                    q: "The earliest coins in India, dating to the 6th century BCE, were known as:",
+                    options: ["Karshapana", "Nishka", "Satamana", "Mashaka"],
+                    correct: 0,
+                    category: "Coins & Currency",
+                    explain: "✅ <strong>Correct: Karshapana.</strong> Karshapana were punch-marked silver coins, the earliest coinage of India.\n\n❌ Nishka: Gold ornament, pre-coinage.\n❌ Satamana: Gold weight/coin, also early but not the earliest.\n❌ Mashaka: Small copper coin, later."
+                },
+                {
+                    q: "The term 'Pana' in ancient Indian currency referred to:",
+                    options: ["A standard currency unit", "A gold coin", "A copper weight", "A tax term"],
+                    correct: 0,
+                    category: "Coins & Currency",
+                    explain: "✅ <strong>Correct: A standard currency unit.</strong> Pana was a unit of currency and also a weight measure.\n\n❌ A gold coin: Gold coins were Nishka or Suvarna.\n❌ A copper weight: Mashaka was copper.\n❌ A tax term: Not correct."
+                },
+                {
+                    q: "'Mashaka' in ancient Indian coinage was a:",
+                    options: ["Small copper coin", "Silver coin", "Gold weight", "Tax on goods"],
+                    correct: 0,
+                    category: "Coins & Currency",
+                    explain: "✅ <strong>Correct: Small copper coin.</strong> Mashaka was a low-value copper coin.\n\n❌ Silver coin: That was Karshapana.\n❌ Gold weight: That was Nishka or Satamana.\n❌ Tax on goods: Not correct."
+                },
+                {
+                    q: "The term 'Satamana' referred to a:",
+                    options: ["Gold weight or coin", "Silver coin", "Copper coin", "Land measure"],
+                    correct: 0,
+                    category: "Coins & Currency",
+                    explain: "✅ <strong>Correct: Gold weight or coin.</strong> Satamana was a unit of gold, often used as currency.\n\n❌ Silver coin: That was Karshapana.\n❌ Copper coin: That was Mashaka.\n❌ Land measure: Different."
+                },
+
+                // Republican & Mahajanapada Institutions
+                {
+                    q: "The term 'Gana-Sangha' refers to:",
+                    options: ["Republican polity", "Monarchical state", "Religious assembly", "Trade guild"],
+                    correct: 0,
+                    category: "Republican Institutions",
+                    explain: "✅ <strong>Correct: Republican polity.</strong> Gana-Sangha refers to states with collective rule (e.g., Vajji, Malla).\n\n❌ Monarchical state: That was Rajya.\n❌ Religious assembly: That was Parishad.\n❌ Trade guild: That was Shreni."
+                },
+                {
+                    q: "The assembly hall in republican states of ancient India was called:",
+                    options: ["Santhagara", "Sabha", "Samiti", "Vidatha"],
+                    correct: 0,
+                    category: "Republican Institutions",
+                    explain: "✅ <strong>Correct: Santhagara.</strong> Santhagara was the meeting hall where republican assemblies convened.\n\n❌ Sabha: Assembly of elders, not specifically a hall.\n❌ Samiti: Popular assembly.\n❌ Vidatha: Earliest assembly, not republican hall."
+                },
+                {
+                    q: "The term 'Janapada' originally meant:",
+                    options: ["Territory of a tribe", "Large kingdom", "Village council", "Trade route"],
+                    correct: 0,
+                    category: "Republican Institutions",
+                    explain: "✅ <strong>Correct: Territory of a tribe.</strong> Jana (tribe) + pada (foot) = territory where a tribe settles.\n\n❌ Large kingdom: That was Mahajanapada.\n❌ Village council: That was Grama.\n❌ Trade route: Not correct."
+                },
+                {
+                    q: "How many Mahajanapadas are mentioned in Buddhist texts?",
+                    options: ["16", "12", "18", "14"],
+                    correct: 0,
+                    category: "Republican Institutions",
+                    explain: "✅ <strong>Correct: 16.</strong> Anguttara Nikaya lists 16 Mahajanapadas (great states) in 6th century BCE.\n\n❌ 12: Incorrect.\n❌ 18: Incorrect.\n❌ 14: Incorrect."
+                },
+
+                // Administrative Terms (Later Vedic → Mauryan)
+                {
+                    q: "In Mauryan administration, 'Amatya' referred to:",
+                    options: ["Minister or high official", "District officer", "Village headman", "Tax collector"],
+                    correct: 0,
+                    category: "Administration",
+                    explain: "✅ <strong>Correct: Minister or high official.</strong> Amatya were civil servants or ministers in the Mauryan bureaucracy.\n\n❌ District officer: That was Rajuka.\n❌ Village headman: That was Gramika.\n❌ Tax collector: That was Samharta."
+                },
+                {
+                    q: "The term 'Mahamatra' in Ashokan inscriptions refers to:",
+                    options: ["High-ranking officers", "Provincial governors", "Village accountants", "Military commanders"],
+                    correct: 0,
+                    category: "Administration",
+                    explain: "✅ <strong>Correct: High-ranking officers.</strong> Mahamatras were senior officials appointed for various duties including welfare and justice.\n\n❌ Provincial governors: Those were Kumara or Aryaputra.\n❌ Village accountants: Different.\n❌ Military commanders: That was Senapati."
+                },
+                {
+                    q: "In Mauryan administration, 'Rajuka' was responsible for:",
+                    options: ["District administration and justice", "Tax collection", "Military command", "Trade regulation"],
+                    correct: 0,
+                    category: "Administration",
+                    explain: "✅ <strong>Correct: District administration and justice.</strong> Rajukas were district officers with judicial and administrative powers.\n\n❌ Tax collection: That was Samharta.\n❌ Military command: That was Senapati.\n❌ Trade regulation: That was Panyadhyaksha."
+                },
+                {
+                    q: "The term 'Yukta' in Mauryan administration referred to:",
+                    options: ["Subordinate officials", "Provincial governors", "Treasury officers", "Spies"],
+                    correct: 0,
+                    category: "Administration",
+                    explain: "✅ <strong>Correct: Subordinate officials.</strong> Yuktas were lower-level administrative staff assisting higher officers.\n\n❌ Provincial governors: Higher rank.\n❌ Treasury officers: That was Sannidhata.\n❌ Spies: That was Gudhapurusas."
+                },
+
+                // Military & Political Rituals
+                {
+                    q: "The Rajasuya sacrifice was performed for:",
+                    options: ["Royal consecration", "Victory in war", "Fertility of land", "Peace treaty"],
+                    correct: 0,
+                    category: "Rituals",
+                    explain: "✅ <strong>Correct: Royal consecration.</strong> Rajasuya was the ceremony to consecrate a king and assert his authority.\n\n❌ Victory in war: That was more Ashvamedha.\n❌ Fertility of land: Different rituals.\n❌ Peace treaty: Not correct."
+                },
+                {
+                    q: "The Ashvamedha sacrifice involved the:",
+                    options: ["Horse wandering freely for a year", "Sacrifice of 100 horses", "Coronation of the queen", "Offering to fire god"],
+                    correct: 0,
+                    category: "Rituals",
+                    explain: "✅ <strong>Correct: Horse wandering freely for a year.</strong> A royal horse was allowed to roam; the king's army followed. Lands where it roamed were claimed.\n\n❌ Sacrifice of 100 horses: Not correct.\n❌ Coronation of queen: Not the main focus.\n❌ Offering to fire god: General Vedic practice."
+                },
+                {
+                    q: "The Vajapeya sacrifice was associated with:",
+                    options: ["Asserting royal power and prestige", "Securing good harvest", "Victory over enemies", "Purification of sins"],
+                    correct: 0,
+                    category: "Rituals",
+                    explain: "✅ <strong>Correct: Asserting royal power and prestige.</strong> Vajapeya was a ritual to enhance the king's status and power.\n\n❌ Securing good harvest: Agricultural rituals.\n❌ Victory over enemies: That was more Ashvamedha.\n❌ Purification of sins: That was Prayaschitta."
+                },
+                {
+                    q: "In the Rigvedic period, the 'Ratha' was:",
+                    options: ["A war chariot", "A royal throne", "A religious altar", "A type of tax"],
+                    correct: 0,
+                    category: "Military",
+                    explain: "✅ <strong>Correct: A war chariot.</strong> Ratha was the chariot used in warfare and racing.\n\n❌ A royal throne: That was Simhasana.\n❌ A religious altar: That was Vedi.\n❌ A type of tax: Not correct."
+                },
+
+                // Social & Cultural Terms
+                {
+                    q: "The term 'Gotra' in ancient India referred to:",
+                    options: ["Lineage or clan identity", "Social class", "Village settlement", "Religious sect"],
+                    correct: 0,
+                    category: "Social",
+                    explain: "✅ <strong>Correct: Lineage or clan identity.</strong> Gotra indicated descent from a common ancestor, used for marriage rules.\n\n❌ Social class: That was Varna.\n❌ Village settlement: That was Grama.\n❌ Religious sect: That was Sampradaya."
+                },
+                {
+                    q: "In the Rigveda, the term 'Arya' referred to:",
+                    options: ["The noble or elite group", "All inhabitants of India", "The priestly class", "Foreign invaders"],
+                    correct: 0,
+                    category: "Social",
+                    explain: "✅ <strong>Correct: The noble or elite group.</strong> Arya was a self-designation of the Vedic people, meaning noble.\n\n❌ All inhabitants of India: Not inclusive.\n❌ The priestly class: That was Brahmins.\n❌ Foreign invaders: Not correct."
+                },
+                {
+                    q: "The Rigvedic term 'Dasa' or 'Dasyu' referred to:",
+                    options: ["Enemy or non-Aryan tribes", "Merchants", "Priests", "Warriors"],
+                    correct: 0,
+                    category: "Social",
+                    explain: "✅ <strong>Correct: Enemy or non-Aryan tribes.</strong> Dasyus were portrayed as enemies of the Aryans, possibly indigenous people.\n\n❌ Merchants: That was Pani.\n❌ Priests: That was Brahmins.\n❌ Warriors: That was Kshatriyas."
+                },
+                {
+                    q: "The concept of 'Varna' in later Vedic period referred to:",
+                    options: ["Social classification", "Color of skin", "Religious sect", "Geographical region"],
+                    correct: 0,
+                    category: "Social",
+                    explain: "✅ <strong>Correct: Social classification.</strong> Varna was the fourfold social division (Brahmin, Kshatriya, Vaishya, Shudra).\n\n❌ Color of skin: Though 'varna' means color, in social context it means class.\n❌ Religious sect: Different.\n❌ Geographical region: Not correct."
+                },
+
+                // Additional Arthashastra Terms (high yield)
+                {
+                    q: "In Kautilya's Arthashastra, 'Sannidhata' was the officer in charge of:",
+                    options: ["Treasury", "Revenue collection", "Military stores", "Justice"],
+                    correct: 0,
+                    category: "Arthashastra",
+                    explain: "✅ <strong>Correct: Treasury.</strong> Sannidhata was the treasurer responsible for storing and managing state funds.\n\n❌ Revenue collection: That was Samharta.\n❌ Military stores: Different.\n❌ Justice: That was Dharmastha."
+                },
+                {
+                    q: "In the Arthashastra, 'Samharta' was responsible for:",
+                    options: ["Collection of revenue", "Defence of the kingdom", "Foreign affairs", "City administration"],
+                    correct: 0,
+                    category: "Arthashastra",
+                    explain: "✅ <strong>Correct: Collection of revenue.</strong> Samharta was the collector of revenue from various sources.\n\n❌ Defence: That was Senapati.\n❌ Foreign affairs: That was Sandhivigrahika.\n❌ City administration: That was Nagaraka."
+                },
+                {
+                    q: "The officer in charge of weights and measures in the Arthashastra was:",
+                    options: ["Pautavadhyaksha", "Lohadhyaksha", "Sulkadhyaksha", "Akradhyaksha"],
+                    correct: 0,
+                    category: "Arthashastra",
+                    explain: "✅ <strong>Correct: Pautavadhyaksha.</strong> He was the superintendent of weights and measures.\n\n❌ Lohadhyaksha: Superintendent of iron.\n❌ Sulkadhyaksha: Superintendent of tolls.\n❌ Akradhyaksha: Superintendent of gambling."
+                },
+                {
+                    q: "The term 'Sulkadhyaksha' in the Arthashastra referred to:",
+                    options: ["Superintendent of tolls and customs", "Superintendent of mines", "Superintendent of textiles", "Superintendent of agriculture"],
+                    correct: 0,
+                    category: "Arthashastra",
+                    explain: "✅ <strong>Correct: Superintendent of tolls and customs.</strong> He collected taxes on goods entering the kingdom.\n\n❌ Superintendent of mines: That was Akaradhyaksha.\n❌ Superintendent of textiles: That was Sutradhyaksha.\n❌ Superintendent of agriculture: That was Sitadhyaksha."
+                }
+            ];
+
+            // --- GLOSSARY DATA (compiled from the same categories, with meanings and clues) ---
+            const glossaryData = [
+                {
+                    category: "Vedic Polity",
+                    terms: [
+                        { term: "Rajan", meaning: "Tribal chief in Rigvedic period, not absolute monarch", clue: "Authority limited by Sabha & Samiti" },
+                        { term: "Sabha", meaning: "Council of elders", clue: "Aristocratic body" },
+                        { term: "Samiti", meaning: "Popular tribal assembly", clue: "Broader participation" },
+                        { term: "Vidatha", meaning: "Earliest tribal assembly", clue: "Social + military + religious" },
+                        { term: "Gramani", meaning: "Head of a village", clue: "Local administrator" },
+                        { term: "Senani", meaning: "Commander of the army", clue: "Military head" },
+                        { term: "Purohita", meaning: "Chief priest & royal advisor", clue: "Close aide of king" },
+                        { term: "Jana", meaning: "Tribe", clue: "Basic political unit" },
+                        { term: "Vis", meaning: "Clan within a tribe", clue: "Group of families" },
+                        { term: "Gana", meaning: "Tribal republic", clue: "Collective leadership" }
+                    ]
+                },
+                {
+                    category: "Vedic Economy & Taxation",
+                    terms: [
+                        { term: "Gavishti", meaning: "Cattle raid or war", clue: "Shows pastoral economy" },
+                        { term: "Bali", meaning: "Voluntary tribute → later tax", clue: "Early tax" },
+                        { term: "Bhaga", meaning: "Share of agricultural produce", clue: "King's share, 1/6" },
+                        { term: "Pani", meaning: "Trader/merchant group", clue: "Sometimes hostile to Aryans" },
+                        { term: "Nishka", meaning: "Gold ornament used as currency", clue: "Pre-coin exchange" }
+                    ]
+                },
+                {
+                    category: "Agriculture & Land",
+                    terms: [
+                        { term: "Urvara", meaning: "Fertile land", clue: "Productive soil" },
+                        { term: "Khila", meaning: "Waste or uncultivated land", clue: "Opposite of urvara" },
+                        { term: "Langala", meaning: "Plough", clue: "Farming implement" },
+                        { term: "Sita", meaning: "Furrow made by plough", clue: "Agricultural term" }
+                    ]
+                },
+                {
+                    category: "Vedic Religion & Priests",
+                    terms: [
+                        { term: "Hotri", meaning: "Priest reciting Rigveda", clue: "Associated with Rigveda" },
+                        { term: "Adhvaryu", meaning: "Priest performing rituals", clue: "Associated with Yajurveda" },
+                        { term: "Udgatri", meaning: "Priest chanting Sama hymns", clue: "Associated with Samaveda" },
+                        { term: "Brahma", meaning: "Supervising priest", clue: "Oversees the ritual" },
+                        { term: "Yajna", meaning: "Sacrificial ritual", clue: "Core Vedic practice" }
+                    ]
+                },
+                {
+                    category: "Trade, Guilds & Urban",
+                    terms: [
+                        { term: "Shreni", meaning: "Guild of merchants/artisans", clue: "Economic association" },
+                        { term: "Sarthavaha", meaning: "Caravan leader", clue: "Long-distance trade" },
+                        { term: "Nigama", meaning: "Market town", clue: "Commercial settlement" },
+                        { term: "Puga", meaning: "Guild/association of traders", clue: "Similar to shreni" }
+                    ]
+                },
+                {
+                    category: "Coins & Currency",
+                    terms: [
+                        { term: "Karshapana", meaning: "Punch-marked silver coin", clue: "Earliest coins in India" },
+                        { term: "Pana", meaning: "Standard currency unit", clue: "Monetary system" },
+                        { term: "Mashaka", meaning: "Small copper coin", clue: "Low-value coin" },
+                        { term: "Satamana", meaning: "Gold weight/coin", clue: "Unit of measurement" }
+                    ]
+                },
+                {
+                    category: "Republican & Mahajanapada Institutions",
+                    terms: [
+                        { term: "Gana-Sangha", meaning: "Republican polity", clue: "Collective rule" },
+                        { term: "Santhagara", meaning: "Assembly hall of republics", clue: "Meeting place" },
+                        { term: "Janapada", meaning: "Territory of a tribe", clue: "Political region" },
+                        { term: "Mahajanapada", meaning: "Large kingdom/state", clue: "6th century BCE states" }
+                    ]
+                },
+                {
+                    category: "Administrative Terms (Mauryan)",
+                    terms: [
+                        { term: "Amatya", meaning: "Minister or official", clue: "Administrative advisor" },
+                        { term: "Mahamatra", meaning: "High officer", clue: "Ashokan edicts" },
+                        { term: "Yukta", meaning: "Subordinate official", clue: "Administrative staff" },
+                        { term: "Rajuka", meaning: "District officer", clue: "Mauryan governance" },
+                        { term: "Pradesika", meaning: "Provincial administrator", clue: "Revenue & order" }
+                    ]
+                },
+                {
+                    category: "Military & Political Rituals",
+                    terms: [
+                        { term: "Rajasuya", meaning: "Royal consecration ritual", clue: "King's authority" },
+                        { term: "Ashvamedha", meaning: "Horse sacrifice", clue: "Imperial sovereignty" },
+                        { term: "Vajapeya", meaning: "Ritual asserting power", clue: "Royal prestige" },
+                        { term: "Ratha", meaning: "War chariot", clue: "Rigvedic warfare" }
+                    ]
+                },
+                {
+                    category: "Social & Cultural Terms",
+                    terms: [
+                        { term: "Gotra", meaning: "Lineage/clan identity", clue: "Social organization" },
+                        { term: "Arya", meaning: "Noble/elite group", clue: "Self-designation" },
+                        { term: "Dasa / Dasyu", meaning: "Enemy or non-Aryan tribes", clue: "Rigvedic references" },
+                        { term: "Varna", meaning: "Social classification", clue: "Later became caste" }
+                    ]
+                },
+                {
+                    category: "Arthashastra Terms",
+                    terms: [
+                        { term: "Sannidhata", meaning: "Treasurer", clue: "In charge of treasury" },
+                        { term: "Samharta", meaning: "Collector of revenue", clue: "Revenue collection" },
+                        { term: "Pautavadhyaksha", meaning: "Superintendent of weights & measures", clue: "Arthashastra" },
+                        { term: "Sulkadhyaksha", meaning: "Superintendent of tolls", clue: "Customs duties" }
+                    ]
+                }
+            ];
+
+            // state
+            let currentQuestions = [];
+            let currentIndex = 0;
+            let userAnswers = [];
+
+            // DOM elements
+            const questionArea = document.getElementById('questionArea');
+            const glossaryArea = document.getElementById('glossaryArea');
+            const categoryDisplay = document.getElementById('categoryDisplay');
+            const counterDisplay = document.getElementById('counterDisplay');
+            const questionText = document.getElementById('questionText');
+            const optionsContainer = document.getElementById('optionsContainer');
+            const explanationBox = document.getElementById('explanationBox');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const skipBtn = document.getElementById('skipBtn');
+            const newTestBtn = document.getElementById('newTestBtn');
+            const studyBtn = document.getElementById('studyBtn');
+            const backToPracticeBtn = document.getElementById('backToPracticeBtn');
+            const glossaryContainer = document.getElementById('glossaryContainer');
+
+            // Fisher-Yates shuffle
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            // create new test with 10 random questions
+            function newRandomTest() {
+                const shuffled = shuffleArray([...practiceBank]);
+                currentQuestions = shuffled.slice(0, 50);
+                currentIndex = 0;
+                userAnswers = new Array(currentQuestions.length).fill(null);
+                renderQuestion();
+            }
+
+            function renderQuestion() {
+                if (currentQuestions.length === 0) {
+                    newRandomTest();
+                    return;
+                }
+                const q = currentQuestions[currentIndex];
+                categoryDisplay.innerText = q.category || 'General';
+                counterDisplay.innerText = `Q.${currentIndex+1} / ${currentQuestions.length}`;
+                questionText.innerText = q.q;
+
+                let optsHtml = '';
+                const selectedIdx = userAnswers[currentIndex];
+
+                q.options.forEach((opt, idx) => {
+                    let cls = 'option-btn';
+                    if (selectedIdx !== null) {
+                        if (idx === q.correct) cls += ' correct';
+                        if (selectedIdx === idx && idx !== q.correct) cls += ' wrong';
+                        if (selectedIdx === idx && idx === q.correct) cls += ' correct selected';
+                    }
+                    optsHtml += `<div class="${cls}" data-opt-index="${idx}">${String.fromCharCode(65+idx)}. ${opt}</div>`;
+                });
+                optionsContainer.innerHTML = optsHtml;
+
+                if (selectedIdx !== null) {
+                    explanationBox.innerHTML = q.explain.replace(/\n/g, '<br>');
+                } else {
+                    explanationBox.innerHTML = '👆 select an option to see detailed explanation for all choices';
+                }
+
+                attachOptionListeners();
+            }
+
+            function attachOptionListeners() {
+                document.querySelectorAll('.option-btn').forEach(opt => {
+                    opt.addEventListener('click', (e) => {
+                        const idx = parseInt(e.currentTarget.dataset.optIndex, 10);
+                        userAnswers[currentIndex] = idx;
+                        renderQuestion();
+                    });
+                });
+            }
+
+            function goToPrev() {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    renderQuestion();
+                }
+            }
+
+            function goToNext() {
+                if (currentIndex < currentQuestions.length - 1) {
+                    currentIndex++;
+                    renderQuestion();
+                }
+            }
+
+            function skipQuestion() {
+                if (currentIndex < currentQuestions.length - 1) {
+                    currentIndex++;
+                    renderQuestion();
+                } else {
+                    alert('This is the last question. Start a new test?');
+                }
+            }
+
+            // Build glossary HTML
+            function buildGlossary() {
+                let html = '';
+                glossaryData.forEach(cat => {
+                    html += `<div class="glossary-category"><h3>${cat.category}</h3>`;
+                    cat.terms.forEach(term => {
+                        html += `
+                            <div class="glossary-item">
+                                <span class="glossary-term">${term.term}</span>
+                                <span class="glossary-meaning">${term.meaning}</span>
+                                <span class="glossary-clue">${term.clue}</span>
+                            </div>
+                        `;
+                    });
+                    html += `</div>`;
+                });
+                glossaryContainer.innerHTML = html;
+            }
+
+            // Switch to glossary mode
+            function showGlossary() {
+                questionArea.classList.add('hidden');
+                glossaryArea.classList.remove('hidden');
+                buildGlossary();
+            }
+
+            // Back to practice mode
+            function backToPractice() {
+                glossaryArea.classList.add('hidden');
+                questionArea.classList.remove('hidden');
+                // re-render current question in case it was lost
+                renderQuestion();
+            }
+
+            prevBtn.addEventListener('click', goToPrev);
+            nextBtn.addEventListener('click', goToNext);
+            skipBtn.addEventListener('click', skipQuestion);
+            newTestBtn.addEventListener('click', newRandomTest);
+            studyBtn.addEventListener('click', showGlossary);
+            backToPracticeBtn.addEventListener('click', backToPractice);
+
+            // initial load
+            newRandomTest();
+        })();
+    </script>
+</body>
+</html>t

@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Indus Valley Civilization · PYQs & Practice · UPSC Prelims</title>
+    <!-- amCharts scripts -->
+    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/geodata/indiaLow.js"></script>
+    <style>
+        /* (same CSS as before – keep unchanged) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', 'Poppins', 'Hiragino Maru Gothic', system-ui, sans-serif;
+        }
+
+        body {
+            background: #0f0a1a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 1.2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        #blackhole-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .master {
+            max-width: 1000px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            background: rgba(30, 22, 40, 0.65);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(180, 150, 200, 0.3);
+            border-radius: 50px 50px 25px 25px;
+            padding: 1.2rem 1.8rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 500;
+            color: #f0d0ff;
+            text-shadow: 0 2px 12px #a07ac0;
+        }
+
+        .header h1 span {
+            background: rgba(60, 45, 75, 0.6);
+            color: #d8b8f0;
+            font-size: 1rem;
+            padding: 4px 16px;
+            border-radius: 40px;
+            margin-left: 10px;
+            border: 1px solid #b088c8;
+        }
+
+        .header p {
+            font-size: 1rem;
+            margin-top: 5px;
+            color: #c0a8d8;
+        }
+
+        .nav-bar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: rgba(45, 35, 55, 0.6);
+            backdrop-filter: blur(8px);
+            padding: 0.7rem 1.2rem;
+            border-radius: 50px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #6a5580;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: #d0b8e8;
+            text-decoration: none;
+            background: rgba(70, 52, 85, 0.6);
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            border: 1px solid #8a6fa0;
+            transition: 0.1s;
+        }
+        .nav-link:hover { background: rgba(100, 75, 125, 0.7); }
+        .nav-separator { color: #8a6fa0; font-size: 1.2rem; }
+        .nav-current {
+            background: rgba(100, 75, 125, 0.7);
+            color: #f0e0ff;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            border: 1px solid #b090c8;
+        }
+        .spacer { flex:1; }
+
+        .mode-btn {
+            background: #4a3a60;
+            border: 1px solid #8a6fa0;
+            color: #d0b8e8;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .mode-btn:hover { background: #6a5a80; color: white; }
+        .mode-btn.active {
+            background: #8a78b0;
+            border-color: #d0a0e0;
+            color: white;
+        }
+
+        .map-top-btn, .shuffle-btn {
+            background: #6a5a80;
+            border: 1px solid #b090c8;
+            color: white;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .map-top-btn:hover, .shuffle-btn:hover {
+            background: #8a78b0;
+        }
+
+        .quiz-card {
+            background: rgba(32, 24, 42, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(170, 140, 200, 0.35);
+            border-radius: 50px;
+            padding: 2rem 2rem;
+            box-shadow: 0 20px 35px -8px #050208;
+            margin-bottom: 1.5rem;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed #7a6190;
+        }
+
+        .year-badge {
+            background: #5a4a70;
+            color: #f0e0ff;
+            padding: 8px 22px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: 1px solid #b088c8;
+        }
+
+        .question-counter {
+            background: #3a2e4a;
+            color: #d8b8f0;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+        }
+
+        .question-text {
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #f0e0ff;
+            margin: 25px 0 30px;
+            line-height: 1.5;
+            text-shadow: 0 2px 10px #906db0;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin: 20px 0 30px;
+        }
+
+        .option-btn {
+            background: rgba(55, 45, 70, 0.7);
+            border: 1.5px solid #7a6a90;
+            border-radius: 40px;
+            padding: 14px 18px;
+            font-size: 1.1rem;
+            color: #e0d0f8;
+            cursor: pointer;
+            transition: 0.15s;
+            text-align: left;
+            backdrop-filter: blur(4px);
+        }
+        .option-btn:hover { background: rgba(85, 70, 105, 0.8); border-color: #b098c8; }
+        .option-btn.selected { background: #6a8a7a; border-color: #a0d0b0; color: #f0fff0; }
+        .option-btn.correct { background: #6a8a7a; border-color: #a0d0b0; }
+        .option-btn.wrong { background: #9a6a7a; border-color: #d0a0b0; }
+
+        .explain-box {
+            background: rgba(45, 35, 60, 0.8);
+            backdrop-filter: blur(4px);
+            border-left: 8px solid #b090c8;
+            border-radius: 40px;
+            padding: 18px 24px;
+            font-size: 1.1rem;
+            color: #e0d0f0;
+            margin: 20px 0 20px;
+            line-height: 1.6;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0 10px;
+        }
+        .nav-btn {
+            background: #4a3a60;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 1rem;
+            color: #f0e0ff;
+            cursor: pointer;
+            transition: 0.1s;
+            border: 1px solid #8a78a0;
+            flex: 1 1 auto;
+        }
+        .nav-btn:hover { background: #6a5a80; }
+        .nav-btn.primary { background: #7a68a0; border-color: #b090c8; }
+        .nav-btn.primary:hover { background: #8a78b0; }
+
+        .finish-btn {
+            background: #9a7ab0;
+            border: 1px solid #d0a8e0;
+            color: #faf0ff;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            margin: 15px 0 5px;
+            transition: 0.15s;
+        }
+        .finish-btn:hover { background: #b090c8; }
+
+        .map-container {
+            background: rgba(35, 28, 45, 0.8);
+            backdrop-filter: blur(8px);
+            border-radius: 50px;
+            padding: 1.5rem;
+            border: 2px solid #8a78a0;
+            margin-top: 1.5rem;
+        }
+        .map-title {
+            font-size: 1.5rem;
+            color: #f0d0ff;
+            margin-bottom: 15px;
+            border-left: 6px solid #b090c8;
+            padding-left: 18px;
+        }
+        #chartdiv {
+            width: 100%;
+            height: 500px;
+            background: #1e1728;
+            border-radius: 30px;
+            border: 1px solid #7a6a90;
+        }
+        .map-caption {
+            color: #c0a8d8;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .hidden { display: none; }
+
+        .reveal-section {
+            margin-top: 30px;
+            background: rgba(35, 28, 45, 0.8);
+            backdrop-filter: blur(8px);
+            border-radius: 50px;
+            padding: 1.5rem;
+            border: 2px solid #8a78a0;
+        }
+        .reveal-title {
+            font-size: 1.5rem;
+            color: #f0d0ff;
+            margin-bottom: 20px;
+            border-left: 6px solid #b090c8;
+            padding-left: 18px;
+        }
+        .reveal-item {
+            background: rgba(55, 45, 70, 0.6);
+            border-radius: 30px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 12px;
+            border: 1px solid #7a6a90;
+        }
+        .reveal-question { font-weight: 500; color: #e8d0ff; margin-bottom: 8px; }
+        .reveal-answer {
+            color: #c0e0c0;
+            background: rgba(70, 80, 70, 0.4);
+            padding: 8px 16px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+        .results-box {
+            background: #6a5a80;
+            border-radius: 50px;
+            padding: 1.2rem;
+            text-align: center;
+            color: #faf0ff;
+            font-size: 1.3rem;
+            margin: 20px 0;
+        }
+        footer {
+            text-align: center;
+            color: #8a78a0;
+            font-size: 0.9rem;
+            margin: 2rem 0 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="blackhole-canvas"></canvas>
+
+    <div class="master">
+        <div class="header">
+            <h1>🏺 Indus Valley Civilization · PYQs & Practice <span>Prelims 2026</span></h1>
+            <p>Click MAP to see major IVC sites · Toggle between PYQ and Practice modes</p>
+        </div>
+
+        <!-- FIXED NAVBAR - Both PYQ and Practice buttons present -->
+        <div class="nav-bar">
+            <a href="/Singularity/index.html" class="nav-link">🏠 Home</a>
+            <span class="nav-separator">›</span>
+            <a href="/Singularity/Ancient_History/" class="nav-link">📁 Ancient India</a>
+            <span class="nav-separator">›</span>
+            <span class="nav-current">🏺 IVC</span>
+            <div class="spacer"></div>
+            <!-- Mode toggle buttons - BOTH are here now -->
+            <button class="mode-btn active" id="pyqModeBtn">📜 PYQs</button>
+            <button class="mode-btn" id="practiceModeBtn">📝 Practice</button>
+            <!-- MAP and Shuffle buttons -->
+            <button class="map-top-btn" id="mapBtn">🗺️ MAP</button>
+            <button class="shuffle-btn" id="shuffleBtn">🔀 Shuffle</button>
+        </div>
+
+        <div class="quiz-card" id="quizCard">
+            <div id="questionArea">
+                <div class="question-header">
+                    <span class="year-badge" id="modeDisplay">PYQ Mode</span>
+                    <span class="question-counter" id="counterDisplay">Q.1 / 20</span>
+                </div>
+
+                <div class="question-text" id="questionText">Loading question...</div>
+
+                <div class="options-grid" id="optionsContainer"></div>
+
+                <div class="explain-box" id="explanationBox">
+                    👆 select an option to see detailed explanation for all choices
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-btn" id="prevBtn">◀ Previous</button>
+                    <button class="nav-btn" id="nextBtn">Next ▶</button>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="nav-btn" id="skipBtn">⏭️ Skip Question</button>
+                    <button class="nav-btn primary" id="revealToggleBtn">📋 Reveal All Answers</button>
+                </div>
+
+                <button class="finish-btn" id="finishBtn">✅ Finish & Show Score</button>
+            </div>
+
+            <div id="revealArea" class="reveal-section hidden">
+                <div class="reveal-title">📋 All Questions & Answers</div>
+                <div id="revealList"></div>
+                <button class="nav-btn" id="backToQuizBtn" style="margin-top: 20px;">◀ Back to Quiz</button>
+            </div>
+
+            <div id="resultsArea" class="results-box hidden"></div>
+        </div>
+
+        <div class="map-container hidden" id="mapContainer">
+            <div class="map-title">📍 Major Indus Valley Civilization Sites</div>
+            <div id="chartdiv"></div>
+            <div class="map-caption">Hover over markers to see site name and notable finds</div>
+        </div>
+
+        <footer>⚡ amCharts India map · 20 PYQs + 50+ Practice Questions · Full explanations</footer>
+    </div>
+
+    <script>
+        (function() {
+            // --- Blackhole animation (same as previous) ---
+            const canvas = document.getElementById('blackhole-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
+            const PARTICLE_COUNT = 80;
+
+            function initCanvas() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+
+                particles = [];
+                for (let i = 0; i < PARTICLE_COUNT; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const radius = 60 + Math.random() * Math.min(width, height) * 0.5;
+                    const speed = 0.0004 + Math.random() * 0.001;
+                    const size = 1 + Math.random() * 2;
+                    particles.push({
+                        angle: angle,
+                        radius: radius,
+                        speed: speed,
+                        size: size,
+                        drift: Math.random() * 0.004 - 0.002,
+                        brightness: 0.3 + Math.random() * 0.4
+                    });
+                }
+            }
+
+            function drawBlackhole() {
+                ctx.clearRect(0, 0, width, height);
+                const centerX = width / 2;
+                const centerY = height / 2;
+
+                const gradient = ctx.createRadialGradient(centerX, centerY, 5, centerX, centerY, Math.min(width, height) * 0.5);
+                gradient.addColorStop(0, 'rgba(70, 30, 60, 0.2)');
+                gradient.addColorStop(0.4, 'rgba(35, 18, 35, 0.15)');
+                gradient.addColorStop(0.8, 'rgba(10, 5, 15, 0.05)');
+                gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, width, height);
+
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 25, 0, 2 * Math.PI);
+                ctx.fillStyle = 'rgba(10, 5, 15, 0.8)';
+                ctx.fill();
+
+                particles.forEach(p => {
+                    p.angle += p.speed * (1 - p.radius / (Math.min(width, height) * 0.4));
+                    p.radius += p.drift;
+                    if (p.radius < 25) p.radius = 80 + Math.random() * 150;
+                    if (p.radius > Math.min(width, height) * 0.5) p.radius = 70;
+
+                    const x = centerX + Math.cos(p.angle) * p.radius;
+                    const y = centerY + Math.sin(p.angle) * p.radius;
+
+                    const dist = Math.hypot(x - centerX, y - centerY);
+                    const brightness = Math.max(0.2, 1 - dist / (Math.min(width, height) * 0.35));
+                    ctx.fillStyle = `rgba(200, 150, 200, ${brightness * 0.25})`;
+                    ctx.shadowColor = '#b080b0';
+                    ctx.shadowBlur = 10 * brightness;
+                    ctx.beginPath();
+                    ctx.arc(x, y, p.size * brightness * 0.6, 0, 2 * Math.PI);
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(drawBlackhole);
+            }
+
+            window.addEventListener('resize', () => { initCanvas(); });
+            initCanvas();
+            drawBlackhole();
+
+            // --- IVC PYQ BANK (20 questions, unchanged) ---
+            const pyqBank = [
+                { year: '2024', q: 'With reference to the Indus Valley Civilization, consider the following sites and their key findings: I. Lothal – Bead-making workshop II. Kalibangan – Ploughed field III. Dholavira – Water harvesting system IV. Chanhudaro – No citadel. How many of the above are correctly matched?', options: ['Only one', 'Only two', 'Only three', 'All four'], correct: 3, category: 'Sites', explain: '✅ <strong>Correct: All four are correctly matched.</strong> Lothal had a bead-making workshop; Kalibangan revealed a ploughed field; Dholavira had elaborate water harvesting; Chanhudaro had no citadel and was a craft center.\n\n❌ Any fewer would be incomplete.' },
+                { year: '2022', q: 'Which of the following sites of the Indus Valley Civilization is located on the banks of the Ghaggar-Hakra river (ancient Saraswati)?', options: ['Rakhigarhi', 'Banawali', 'Kalibangan', 'All of the above'], correct: 3, category: 'Geography', explain: '✅ <strong>Correct: All of the above.</strong> Rakhigarhi, Banawali, and Kalibangan are all located along the Ghaggar-Hakra (dried-up Saraswati) river.\n\n❌ Any single option would be incomplete.' },
+                { year: '2020', q: 'Consider the following statements about the Indus Valley Civilization: 1. The largest number of sites are found in the Ghaggar-Hakra region. 2. The people were familiar with the use of gold, silver, copper, and iron. 3. The Indus people did not have knowledge of the horse. Which of the statements given above is/are correct?', options: ['1 and 2 only', '2 only', '1 and 3 only', '1, 2 and 3'], correct: 2, category: 'General', explain: '✅ <strong>Correct: 1 and 3 only.</strong> Statement 1 is true (most sites are on Ghaggar-Hakra). Statement 3 is true (horse remains are not conclusively found). Statement 2 is false: iron was not known to the Indus people.\n\n❌ Option A includes false statement 2.\n❌ Option B misses correct statement 1.\n❌ Option D includes false statement 2.' },
+                { year: '2018', q: 'Which of the following is not a characteristic feature of the Harappan civilization?', options: ['Urban planning with grid system', 'Worship of Mother Goddess', 'Extensive use of burnt bricks', 'Presence of iron tools'], correct: 3, category: 'Culture', explain: '✅ <strong>Correct: Presence of iron tools.</strong> The Harappans used copper and bronze but not iron.\n\n❌ Urban planning, Mother Goddess worship, and burnt bricks are all characteristic features.' },
+                { year: '2016', q: 'Lothal, a Harappan port city, was located on the banks of which river?', options: ['Sabarmati', 'Bhogawo', 'Indus', 'Ravi'], correct: 1, category: 'Geography', explain: '✅ <strong>Correct: Bhogawo.</strong> Lothal was located on the Bhogawo river, a tributary of the Sabarmati, which gave access to the Gulf of Khambhat.\n\n❌ Sabarmati is the main river but Lothal was on Bhogawo.\n❌ Indus and Ravi are in Pakistan.' },
+                { year: '2015', q: 'Which of the following sites of the Indus Valley Civilization gives evidence of a dockyard?', options: ['Harappa', 'Mohenjodaro', 'Lothal', 'Kalibangan'], correct: 2, category: 'Sites', explain: '✅ <strong>Correct: Lothal.</strong> Lothal has a brick structure identified as a dockyard for maritime trade.\n\n❌ Harappa had granaries.\n❌ Mohenjodaro had the Great Bath.\n❌ Kalibangan had a ploughed field.' },
+                { year: '2014', q: 'The famous "Dancing Girl" bronze statue was found at which Harappan site?', options: ['Harappa', 'Mohenjodaro', 'Lothal', 'Dholavira'], correct: 1, category: 'Artifacts', explain: '✅ <strong>Correct: Mohenjodaro.</strong> The bronze "Dancing Girl" was discovered at Mohenjodaro.\n\n❌ Harappa yielded the stone male torso.\n❌ Lothal had bead-making.\n❌ Dholavira had inscriptions.' },
+                { year: '2013', q: 'Which of the following animals was not known to the Indus Valley people?', options: ['Elephant', 'Horse', 'Rhino', 'Tiger'], correct: 1, category: 'Culture', explain: '✅ <strong>Correct: Horse.</strong> Horse remains are not conclusively found; seals depict elephants, rhinos, tigers.\n\n❌ Elephant, rhino, and tiger are depicted on seals.' },
+                { year: '2012', q: 'The Indus Valley Civilization belongs to which age?', options: ['Palaeolithic', 'Mesolithic', 'Neolithic', 'Chalcolithic'], correct: 3, category: 'Chronology', explain: '✅ <strong>Correct: Chalcolithic (Bronze Age).</strong> IVC is a Bronze Age civilization using copper and bronze.\n\n❌ Palaeolithic/Mesolithic are Stone Age.\n❌ Neolithic preceded the Bronze Age.' },
+                { year: '2011', q: 'Which of the following sites gives evidence of a double burial?', options: ['Harappa', 'Mohenjodaro', 'Lothal', 'Kalibangan'], correct: 3, category: 'Sites', explain: '✅ <strong>Correct: Kalibangan.</strong> Kalibangan yielded evidence of double burial (male and female together).\n\n❌ Other sites have single burials.' },
+                { year: '2010', q: 'The Great Bath of Mohenjodaro was used for:', options: ['Public bathing', 'Religious rituals', 'Both A and B', 'Storage'], correct: 2, category: 'Architecture', explain: '✅ <strong>Correct: Both A and B.</strong> The Great Bath likely served ritual purification purposes, possibly as a public bathing pool.\n\n❌ Storage is incorrect.' },
+                { year: '2009', q: 'Which Harappan site is known for its elaborate water management system with reservoirs?', options: ['Dholavira', 'Lothal', 'Mohenjodaro', 'Harappa'], correct: 0, category: 'Sites', explain: '✅ <strong>Correct: Dholavira.</strong> Dholavira (Gujarat) had a sophisticated water harvesting system with reservoirs and channels.\n\n❌ Lothal had a dockyard.\n❌ Mohenjodaro had wells.\n❌ Harappa had granaries.' },
+                { year: '2008', q: 'The Indus script was:', options: ['Brahmi', 'Kharoshthi', 'Pictographic', 'Alphabetic'], correct: 2, category: 'Script', explain: '✅ <strong>Correct: Pictographic.</strong> The Indus script is pictographic (using symbols/pictures) and remains undeciphered.\n\n❌ Brahmi and Kharoshthi are later scripts.\n❌ It is not alphabetic.' },
+                { year: '2007', q: 'Which of the following was the most important trading commodity of the Indus people?', options: ['Cotton', 'Wheat', 'Copper', 'Lapis Lazuli'], correct: 3, category: 'Economy', explain: '✅ <strong>Correct: Lapis Lazuli.</strong> Lapis lazuli from Afghanistan was a major export to Mesopotamia.\n\n❌ Cotton was grown but not the most important trade item.\n❌ Wheat was staple.\n❌ Copper was imported.' },
+                { year: '2006', q: 'The site of Chanhudaro is famous for:', options: ['Bead-making industry', 'Bronze casting', 'Terracotta toys', 'All of the above'], correct: 3, category: 'Sites', explain: '✅ <strong>Correct: All of the above.</strong> Chanhudaro was a craft center specializing in bead-making, bronze casting, and terracotta toys.\n\n❌ Any single option would be incomplete.' },
+                { year: '2005', q: 'Which of the following was not a city of the Indus Valley Civilization?', options: ['Harappa', 'Mohenjodaro', 'Ropar', 'Patna'], correct: 3, category: 'Sites', explain: '✅ <strong>Correct: Patna.</strong> Patna (Pataliputra) is a later historical city, not an Indus site.\n\n❌ Harappa, Mohenjodaro, and Ropar are all Indus sites.' },
+                { year: '2004', q: 'The Indus Valley people worshipped:', options: ['Shiva', 'Mother Goddess', 'Sun', 'All of the above'], correct: 1, category: 'Religion', explain: '✅ <strong>Correct: Mother Goddess.</strong> Many terracotta female figurines suggest worship of a Mother Goddess. The "Pashupati" seal may indicate a proto-Shiva, but Mother Goddess worship is more certain.\n\n❌ Shiva is a later concept; Sun worship not evident.' },
+                { year: '2003', q: 'The economy of the Indus Valley Civilization was based on:', options: ['Agriculture only', 'Trade and agriculture', 'Pastoralism only', 'Hunting and gathering'], correct: 1, category: 'Economy', explain: '✅ <strong>Correct: Trade and agriculture.</strong> They had a strong agricultural base (wheat, barley) and extensive trade (with Mesopotamia, etc.).\n\n❌ Agriculture only ignores trade.\n❌ Pastoralism only is wrong.\n❌ Hunting/gathering is incorrect.' },
+                { year: '2001', q: 'Which of the following sites is located in present-day Afghanistan?', options: ['Shortughai', 'Sutkagen-dor', 'Mundigak', 'All of the above'], correct: 0, category: 'Geography', explain: '✅ <strong>Correct: Shortughai.</strong> Shortughai (in Afghanistan) was an Indus outpost for lapis lazuli trade.\n\n❌ Sutkagen-dor is in Pakistan.\n❌ Mundigak is also in Afghanistan but the question asks for "site located in Afghanistan" – Shortughai is the best known. However, Mundigak is also in Afghanistan. The question likely expects Shortughai as the single correct one.' },
+                { year: '1999', q: 'The earliest evidence of cotton cultivation comes from which Indus site?', options: ['Mehrgarh', 'Mohenjodaro', 'Harappa', 'Rakhigarhi'], correct: 0, category: 'Agriculture', explain: '✅ <strong>Correct: Mehrgarh.</strong> Mehrgarh (pre-Harappan) shows cotton cultivation from around 5000 BCE.\n\n❌ Mohenjodaro and Harappa had cotton textiles but not the earliest evidence.\n❌ Rakhigarhi is later.' }
+            ];
+
+            // --- EXPANDED PRACTICE BANK (50+ questions) - YOUR FULL 50+ QUESTIONS HERE ---
+            const practiceBank = [
+                // SITES & UNIQUE FEATURES (20 questions)
+                {
+                    year: 'Practice',
+                    q: 'Which Harappan site is known for its "fire altars" suggesting ritual practices?',
+                    options: ['Kalibangan', 'Lothal', 'Banawali', 'Dholavira'],
+                    correct: 0,
+                    category: 'Sites',
+                    explain: '✅ <strong>Correct: Kalibangan.</strong> Kalibangan (Rajasthan) has yielded several fire altars, possibly used for sacrifices.\n\n❌ Lothal had a dockyard.\n❌ Banawali had terracotta plow.\n❌ Dholavira had water management.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The Harappan site of Rakhigarhi is located in which modern state?',
+                    options: ['Haryana', 'Rajasthan', 'Punjab', 'Gujarat'],
+                    correct: 0,
+                    category: 'Geography',
+                    explain: '✅ <strong>Correct: Haryana.</strong> Rakhigarhi, one of the largest Harappan sites, is in Haryana.\n\n❌ Rajasthan has Kalibangan.\n❌ Punjab has Ropar.\n❌ Gujarat has Lothal and Dholavira.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'Which site provides evidence of a "horse" from the Harappan period, though controversial?',
+                    options: ['Surkotada', 'Mohenjodaro', 'Harappa', 'Lothal'],
+                    correct: 0,
+                    category: 'Sites',
+                    explain: '✅ <strong>Correct: Surkotada.</strong> Surkotada (Gujarat) yielded horse bones, but the identification is debated.\n\n❌ Mohenjodaro and Harappa have no conclusive horse remains.\n❌ Lothal has no horse evidence.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'At which site was a "bronze chariot" discovered?',
+                    options: ['Daimabad', 'Harappa', 'Mohenjodaro', 'Lothal'],
+                    correct: 0,
+                    category: 'Artifacts',
+                    explain: '✅ <strong>Correct: Daimabad.</strong> Daimabad (Maharashtra) yielded bronze models of a chariot, elephant, and rhino.\n\n❌ Harappa had stone sculptures.\n❌ Mohenjodaro had dancing girl.\n❌ Lothal had beads.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'Which site is known for its "reservoir" system and is located in Gujarat?',
+                    options: ['Dholavira', 'Lothal', 'Surkotada', 'Rangpur'],
+                    correct: 0,
+                    category: 'Sites',
+                    explain: '✅ <strong>Correct: Dholavira.</strong> Dholavira had a sophisticated water management system with reservoirs.\n\n❌ Lothal had a dockyard.\n❌ Surkotada had horse remains.\n❌ Rangpur is another Gujarat site but not known for reservoirs.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The site of Mehrgarh (in Pakistan) is important because it shows:',
+                    options: ['Earliest farming communities', 'First urban center', 'Indus script', 'Dockyard'],
+                    correct: 0,
+                    category: 'Chronology',
+                    explain: '✅ <strong>Correct: Earliest farming communities.</strong> Mehrgarh (7000 BCE) is a Neolithic site showing transition to agriculture.\n\n❌ First urban center is Mohenjodaro.\n❌ Indus script not found.\n❌ Dockyard is Lothal.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'Which Harappan site is known for its "granaries" aligned in rows?',
+                    options: ['Harappa', 'Mohenjodaro', 'Lothal', 'Kalibangan'],
+                    correct: 0,
+                    category: 'Sites',
+                    explain: '✅ <strong>Correct: Harappa.</strong> Harappa had rows of granaries near the river.\n\n❌ Mohenjodaro had Great Bath.\n❌ Lothal had dockyard.\n❌ Kalibangan had ploughed field.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The site of Banawali is located on the banks of which river?',
+                    options: ['Ghaggar', 'Indus', 'Ravi', 'Sutlej'],
+                    correct: 0,
+                    category: 'Geography',
+                    explain: '✅ <strong>Correct: Ghaggar.</strong> Banawali (Haryana) is on the Ghaggar river (ancient Saraswati).\n\n❌ Indus is further west.\n❌ Ravi and Sutlej are in Pakistan.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'Which site is known for its "twin burial" of a man and woman?',
+                    options: ['Kalibangan', 'Lothal', 'Rakhigarhi', 'Harappa'],
+                    correct: 0,
+                    category: 'Sites',
+                    explain: '✅ <strong>Correct: Kalibangan.</strong> Kalibangan yielded a double burial (male and female).\n\n❌ Lothal had single burials.\n❌ Rakhigarhi had multiple burial pits.\n❌ Harappa had cemeteries.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The "warehouse" at Mohenjodaro was located:',
+                    options: ['Near the Great Bath', 'In the citadel', 'In the lower town', 'Outside the city'],
+                    correct: 1,
+                    category: 'Architecture',
+                    explain: '✅ <strong>Correct: In the citadel.</strong> The warehouse (with loading platforms) was in the citadel area.\n\n❌ Great Bath is separate.\n❌ Lower town had residential.\n❌ Outside is incorrect.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'Which site has evidence of a "circular grave" with pottery?',
+                    options: ['Ropar', 'Lothal', 'Kalibangan', 'Harappa'],
+                    correct: 0,
+                    category: 'Burials',
+                    explain: '✅ <strong>Correct: Ropar.</strong> Ropar (Punjab) had circular graves with pottery offerings.\n\n❌ Lothal had rectangular brick tombs.\n❌ Kalibangan had rectangular pits.\n❌ Harappa had extended burials.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The "copper hoards" associated with the Harappan culture have been found in:',
+                    options: ['Gangetic plains', 'Gujarat', 'Punjab', 'Rajasthan'],
+                    correct: 0,
+                    category: 'Metallurgy',
+                    explain: '✅ <strong>Correct: Gangetic plains.</strong> Copper hoards (weapons, tools) are found in the Gangetic valley, often linked to late Harappan.\n\n❌ Gujarat has Harappan sites.\n❌ Punjab has early Harappan.\n❌ Rajasthan has Kalibangan.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The "Pashupati" seal depicts a figure surrounded by:',
+                    options: ['Elephant, tiger, rhino, buffalo', 'Elephant, tiger, rhino, deer', 'Lion, elephant, bull, goat', 'Horse, elephant, tiger, rhino'],
+                    correct: 0,
+                    category: 'Seals',
+                    explain: '✅ <strong>Correct: Elephant, tiger, rhino, buffalo.</strong> The Pashupati seal from Mohenjodaro shows a seated yogic figure surrounded by four animals: elephant, tiger, rhino, and buffalo.\n\n❌ Other combinations are incorrect.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'Which of the following animals is NOT depicted on Harappan seals?',
+                    options: ['Unicorn', 'Horse', 'Bull', 'Elephant'],
+                    correct: 1,
+                    category: 'Seals',
+                    explain: '✅ <strong>Correct: Horse.</strong> The horse is not depicted on Harappan seals; unicorn (mythical), bull, and elephant are common.\n\n❌ Unicorn is common.\n❌ Bull is common.\n❌ Elephant is common.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The "Great Bath" of Mohenjodaro was made watertight using:',
+                    options: ['Bitumen', 'Limestone plaster', 'Clay', 'Gypsum'],
+                    correct: 0,
+                    category: 'Architecture',
+                    explain: '✅ <strong>Correct: Bitumen.</strong> The Great Bath was lined with bricks and sealed with bitumen (natural tar) to make it watertight.\n\n❌ Limestone plaster was not used.\n❌ Clay would wash away.\n❌ Gypsum is not attested.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The Harappan site of Kot Diji is located in which modern country?',
+                    options: ['Pakistan', 'India', 'Afghanistan', 'Nepal'],
+                    correct: 0,
+                    category: 'Geography',
+                    explain: '✅ <strong>Correct: Pakistan.</strong> Kot Diji (Sindh) is an important pre-Harappan and Harappan site in Pakistan.\n\n❌ India has sites like Lothal.\n❌ Afghanistan has Shortughai.\n❌ Nepal has no Harappan sites.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'Which site is famous for its "terracotta plough" model?',
+                    options: ['Banawali', 'Kalibangan', 'Lothal', 'Rakhigarhi'],
+                    correct: 0,
+                    category: 'Agriculture',
+                    explain: '✅ <strong>Correct: Banawali.</strong> Banawali yielded a terracotta plough model, indicating agricultural practices.\n\n❌ Kalibangan had a ploughed field.\n❌ Lothal had beads.\n❌ Rakhigarhi had large size.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The "three-part" division of Harappan cities (citadel, middle town, lower town) is seen at:',
+                    options: ['Dholavira', 'Mohenjodaro', 'Harappa', 'Lothal'],
+                    correct: 0,
+                    category: 'Town Planning',
+                    explain: '✅ <strong>Correct: Dholavira.</strong> Dholavira had a unique three-part division: citadel, middle town, lower town.\n\n❌ Mohenjodaro and Harappa had two parts (citadel and lower town).\n❌ Lothal had one-part town.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The "granary" at Harappa was located:',
+                    options: ['Near the river', 'In the citadel', 'Outside the city', 'Near the cemetery'],
+                    correct: 1,
+                    category: 'Architecture',
+                    explain: '✅ <strong>Correct: In the citadel.</strong> The granaries at Harappa were located in the citadel area, along with other public buildings.\n\n❌ Near the river is not precise.\n❌ Outside the city is incorrect.\n❌ Cemetery is separate.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'Which site provides evidence of a "bead-making factory" with furnaces?',
+                    options: ['Chanhudaro', 'Lothal', 'Harappa', 'Mohenjodaro'],
+                    correct: 0,
+                    category: 'Craft',
+                    explain: '✅ <strong>Correct: Chanhudaro.</strong> Chanhudaro was a major craft center with bead-making workshops and furnaces.\n\n❌ Lothal also had bead-making but Chanhudaro is more famous.\n❌ Harappa and Mohenjodaro had craft areas.'
+                },
+                // ECONOMY & TRADE (10 questions)
+                {
+                    year: 'Practice',
+                    q: 'The Harappans exported goods to Mesopotamia. Which Mesopotamian city had trade contacts with the Indus?',
+                    options: ['Ur', 'Babylon', 'Nineveh', 'All of the above'],
+                    correct: 3,
+                    category: 'Trade',
+                    explain: '✅ <strong>Correct: All of the above.</strong> Indus seals have been found in Ur, Babylon, and Nineveh, indicating trade.\n\n❌ Any single option would be incomplete.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The "Persian Gulf" seals found in Harappan sites suggest trade with:',
+                    options: ['Oman', 'Mesopotamia', 'Egypt', 'China'],
+                    correct: 0,
+                    category: 'Trade',
+                    explain: '✅ <strong>Correct: Oman.</strong> Persian Gulf seals (circular with animals) indicate trade with Oman (Magan).\n\n❌ Mesopotamia used cylinder seals.\n❌ Egypt not connected.\n❌ China later.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'Which metal was imported by the Harappans from the Khetri region (Rajasthan)?',
+                    options: ['Copper', 'Gold', 'Silver', 'Tin'],
+                    correct: 0,
+                    category: 'Metallurgy',
+                    explain: '✅ <strong>Correct: Copper.</strong> The Khetri copper mines (Rajasthan) supplied copper to Harappan cities.\n\n❌ Gold came from Karnataka.\n❌ Silver from Afghanistan.\n❌ Tin from Afghanistan/Central Asia.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The Harappans used which material as a standard weight unit?',
+                    options: ['Chert', 'Limestone', 'Sandstone', 'Marble'],
+                    correct: 0,
+                    category: 'Economy',
+                    explain: '✅ <strong>Correct: Chert.</strong> Harappan weights were made of chert (a hard stone) in a binary system (1, 2, 4, 8, etc.).\n\n❌ Limestone, sandstone, marble were not used for weights.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'Which of the following was a major import for the Harappans from Afghanistan?',
+                    options: ['Lapis lazuli', 'Gold', 'Silver', 'All of the above'],
+                    correct: 3,
+                    category: 'Trade',
+                    explain: '✅ <strong>Correct: All of the above.</strong> Afghanistan supplied lapis lazuli, tin, gold, and silver to the Indus.\n\n❌ Any single option would be incomplete.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The Harappan "dockyard" at Lothal was connected to which river?',
+                    options: ['Sabarmati', 'Bhogawo', 'Narmada', 'Tapi'],
+                    correct: 1,
+                    category: 'Geography',
+                    explain: '✅ <strong>Correct: Bhogawo.</strong> Lothal’s dockyard was on the Bhogawo river, a tributary of the Sabarmati.\n\n❌ Sabarmati is the main river.\n❌ Narmada and Tapi are further south.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The Harappan trade with Mesopotamia is evidenced by the presence of:',
+                    options: ['Indus seals in Mesopotamian cities', 'Mesopotamian texts mentioning Meluhha', 'Indus carnelian beads in Ur', 'All of the above'],
+                    correct: 3,
+                    category: 'Trade',
+                    explain: '✅ <strong>Correct: All of the above.</strong> Indus seals, carnelian beads, and Mesopotamian texts (Meluhha) all indicate trade.\n\n❌ Any single option would be incomplete.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'Which animal was probably domesticated by the Harappans for transport and trade?',
+                    options: ['Bull', 'Horse', 'Camel', 'Elephant'],
+                    correct: 0,
+                    category: 'Economy',
+                    explain: '✅ <strong>Correct: Bull.</strong> Bulls (and possibly water buffalo) were used for transport; bullock carts were common.\n\n❌ Horse not present.\n❌ Camel bones rare.\n❌ Elephant bones found but not primary transport.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The Harappans grew a variety of crops. Which of the following was NOT cultivated by them?',
+                    options: ['Wheat', 'Barley', 'Rice', 'Sugarcane'],
+                    correct: 3,
+                    category: 'Agriculture',
+                    explain: '✅ <strong>Correct: Sugarcane.</strong> Sugarcane was not cultivated by Harappans; wheat, barley, and rice (at Lothal) were grown.\n\n❌ Wheat and barley were staple.\n❌ Rice husk found at Lothal.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The "weights and measures" system of the Harappans was based on:',
+                    options: ['Binary system', 'Decimal system', 'Hexadecimal system', 'Random'],
+                    correct: 0,
+                    category: 'Economy',
+                    explain: '✅ <strong>Correct: Binary system.</strong> Harappan weights followed a binary system (1, 2, 4, 8, 16, 32, etc.).\n\n❌ Decimal came later.\n❌ Hexadecimal not used.\n❌ Random is incorrect.'
+                },
+                // RELIGION & SOCIETY (8 questions)
+                {
+                    year: 'Practice',
+                    q: 'Which of the following is considered a "proto-Shiva" figure from the Indus Valley?',
+                    options: ['Pashupati seal', 'Dancing Girl', 'Priest-King', 'Mother Goddess figurine'],
+                    correct: 0,
+                    category: 'Religion',
+                    explain: '✅ <strong>Correct: Pashupati seal.</strong> The seal showing a yogic figure with animals is considered a proto-Shiva.\n\n❌ Dancing Girl is a bronze statue.\n❌ Priest-King is a stone bust.\n❌ Mother Goddess are terracotta figurines.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'Terracotta figurines of Mother Goddess are found in large numbers at:',
+                    options: ['Mohenjodaro', 'Harappa', 'Lothal', 'All of the above'],
+                    correct: 3,
+                    category: 'Religion',
+                    explain: '✅ <strong>Correct: All of the above.</strong> Mother Goddess figurines are common at all major Harappan sites.\n\n❌ Any single option would be incomplete.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The "priest-king" sculpture was found at which site?',
+                    options: ['Mohenjodaro', 'Harappa', 'Lothal', 'Dholavira'],
+                    correct: 0,
+                    category: 'Artifacts',
+                    explain: '✅ <strong>Correct: Mohenjodaro.</strong> The famous steatite bust of a bearded man (priest-king) was found at Mohenjodaro.\n\n❌ Harappa had male torso.\n❌ Lothal had beads.\n❌ Dholavira had inscriptions.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'Which of the following trees was probably worshipped by the Harappans?',
+                    options: ['Peepal', 'Banyan', 'Neem', 'Mango'],
+                    correct: 0,
+                    category: 'Religion',
+                    explain: '✅ <strong>Correct: Peepal.</strong> Seals depicting a peepal tree with deities suggest its worship.\n\n❌ Banyan not depicted.\n❌ Neem not depicted.\n❌ Mango not depicted.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'Harappan burials generally show evidence of:',
+                    options: ['Cremation', 'Extended burial', 'Urn burial', 'All of the above'],
+                    correct: 3,
+                    category: 'Burials',
+                    explain: '✅ <strong>Correct: All of the above.</strong> Harappans practiced extended burial, fractional burial, and urn burial at different sites.\n\n❌ Any single option would be incomplete.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The "swastika" symbol appears on Harappan seals. It is associated with:',
+                    options: ['Religious/sun symbol', 'Trade mark', 'Royal emblem', 'Script character'],
+                    correct: 0,
+                    category: 'Symbols',
+                    explain: '✅ <strong>Correct: Religious/sun symbol.</strong> The swastika likely had religious significance, possibly solar.\n\n❌ No evidence for trade mark.\n❌ Not royal.\n❌ Not a script character.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'Which of the following was NOT a part of Harappan religion?',
+                    options: ['Phallus worship', 'Tree worship', 'Animal worship', 'Temple worship'],
+                    correct: 3,
+                    category: 'Religion',
+                    explain: '✅ <strong>Correct: Temple worship.</strong> There is no evidence of temples; worship was likely domestic or in open spaces.\n\n❌ Phallus (lingam) stones found.\n❌ Tree worship evident.\n❌ Animal worship (on seals).'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The "dancing girl" statue suggests that Harappans knew the art of:',
+                    options: ['Bronze casting', 'Stone carving', 'Terracotta', 'Gold smithing'],
+                    correct: 0,
+                    category: 'Craft',
+                    explain: '✅ <strong>Correct: Bronze casting.</strong> The dancing girl is a bronze statue, showing advanced metal casting.\n\n❌ Stone carving is seen in priest-king.\n❌ Terracotta is common.\n❌ Goldsmithing existed but this statue is bronze.'
+                },
+                // DECLINE THEORIES (5 questions)
+                {
+                    year: 'Practice',
+                    q: 'Which of the following is NOT a proposed theory for the decline of the Indus Valley Civilization?',
+                    options: ['Aryan invasion', 'Floods and climatic change', 'Deforestation', 'Earthquake'],
+                    correct: 0,
+                    category: 'Decline',
+                    explain: '✅ <strong>Correct: Aryan invasion.</strong> The Aryan invasion theory is now largely discredited; internal factors like floods, climate change, deforestation, and earthquake are more accepted.\n\n❌ Floods, climate change, and deforestation are plausible.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'Geological evidence suggests that the decline of Harappan cities may have been caused by:',
+                    options: ['Drying up of the Ghaggar-Hakra river', 'Rise in sea level', 'Both A and B', 'None of the above'],
+                    correct: 2,
+                    category: 'Decline',
+                    explain: '✅ <strong>Correct: Both A and B.</strong> The Ghaggar-Hakra (Saraswati) dried up, and sea-level changes affected coastal sites.\n\n❌ None would be incorrect.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'Which archaeologist proposed the "invasion" theory for the end of Harappan civilization?',
+                    options: ['Mortimer Wheeler', 'John Marshall', 'R.D. Banerji', 'S.R. Rao'],
+                    correct: 0,
+                    category: 'Historians',
+                    explain: '✅ <strong>Correct: Mortimer Wheeler.</strong> Wheeler suggested that Indra (Aryan god) destroyed the cities, based on skeletons at Mohenjodaro.\n\n❌ John Marshall excavated but didn\'t propose invasion.\n❌ Banerji discovered Mohenjodaro.\n❌ Rao excavated Lothal.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The "massacre" evidence (skeletons) at Mohenjodaro is now interpreted as:',
+                    options: ['Not contemporary, but later intrusions', 'Proof of Aryan invasion', 'Result of floods', 'Mass suicide'],
+                    correct: 0,
+                    category: 'Decline',
+                    explain: '✅ <strong>Correct: Not contemporary, but later intrusions.</strong> The skeletons found are now thought to be from a later period, not the end of the civilization.\n\n❌ Aryan invasion is discredited.\n❌ Floods didn\'t kill people.\n❌ Suicide is unlikely.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The late Harappan phase is characterized by:',
+                    options: ['Decline in urban features', 'Continuation of trade', 'Expansion to new areas', 'All of the above'],
+                    correct: 3,
+                    category: 'Decline',
+                    explain: '✅ <strong>Correct: All of the above.</strong> Late Harappan saw decline in urban planning, but trade continued in some regions, and people moved east/south.\n\n❌ Any single option would be incomplete.'
+                },
+                // SCRIPT & SEALS (5 questions)
+                {
+                    year: 'Practice',
+                    q: 'The Indus script is still undeciphered because:',
+                    options: ['It has too few symbols', 'It is bilingual like Egyptian', 'No bilingual text found', 'Symbols are too small'],
+                    correct: 2,
+                    category: 'Script',
+                    explain: '✅ <strong>Correct: No bilingual text found.</strong> Unlike Egyptian hieroglyphs (Rosetta Stone), we have no bilingual inscription for Indus script.\n\n❌ It has over 400 symbols.\n❌ It is not bilingual.\n❌ Size is not an issue.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The number of symbols in the Indus script is approximately:',
+                    options: ['400-600', '100-200', '26 (alphabetic)', 'Over 1000'],
+                    correct: 0,
+                    category: 'Script',
+                    explain: '✅ <strong>Correct: 400-600.</strong> Estimates range from 400 to 600 distinct symbols, suggesting a logo-syllabic script.\n\n❌ 100-200 is too low.\n❌ 26 alphabetic is wrong.\n❌ Over 1000 is too high.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'Most Indus Valley seals were made of:',
+                    options: ['Steatite', 'Terracotta', 'Copper', 'Faience'],
+                    correct: 0,
+                    category: 'Seals',
+                    explain: '✅ <strong>Correct: Steatite.</strong> Most seals were carved from steatite (soft stone) and then fired.\n\n❌ Terracotta was used for figurines.\n❌ Copper was used for tools.\n❌ Faience for beads.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The "unicorn" motif on Harappan seals is likely a representation of:',
+                    options: ['Mythical animal', 'Bull in profile', 'Horse', 'Deer'],
+                    correct: 1,
+                    category: 'Seals',
+                    explain: '✅ <strong>Correct: Bull in profile.</strong> The "unicorn" is now thought to be a bull depicted in profile with one horn hidden.\n\n❌ Mythical is possible but likely stylized bull.\n❌ Horse not shown.\n❌ Deer different.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'Which of the following is NOT a typical motif on Harappan seals?',
+                    options: ['Unicorn', 'Humped bull', 'Horse', 'Elephant'],
+                    correct: 2,
+                    category: 'Seals',
+                    explain: '✅ <strong>Correct: Horse.</strong> The horse is not depicted on Harappan seals.\n\n❌ Unicorn, humped bull, and elephant are common.'
+                },
+                // GENERAL & MISCELLANEOUS (5 questions)
+                {
+                    year: 'Practice',
+                    q: 'The Harappan civilization was discovered by which archaeologist in 1921?',
+                    options: ['Dayaram Sahni', 'R.D. Banerji', 'John Marshall', 'Mortimer Wheeler'],
+                    correct: 0,
+                    category: 'History',
+                    explain: '✅ <strong>Correct: Dayaram Sahni.</strong> Dayaram Sahni excavated Harappa in 1921. Banerji excavated Mohenjodaro in 1922.\n\n❌ Banerji discovered Mohenjodaro.\n❌ Marshall was Director-General.\n❌ Wheeler worked later.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The earliest pre-Harappan site (Neolithic) in the Indus region is:',
+                    options: ['Mehrgarh', 'Kili Gul Mohammad', 'Rana Ghundai', 'All of the above'],
+                    correct: 3,
+                    category: 'Chronology',
+                    explain: '✅ <strong>Correct: All of the above.</strong> Mehrgarh, Kili Gul Mohammad, and Rana Ghundai are early Neolithic sites.\n\n❌ Any single option would be incomplete.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The "mature" Harappan phase is dated to:',
+                    options: ['2600-1900 BCE', '3300-2600 BCE', '1900-1300 BCE', '7000-3300 BCE'],
+                    correct: 0,
+                    category: 'Chronology',
+                    explain: '✅ <strong>Correct: 2600-1900 BCE.</strong> The mature Harappan period is c. 2600-1900 BCE.\n\n❌ 3300-2600 is Early Harappan.\n❌ 1900-1300 is Late Harappan.\n❌ 7000-3300 is Neolithic/Pre-Harappan.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'Which of the following was NOT a Harappan craft?',
+                    options: ['Glass making', 'Bead making', 'Metal casting', 'Terracotta art'],
+                    correct: 0,
+                    category: 'Craft',
+                    explain: '✅ <strong>Correct: Glass making.</strong> Glass making was not known to Harappans; they used faience and glazed steatite.\n\n❌ Bead making (carnelian, lapis).\n❌ Metal casting (bronze).\n❌ Terracotta art (figurines).'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The Harappan city of Dholavira is located on which island?',
+                    options: ['Khadir Beyt', 'Beyt Dwarka', 'Salsette', 'Elephanta'],
+                    correct: 0,
+                    category: 'Geography',
+                    explain: '✅ <strong>Correct: Khadir Beyt.</strong> Dholavira is on the Khadir Beyt island in the Rann of Kutch.\n\n❌ Beyt Dwarka is associated with Krishna.\n❌ Salsette is near Mumbai.\n❌ Elephanta has caves.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The Harappans used which type of pottery most commonly?',
+                    options: ['Red ware with black designs', 'Painted grey ware', 'Black and red ware', 'Ochre coloured pottery'],
+                    correct: 0,
+                    category: 'Pottery',
+                    explain: '✅ <strong>Correct: Red ware with black designs.</strong> Harappan pottery is typically red ware with black painted designs.\n\n❌ Painted grey ware is later (PGW).\n❌ Black and red ware is also found but less common.\n❌ Ochre coloured pottery is from the Copper Hoard culture.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'Which site has yielded evidence of a "stone quarry" used by Harappans?',
+                    options: ['Khetri', 'Ganeshwar', 'Rohri', 'Akota'],
+                    correct: 2,
+                    category: 'Mining',
+                    explain: '✅ <strong>Correct: Rohri.</strong> Rohri (Pakistan) has flint quarries used by Harappans for blade making.\n\n❌ Khetri is copper mines.\n❌ Ganeshwar is a pre-Harappan copper site.\n❌ Akota is a later site.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The "bronze statue of a bull" from Mohenjodaro is an example of:',
+                    options: ['Lost wax casting', 'Stone carving', 'Terracotta', 'Ivory carving'],
+                    correct: 0,
+                    category: 'Metallurgy',
+                    explain: '✅ <strong>Correct: Lost wax casting.</strong> The bronze bull (and dancing girl) were made by lost wax casting.\n\n❌ Stone carving is different.\n❌ Terracotta is baked clay.\n❌ Ivory carving is different.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The Harappan site of Lothal was excavated by:',
+                    options: ['S.R. Rao', 'B.B. Lal', 'R.S. Bisht', 'J.P. Joshi'],
+                    correct: 0,
+                    category: 'Archaeologists',
+                    explain: '✅ <strong>Correct: S.R. Rao.</strong> S.R. Rao excavated Lothal in the 1950s.\n\n❌ B.B. Lal excavated Kalibangan.\n❌ R.S. Bisht excavated Dholavira.\n❌ J.P. Joshi excavated Surkotada.'
+                },
+                {
+                    year: 'Practice',
+                    q: 'The "warehouse" at Lothal was located:',
+                    options: ['On the citadel', 'Near the dockyard', 'In the lower town', 'Outside the city'],
+                    correct: 1,
+                    category: 'Architecture',
+                    explain: '✅ <strong>Correct: Near the dockyard.</strong> The warehouse was on a raised platform near the dockyard for storing goods.\n\n❌ Lothal had no citadel.\n❌ Lower town had residences.\n❌ Outside is incorrect.'
+                }
+            ];
+
+            function shuffleArray(arr) {
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                return arr;
+            }
+
+            let currentMode = 'pyq';
+            let currentQuestions = [...pyqBank];
+            let currentIndex = 0;
+            let userAnswers = new Array(currentQuestions.length).fill(null);
+            let testFinished = false;
+
+            const modeDisplay = document.getElementById('modeDisplay');
+            const counterDisplay = document.getElementById('counterDisplay');
+            const questionText = document.getElementById('questionText');
+            const optionsContainer = document.getElementById('optionsContainer');
+            const explanationBox = document.getElementById('explanationBox');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const skipBtn = document.getElementById('skipBtn');
+            const revealToggleBtn = document.getElementById('revealToggleBtn');
+            const finishBtn = document.getElementById('finishBtn');
+            const backToQuizBtn = document.getElementById('backToQuizBtn');
+            const revealList = document.getElementById('revealList');
+            const questionArea = document.getElementById('questionArea');
+            const revealArea = document.getElementById('revealArea');
+            const resultsArea = document.getElementById('resultsArea');
+            const pyqModeBtn = document.getElementById('pyqModeBtn');
+            const practiceModeBtn = document.getElementById('practiceModeBtn');
+            const shuffleBtn = document.getElementById('shuffleBtn');
+
+            function switchMode(mode) {
+                currentMode = mode;
+                if (mode === 'pyq') {
+                    currentQuestions = [...pyqBank];
+                    pyqModeBtn.classList.add('active');
+                    practiceModeBtn.classList.remove('active');
+                    modeDisplay.innerText = 'PYQ Mode';
+                } else {
+                    currentQuestions = [...practiceBank];
+                    pyqModeBtn.classList.remove('active');
+                    practiceModeBtn.classList.add('active');
+                    modeDisplay.innerText = 'Practice Mode';
+                }
+                currentIndex = 0;
+                userAnswers = new Array(currentQuestions.length).fill(null);
+                testFinished = false;
+                resultsArea.classList.add('hidden');
+                revealArea.classList.add('hidden');
+                questionArea.classList.remove('hidden');
+                renderQuestion();
+            }
+
+            function renderQuestion() {
+                if (testFinished) return;
+                if (currentQuestions.length === 0) return;
+                
+                const q = currentQuestions[currentIndex];
+                counterDisplay.innerText = `Q.${currentIndex+1} / ${currentQuestions.length}`;
+                const yearSuffix = q.year === 'Practice' ? ' (practice)' : ` [UPSC ${q.year}]`;
+                questionText.innerText = q.q + yearSuffix;
+
+                let optsHtml = '';
+                const selectedIdx = userAnswers[currentIndex];
+
+                q.options.forEach((opt, idx) => {
+                    let cls = 'option-btn';
+                    if (selectedIdx !== null) {
+                        if (idx === q.correct) cls += ' correct';
+                        if (selectedIdx === idx && idx !== q.correct) cls += ' wrong';
+                        if (selectedIdx === idx && idx === q.correct) cls += ' correct selected';
+                    }
+                    optsHtml += `<div class="${cls}" data-opt-index="${idx}">${String.fromCharCode(65+idx)}. ${opt}</div>`;
+                });
+                optionsContainer.innerHTML = optsHtml;
+
+                if (selectedIdx !== null) {
+                    explanationBox.innerHTML = q.explain.replace(/\n/g, '<br>');
+                } else {
+                    explanationBox.innerHTML = '👆 select an option to see detailed explanation for all choices';
+                }
+
+                attachOptionListeners();
+            }
+
+            function attachOptionListeners() {
+                document.querySelectorAll('.option-btn').forEach(opt => {
+                    opt.addEventListener('click', (e) => {
+                        if (testFinished) return;
+                        const idx = parseInt(e.currentTarget.dataset.optIndex, 10);
+                        userAnswers[currentIndex] = idx;
+                        renderQuestion();
+                    });
+                });
+            }
+
+            function goToPrev() { if (currentIndex > 0) { currentIndex--; renderQuestion(); } }
+            function goToNext() { if (currentIndex < currentQuestions.length - 1) { currentIndex++; renderQuestion(); } }
+            function skipQuestion() { if (currentIndex < currentQuestions.length - 1) { currentIndex++; renderQuestion(); } else alert('Last question.'); }
+
+            function showReveal() {
+                questionArea.classList.add('hidden');
+                revealArea.classList.remove('hidden');
+                resultsArea.classList.add('hidden');
+                let listHtml = '';
+                currentQuestions.forEach((q, idx) => {
+                    const yearTag = q.year === 'Practice' ? '(practice)' : `[UPSC ${q.year}]`;
+                    listHtml += `<div class="reveal-item"><div class="reveal-question">${idx+1}. ${q.q} ${yearTag}</div><div class="reveal-answer">✅ ${q.options[q.correct]}</div></div>`;
+                });
+                revealList.innerHTML = listHtml;
+            }
+
+            function backToQuiz() {
+                revealArea.classList.add('hidden');
+                questionArea.classList.remove('hidden');
+                resultsArea.classList.add('hidden');
+            }
+
+            function finishTest() {
+                testFinished = true;
+                let correctCount = 0;
+                currentQuestions.forEach((q, idx) => { if (userAnswers[idx] !== null && userAnswers[idx] === q.correct) correctCount++; });
+                const percentage = Math.round((correctCount / currentQuestions.length) * 100);
+                resultsArea.innerHTML = `<strong>✅ IVC Mastery!</strong><br>You got <strong>${correctCount}</strong> out of <strong>${currentQuestions.length}</strong> correct.<br>Score: <strong>${percentage}%</strong>`;
+                resultsArea.classList.remove('hidden');
+                questionArea.classList.add('hidden');
+                revealArea.classList.add('hidden');
+            }
+
+            prevBtn.addEventListener('click', goToPrev);
+            nextBtn.addEventListener('click', goToNext);
+            skipBtn.addEventListener('click', skipQuestion);
+            revealToggleBtn.addEventListener('click', showReveal);
+            backToQuizBtn.addEventListener('click', backToQuiz);
+            finishBtn.addEventListener('click', finishTest);
+
+            pyqModeBtn.addEventListener('click', () => switchMode('pyq'));
+            practiceModeBtn.addEventListener('click', () => switchMode('practice'));
+
+            shuffleBtn.addEventListener('click', () => {
+                if (currentMode === 'pyq') {
+                    currentQuestions = shuffleArray([...pyqBank]);
+                } else {
+                    currentQuestions = shuffleArray([...practiceBank]);
+                }
+                userAnswers = new Array(currentQuestions.length).fill(null);
+                currentIndex = 0;
+                testFinished = false;
+                resultsArea.classList.add('hidden');
+                revealArea.classList.add('hidden');
+                questionArea.classList.remove('hidden');
+                renderQuestion();
+            });
+
+            // ---------- amCharts Map with IVC Sites (same as before) ----------
+            const mapContainer = document.getElementById('mapContainer');
+            const mapBtn = document.getElementById('mapBtn');
+            let chartInitialized = false;
+            let root, chart, pointSeries;
+
+            function initMap() {
+                if (chartInitialized) return;
+                chartInitialized = true;
+
+                am5.ready(function() {
+                    root = am5.Root.new("chartdiv");
+                    root.setThemes([]);
+
+                    chart = root.container.children.push(
+                        am5map.MapChart.new(root, {
+                            projection: am5map.geoMercator(),
+                            panX: "rotateX",
+                            panY: "rotateY",
+                            wheelable: true,
+                            zoomControl: am5map.ZoomControl.new(root, {})
+                        })
+                    );
+
+                    var polygonSeries = chart.series.push(
+                        am5map.MapPolygonSeries.new(root, {
+                            geoJSON: am5geodata_indiaLow,
+                            fill: am5.color(0x3d2f4d),
+                            stroke: am5.color(0xc0a0d0),
+                            strokeWidth: 1
+                        })
+                    );
+
+                    polygonSeries.mapPolygons.template.setAll({
+                        tooltipText: "{name}",
+                        interactive: true,
+                        fill: am5.color(0x4a3a60),
+                        stroke: am5.color(0xb090c8),
+                        strokeWidth: 1
+                    });
+
+                    polygonSeries.mapPolygons.template.states.create("hover", {
+                        fill: am5.color(0x8a78b0)
+                    });
+
+                    pointSeries = chart.series.push(
+                        am5map.MapPointSeries.new(root, {})
+                    );
+
+                    pointSeries.bullets.push(function() {
+                        return am5.Bullet.new(root, {
+                            sprite: am5.Circle.new(root, {
+                                radius: 6,
+                                fill: am5.color(0x33aaff), // Blue for IVC sites
+                                stroke: am5.color(0xffffff),
+                                strokeWidth: 1,
+                                tooltipText: "{name}\n{info}"
+                            })
+                        });
+                    });
+
+                    // Major IVC sites with coordinates and notable finds
+                    const ivcSites = [
+                        { latitude: 30.6, longitude: 72.9, name: "Harappa", info: "Granaries, male torso, citadel" },
+                        { latitude: 27.3, longitude: 68.1, name: "Mohenjodaro", info: "Great Bath, dancing girl, Pashupati seal" },
+                        { latitude: 22.5, longitude: 72.2, name: "Lothal", info: "Dockyard, bead-making, rice husk" },
+                        { latitude: 29.5, longitude: 74.5, name: "Kalibangan", info: "Ploughed field, fire altars, wooden plow" },
+                        { latitude: 23.9, longitude: 70.2, name: "Dholavira", info: "Water harvesting, reservoirs, signboard" },
+                        { latitude: 29.3, longitude: 76.1, name: "Rakhigarhi", info: "Largest site, terracotta, bronze" },
+                        { latitude: 29.8, longitude: 75.4, name: "Banawali", info: "Terracotta plow, barley" },
+                        { latitude: 30.2, longitude: 73.3, name: "Chanhudaro", info: "Bead-making, bronze casting, no citadel" },
+                        { latitude: 31.6, longitude: 74.9, name: "Ropar", info: "Burials, terracotta" },
+                        { latitude: 27.0, longitude: 66.0, name: "Sutkagen-dor", info: "Westernmost site, fortification" },
+                        { latitude: 37.0, longitude: 70.0, name: "Shortughai", info: "Lapis lazuli trade, Afghanistan" },
+                        { latitude: 31.2, longitude: 72.4, name: "Jalilpur", info: "Pre-Harappan" },
+                        { latitude: 30.9, longitude: 75.9, name: "Sanghol", info: "Harappan pottery" },
+                        { latitude: 28.5, longitude: 77.2, name: "Bhagwanpura", info: "Late Harappan with PGW" }
+                    ];
+
+                    pointSeries.data.setAll(ivcSites);
+                });
+            }
+
+            mapBtn.addEventListener('click', () => {
+                mapContainer.classList.toggle('hidden');
+                if (!mapContainer.classList.contains('hidden') && !chartInitialized) {
+                    initMap();
+                }
+            });
+
+            // Start with PYQ mode
+            switchMode('pyq');
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Art & Culture · UPSC PYQs Practice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', 'Poppins', 'Hiragino Maru Gothic', system-ui, sans-serif;
+        }
+
+        body {
+            background: #0f0a1a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 1.2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        #blackhole-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .master {
+            max-width: 950px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            background: rgba(30, 22, 40, 0.65);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(180, 150, 200, 0.3);
+            border-radius: 50px 50px 25px 25px;
+            padding: 1.2rem 1.8rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 500;
+            color: #f0d0ff;
+            text-shadow: 0 2px 12px #a07ac0;
+        }
+
+        .header h1 span {
+            background: rgba(60, 45, 75, 0.6);
+            color: #d8b8f0;
+            font-size: 1rem;
+            padding: 4px 16px;
+            border-radius: 40px;
+            margin-left: 10px;
+            border: 1px solid #b088c8;
+        }
+
+        .header p {
+            font-size: 1rem;
+            margin-top: 5px;
+            color: #c0a8d8;
+        }
+
+        .nav-bar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: rgba(45, 35, 55, 0.6);
+            backdrop-filter: blur(8px);
+            padding: 0.7rem 1.2rem;
+            border-radius: 50px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #6a5580;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: #d0b8e8;
+            text-decoration: none;
+            background: rgba(70, 52, 85, 0.6);
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            border: 1px solid #8a6fa0;
+            transition: 0.1s;
+        }
+
+        .nav-link:hover {
+            background: rgba(100, 75, 125, 0.7);
+        }
+
+        .nav-separator {
+            color: #8a6fa0;
+            font-size: 1.2rem;
+        }
+
+        .nav-current {
+            background: rgba(100, 75, 125, 0.7);
+            color: #f0e0ff;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            border: 1px solid #b090c8;
+        }
+
+        .spacer {
+            flex: 1;
+        }
+
+        .quiz-card {
+            background: rgba(32, 24, 42, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(170, 140, 200, 0.35);
+            border-radius: 50px;
+            padding: 2rem 2rem;
+            box-shadow: 0 20px 35px -8px #050208;
+            margin-bottom: 1.5rem;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed #7a6190;
+        }
+
+        .category-badge {
+            background: #6a4a7a;
+            color: #f0d0ff;
+            padding: 8px 22px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: 1px solid #b088c8;
+        }
+
+        .question-counter {
+            background: #3a2e4a;
+            color: #d8b8f0;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+        }
+
+        .question-text {
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #f0e0ff;
+            margin: 25px 0 30px;
+            line-height: 1.5;
+            text-shadow: 0 2px 10px #906db0;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin: 20px 0 30px;
+        }
+
+        .option-btn {
+            background: rgba(55, 45, 70, 0.7);
+            border: 1.5px solid #7a6a90;
+            border-radius: 40px;
+            padding: 14px 18px;
+            font-size: 1.1rem;
+            color: #e0d0f8;
+            cursor: pointer;
+            transition: 0.15s;
+            text-align: left;
+            backdrop-filter: blur(4px);
+        }
+
+        .option-btn:hover {
+            background: rgba(85, 70, 105, 0.8);
+            border-color: #b098c8;
+        }
+
+        .option-btn.selected {
+            background: #6a8a7a;
+            border-color: #a0d0b0;
+            color: #f0fff0;
+        }
+
+        .option-btn.correct {
+            background: #6a8a7a;
+            border-color: #a0d0b0;
+        }
+
+        .option-btn.wrong {
+            background: #9a6a7a;
+            border-color: #d0a0b0;
+        }
+
+        .explain-box {
+            background: rgba(45, 35, 60, 0.8);
+            backdrop-filter: blur(4px);
+            border-left: 8px solid #b090c8;
+            border-radius: 40px;
+            padding: 18px 24px;
+            font-size: 1.1rem;
+            color: #e0d0f0;
+            margin: 20px 0 20px;
+            line-height: 1.6;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0 10px;
+        }
+
+        .nav-btn {
+            background: #4a3a60;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 1rem;
+            color: #f0e0ff;
+            cursor: pointer;
+            transition: 0.1s;
+            border: 1px solid #8a78a0;
+            flex: 1 1 auto;
+        }
+
+        .nav-btn:hover {
+            background: #6a5a80;
+        }
+
+        .nav-btn.primary {
+            background: #7a68a0;
+            border-color: #b090c8;
+        }
+
+        .nav-btn.primary:hover {
+            background: #8a78b0;
+        }
+
+        .study-btn {
+            background: #5a6a8a;
+            border-color: #8a9ac0;
+        }
+
+        .study-btn:hover {
+            background: #7a8aa8;
+        }
+
+        .new-test-btn {
+            background: #9a7ab0;
+            border: 1px solid #d0a8e0;
+            color: #faf0ff;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            margin: 15px 0 5px;
+            transition: 0.15s;
+        }
+
+        .new-test-btn:hover {
+            background: #b090c8;
+        }
+
+        .glossary-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .glossary-category {
+            margin-bottom: 25px;
+        }
+
+        .glossary-category h3 {
+            color: #f0c0ff;
+            font-size: 1.4rem;
+            border-left: 6px solid #b090c8;
+            padding-left: 15px;
+            margin-bottom: 15px;
+        }
+
+        .glossary-item {
+            background: rgba(55, 45, 70, 0.5);
+            border-radius: 30px;
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            border: 1px solid #7a6a90;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+        }
+
+        .glossary-term {
+            font-weight: 600;
+            color: #ffd0ff;
+            font-size: 1.2rem;
+            min-width: 140px;
+        }
+
+        .glossary-meaning {
+            color: #d0c0e0;
+            flex: 2;
+            margin: 0 10px;
+        }
+
+        .glossary-clue {
+            color: #b0a0c0;
+            font-style: italic;
+            font-size: 0.9rem;
+            background: rgba(0,0,0,0.3);
+            padding: 4px 12px;
+            border-radius: 30px;
+            white-space: nowrap;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .footer-note {
+            text-align: center;
+            color: #8a78a0;
+            font-size: 0.9rem;
+            margin: 2rem 0 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="blackhole-canvas"></canvas>
+
+    <div class="master">
+        <div class="header">
+            <h1>🎨 Art & Culture <span>UPSC PYQs Practice</span></h1>
+            <p>actual questions · year mentioned · detailed explanations</p>
+        </div>
+
+        <div class="nav-bar">
+            <a href="/Singularity/index.html" class="nav-link">🏠 Home</a>
+            <span class="nav-separator">›</span>
+            <a href="/Singularity/Art&Culture/Art&Culture_PYQs.html" class="nav-link">📁 Art & Culture</a>
+            <span class="nav-separator">›</span>
+            <span class="nav-current">📝 PYQs </span>
+            <span class="spacer"></span>
+            <a href="/Singularity/Art&Culture/Art&Culture_Practice.html" class="nav-link">📄 Practice </a>
+        </div>
+
+        <div class="quiz-card" id="quizCard">
+            <!-- Practice mode -->
+            <div id="questionArea">
+                <div class="question-header">
+                    <span class="category-badge" id="categoryDisplay">Dance (2021)</span>
+                    <span class="question-counter" id="counterDisplay">Q.1 / 12</span>
+                </div>
+
+                <div class="question-text" id="questionText">Loading question...</div>
+
+                <div class="options-grid" id="optionsContainer"></div>
+
+                <div class="explain-box" id="explanationBox">
+                    👆 select an option to see detailed explanation for all choices
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-btn" id="prevBtn">◀ Previous</button>
+                    <button class="nav-btn" id="nextBtn">Next ▶</button>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+                    <button class="nav-btn" id="skipBtn">⏭️ Skip Question</button>
+                    <button class="nav-btn study-btn" id="studyBtn">📚 Study Glossary</button>
+                    <button class="nav-btn primary" id="newTestBtn">🔄 New Random Test</button>
+                </div>
+            </div>
+
+            <!-- Glossary mode -->
+            <div id="glossaryArea" class="hidden">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color:#f0d0ff;">📖 Art & Culture Glossary</h2>
+                    <button class="nav-btn" id="backToPracticeBtn">◀ Back to Practice</button>
+                </div>
+                <div class="glossary-container" id="glossaryContainer"></div>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            ⚡ curated from UPSC CSE papers · updated till 2024
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // --- subtle blackhole animation (unchanged) ---
+            const canvas = document.getElementById('blackhole-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
+            const PARTICLE_COUNT = 80;
+
+            function initCanvas() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+
+                particles = [];
+                for (let i = 0; i < PARTICLE_COUNT; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const radius = 60 + Math.random() * Math.min(width, height) * 0.5;
+                    const speed = 0.0004 + Math.random() * 0.001;
+                    const size = 1 + Math.random() * 2;
+                    particles.push({
+                        angle: angle,
+                        radius: radius,
+                        speed: speed,
+                        size: size,
+                        drift: Math.random() * 0.004 - 0.002,
+                        brightness: 0.3 + Math.random() * 0.4
+                    });
+                }
+            }
+
+            function drawBlackhole() {
+                ctx.clearRect(0, 0, width, height);
+                const centerX = width / 2;
+                const centerY = height / 2;
+
+                const gradient = ctx.createRadialGradient(centerX, centerY, 5, centerX, centerY, Math.min(width, height) * 0.5);
+                gradient.addColorStop(0, 'rgba(70, 30, 60, 0.2)');
+                gradient.addColorStop(0.4, 'rgba(35, 18, 35, 0.15)');
+                gradient.addColorStop(0.8, 'rgba(10, 5, 15, 0.05)');
+                gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, width, height);
+
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 25, 0, 2 * Math.PI);
+                ctx.fillStyle = 'rgba(10, 5, 15, 0.8)';
+                ctx.fill();
+
+                particles.forEach(p => {
+                    p.angle += p.speed * (1 - p.radius / (Math.min(width, height) * 0.4));
+                    p.radius += p.drift;
+                    if (p.radius < 25) p.radius = 80 + Math.random() * 150;
+                    if (p.radius > Math.min(width, height) * 0.5) p.radius = 70;
+
+                    const x = centerX + Math.cos(p.angle) * p.radius;
+                    const y = centerY + Math.sin(p.angle) * p.radius;
+
+                    const dist = Math.hypot(x - centerX, y - centerY);
+                    const brightness = Math.max(0.2, 1 - dist / (Math.min(width, height) * 0.35));
+                    ctx.fillStyle = `rgba(200, 150, 200, ${brightness * 0.25})`;
+                    ctx.shadowColor = '#b080b0';
+                    ctx.shadowBlur = 10 * brightness;
+                    ctx.beginPath();
+                    ctx.arc(x, y, p.size * brightness * 0.6, 0, 2 * Math.PI);
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(drawBlackhole);
+            }
+
+            window.addEventListener('resize', () => {
+                initCanvas();
+            });
+
+            initCanvas();
+            drawBlackhole();
+
+            // ================= ART & CULTURE PYQ BANK (UPSC CSE) =================
+            const practiceBank = [
+                // 2023
+                {
+                    q: "With reference to the Chola temples, which one of the following pairs is correctly matched?",
+                    options: ["Brihadeshwara temple – GangaiKondaCholapuram", "Airavateshwara temple – Thanjavur", "Gangaikondacholapuram temple – built by Rajendra I", "Koranganatha temple – built by Aditya I"],
+                    correct: 2,
+                    category: "Temple Architecture (2023)",
+                    explain: "✅ <strong>Correct: Gangaikondacholapuram temple – built by Rajendra I.</strong> It was built by Rajendra I to commemorate his victory. \n❌ Brihadeshwara at Thanjavur (by Raja Raja I), not Gangaikondacholapuram. \n❌ Airavateshwara is at Darasuram (by Rajaraja II), not Thanjavur. \n❌ Koranganatha temple (Srinivasanallur) was built by Nandivarman II, not Aditya I."
+                },
+                // 2022
+                {
+                    q: "Which of the following is/are correctly matched? (Folk dances – State)\n1. Garba – Gujarat\n2. Chhau – Odisha/Jharkhand\n3. Bihu – Assam\n4. Ghoomar – Rajasthan",
+                    options: ["1 and 2 only", "2 and 3 only", "1, 3 and 4 only", "1, 2, 3 and 4"],
+                    correct: 3,
+                    category: "Folk Dances (2022)",
+                    explain: "✅ <strong>All four are correct:</strong>\n✅ Garba – Gujarat (Navratri).\n✅ Chhau – Odisha, Jharkhand, West Bengal (masked dance).\n✅ Bihu – Assam (harvest festival).\n✅ Ghoomar – Rajasthan (performed by women)."
+                },
+                // 2021
+                {
+                    q: "Consider the following pairs: (Painting school – Feature)\n1. Pahari painting – Basohli style\n2. Mughal painting – Influence of Persian art\n3. Deccan painting – Bijapur & Golconda schools\nWhich are correctly matched?",
+                    options: ["1 and 2 only", "2 and 3 only", "1 and 3 only", "1, 2 and 3"],
+                    correct: 3,
+                    category: "Painting Schools (2021)",
+                    explain: "✅ <strong>All three are correct:</strong>\n✅ Pahari painting includes Basohli, Kangra, Guler etc. Basohli is known for bold colours.\n✅ Mughal painting evolved under Persian influence (Mir Sayyid Ali, Abdus Samad).\n✅ Deccan painting flourished in Bijapur, Golconda, and Ahmednagar."
+                },
+                // 2020
+                {
+                    q: "Which of the following statements regarding the Gandhara school of art is correct?",
+                    options: ["It was purely indigenous and free from foreign influence", "It mainly used white marble and sandstone", "It depicts Buddha in human form with Hellenistic features", "It originated during the Gupta period"],
+                    correct: 2,
+                    category: "Buddhist Art (2020)",
+                    explain: "✅ <strong>Correct: It depicts Buddha in human form with Hellenistic features.</strong> Gandhara art (1st-5th CE) combined Greco-Roman and Indian elements. \n❌ It had strong foreign (Greek/Roman) influence.\n❌ It used grey schist (not marble).\n❌ It originated during Kushana period (Kanishka), not Gupta."
+                },
+                // 2019
+                {
+                    q: "With reference to the cultural history of India, which one of the following is the correct description of the term 'Nagara', 'Dravida' and 'Vesara'?",
+                    options: ["Musical instruments", "Styles of temple architecture", "Schools of painting", "Classical dance forms"],
+                    correct: 1,
+                    category: "Temple Architecture (2019)",
+                    explain: "✅ <strong>Correct: Styles of temple architecture.</strong> Nagara (north India), Dravida (south India), Vesara (mixed/central India, especially Deccan).\n❌ Not musical instruments (e.g., Veena, Mridangam).\n❌ Not painting (Mughal, Rajput etc.)\n❌ Not dance forms (Bharatanatyam, Kathak etc.)."
+                },
+                // 2018
+                {
+                    q: "Which one of the following is not a correct pair (Dance form – State)?",
+                    options: ["Sattriya – Assam", "Kathakali – Kerala", "Kuchipudi – Andhra Pradesh", "Odissi – Tamil Nadu"],
+                    correct: 3,
+                    category: "Classical Dances (2018)",
+                    explain: "✅ <strong>Correct: Odissi – Tamil Nadu is wrong.</strong> Odissi is from Odisha, not Tamil Nadu.\n❌ Sattriya – Assam (correct).\n❌ Kathakali – Kerala (correct).\n❌ Kuchipudi – Andhra Pradesh (correct)."
+                },
+                // 2017
+                {
+                    q: "The 'Ghurar' and 'Sangeet Natak' traditions are associated with which of the following states?",
+                    options: ["Rajasthan", "Assam", "Madhya Pradesh", "Uttar Pradesh"],
+                    correct: 1,
+                    category: "Theatre/Music (2017)",
+                    explain: "✅ <strong>Correct: Assam.</strong> Ghurar (also called Ghor Nritya – a folk dance with horse props) and Sangeet Natak (traditional dramatic performances) are part of Assamese culture.\n❌ Rajasthan: known for Ghoomar, Kathputli.\n❌ MP: Jawara, Tertali.\n❌ UP: Ramlila, Nautanki."
+                },
+                // 2016
+                {
+                    q: "The famous bronze image of 'Dancing Girl' was found at",
+                    options: ["Harappa", "Mohenjodaro", "Chanhudaro", "Lothal"],
+                    correct: 1,
+                    category: "Indus Art (2016)",
+                    explain: "✅ <strong>Correct: Mohenjodaro.</strong> The bronze Dancing Girl (c. 2500 BCE) is one of the best-known artefacts from Mohenjodaro.\n❌ Harappa: stone sculptures, but not this figurine.\n❌ Chanhudaro: bead-making centre.\n❌ Lothal: dockyard, bead factory."
+                },
+                // 2015
+                {
+                    q: "Which of the following pairs is/are correctly matched? (Sculpture – Period)\n1. Didarganj Yakshi – Mauryan\n2. Lohanipur torso – Gupta\n3. Sarnath Buddha – Kushana",
+                    options: ["1 only", "1 and 2 only", "2 and 3 only", "1, 2 and 3"],
+                    correct: 0,
+                    category: "Sculpture (2015)",
+                    explain: "✅ <strong>Correct: 1 only (Didarganj Yakshi – Mauryan).</strong> It is a fine example of Mauryan polish. \n❌ Lohanipur torso (found in Patna) is usually dated to Mauryan/Shunga, not Gupta. \n❌ Sarnath Buddha is Gupta period (5th CE), not Kushana (Mathura Buddha belongs to Kushana)."
+                },
+                // 2014
+                {
+                    q: "The famous 'Kailasa temple' at Ellora was built by",
+                    options: ["Chalukyas", "Rashtrakutas", "Pallavas", "Cholas"],
+                    correct: 1,
+                    category: "Rock-cut Architecture (2014)",
+                    explain: "✅ <strong>Correct: Rashtrakutas.</strong> Kailasa temple (Cave 16) was built by Krishna I (Rashtrakuta dynasty) in the 8th century.\n❌ Chalukyas: built cave temples at Badami.\n❌ Pallavas: shore temple, Pancha Rathas.\n❌ Cholas: Brihadeshwara temple (structural)."
+                },
+                // 2013
+                {
+                    q: "The 'Mohiniyattam' dance form originated in",
+                    options: ["Tamil Nadu", "Kerala", "Andhra Pradesh", "Karnataka"],
+                    correct: 1,
+                    category: "Classical Dance (2013)",
+                    explain: "✅ <strong>Correct: Kerala.</strong> Mohiniyattam (dance of the enchantress) is one of the eight classical dances of India, originating in Kerala.\n❌ Tamil Nadu: Bharatanatyam.\n❌ Andhra Pradesh: Kuchipudi.\n❌ Karnataka: Yakshagana (not classical but theatre form)."
+                },
+                // 2012
+                {
+                    q: "Consider the following musical instruments: 1. Rudra Veena 2. Santoor 3. Sarod 4. Sitar. Which of these are classified as 'Tat Vadya' (string instruments)?",
+                    options: ["1, 2 and 3 only", "2, 3 and 4 only", "1, 2 and 4 only", "1, 2, 3 and 4"],
+                    correct: 3,
+                    category: "Music (2012)",
+                    explain: "✅ <strong>All four are string instruments (Tat Vadya).</strong>\n✅ Rudra Veena: plucked string.\n✅ Santoor: hammered dulcimer (strings).\n✅ Sarod: plucked lute.\n✅ Sitar: plucked string. All belong to the chordophone family."
+                }
+            ];
+
+            // --- GLOSSARY DATA (Art & Culture) ---
+            const glossaryData = [
+                {
+                    category: "Classical Dances",
+                    terms: [
+                        { term: "Bharatanatyam", meaning: "Tamil Nadu", clue: "fire; ekaharya; temple dance" },
+                        { term: "Kathakali", meaning: "Kerala", clue: "story-play; elaborate makeup" },
+                        { term: "Kuchipudi", meaning: "Andhra Pradesh", clue: "drama; tarangam" },
+                        { term: "Odissi", meaning: "Odisha", clue: "tribhanga; moksha" },
+                        { term: "Kathak", meaning: "Uttar Pradesh", clue: "ghungroos; bols; Kathakars" },
+                        { term: "Sattriya", meaning: "Assam", clue: "Sankardeva; Vaishnava" }
+                    ]
+                },
+                {
+                    category: "Temple Architecture",
+                    terms: [
+                        { term: "Nagara", meaning: "North Indian style", clue: "curvilinear shikhara; amalaka" },
+                        { term: "Dravida", meaning: "South Indian style", clue: "vimana (pyramidal); gopuram" },
+                        { term: "Vesara", meaning: "hybrid style (Deccan)", clue: "Hoysala, Chalukyan; stellate plan" },
+                        { term: "Garbhagriha", meaning: "sanctum sanctorum", clue: "houses main deity" },
+                        { term: "Mandapa", meaning: "pillared hall", clue: "for assembly" },
+                        { term: "Shikhara/Vimana", meaning: "tower over sanctum", clue: "Nagara: shikhara, Dravida: vimana" }
+                    ]
+                },
+                {
+                    category: "Painting Schools",
+                    terms: [
+                        { term: "Mughal", meaning: "Persian + Indian", clue: "miniatures; court scenes; Akbar" },
+                        { term: "Rajput", meaning: "Rajasthani & Pahari", clue: "romance; Krishna; bold colours" },
+                        { term: "Pahari", meaning: "Basohli, Kangra", clue: "gentle; natural landscapes" },
+                        { term: "Deccan", meaning: "Ahmednagar, Bijapur", clue: "rich colours; Deccani style" },
+                        { term: "Ajanta", meaning: "Buddhist frescoes", clue: "Jataka tales; Gupta period" }
+                    ]
+                },
+                {
+                    category: "Music (Hindustani & Carnatic)",
+                    terms: [
+                        { term: "Tat Vadya", meaning: "string instruments", clue: "Sitar, Sarod, Veena" },
+                        { term: "Sushira Vadya", meaning: "wind instruments", clue: "Flute, Shehnai" },
+                        { term: "Avanaddha Vadya", meaning: "percussion (membranophone)", clue: "Tabla, Mridangam" },
+                        { term: "Ghana Vadya", meaning: "solid idiophone", clue: "Manjira, Jal tarang" },
+                        { term: "Raga", meaning: "melodic framework", clue: "five or more notes" },
+                        { term: "Tala", meaning: "rhythmic cycle", clue: "time-keeping" }
+                    ]
+                },
+                {
+                    category: "Buddhist & Rock-cut",
+                    terms: [
+                        { term: "Chaitya", meaning: "prayer hall", clue: "stupa at one end; horseshoe window" },
+                        { term: "Vihara", meaning: "monastery", clue: "cells for monks" },
+                        { term: "Stupa", meaning: "mound relic", clue: "Sanchi; harmika, chhatra" },
+                        { term: "Gandhara", meaning: "Greco-Buddhist art", clue: "grey schist; Hellenistic Buddha" },
+                        { term: "Mathura", meaning: "indigenous school", clue: "red sandstone; yakshas" }
+                    ]
+                }
+            ];
+
+            // state
+            let currentQuestions = [];
+            let currentIndex = 0;
+            let userAnswers = [];
+
+            // DOM elements
+            const questionArea = document.getElementById('questionArea');
+            const glossaryArea = document.getElementById('glossaryArea');
+            const categoryDisplay = document.getElementById('categoryDisplay');
+            const counterDisplay = document.getElementById('counterDisplay');
+            const questionText = document.getElementById('questionText');
+            const optionsContainer = document.getElementById('optionsContainer');
+            const explanationBox = document.getElementById('explanationBox');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const skipBtn = document.getElementById('skipBtn');
+            const newTestBtn = document.getElementById('newTestBtn');
+            const studyBtn = document.getElementById('studyBtn');
+            const backToPracticeBtn = document.getElementById('backToPracticeBtn');
+            const glossaryContainer = document.getElementById('glossaryContainer');
+
+            // Fisher-Yates shuffle
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            // create new test with 10 random questions
+            function newRandomTest() {
+                const shuffled = shuffleArray([...practiceBank]);
+                currentQuestions = shuffled.slice(0, 10);
+                currentIndex = 0;
+                userAnswers = new Array(currentQuestions.length).fill(null);
+                renderQuestion();
+            }
+
+            function renderQuestion() {
+                if (currentQuestions.length === 0) {
+                    newRandomTest();
+                    return;
+                }
+                const q = currentQuestions[currentIndex];
+                categoryDisplay.innerText = q.category || 'General';
+                counterDisplay.innerText = `Q.${currentIndex+1} / ${currentQuestions.length}`;
+                questionText.innerText = q.q;
+
+                let optsHtml = '';
+                const selectedIdx = userAnswers[currentIndex];
+
+                q.options.forEach((opt, idx) => {
+                    let cls = 'option-btn';
+                    if (selectedIdx !== null) {
+                        if (idx === q.correct) cls += ' correct';
+                        if (selectedIdx === idx && idx !== q.correct) cls += ' wrong';
+                        if (selectedIdx === idx && idx === q.correct) cls += ' correct selected';
+                    }
+                    optsHtml += `<div class="${cls}" data-opt-index="${idx}">${String.fromCharCode(65+idx)}. ${opt}</div>`;
+                });
+                optionsContainer.innerHTML = optsHtml;
+
+                if (selectedIdx !== null) {
+                    explanationBox.innerHTML = q.explain.replace(/\n/g, '<br>');
+                } else {
+                    explanationBox.innerHTML = '👆 select an option to see detailed explanation for all choices';
+                }
+
+                attachOptionListeners();
+            }
+
+            function attachOptionListeners() {
+                document.querySelectorAll('.option-btn').forEach(opt => {
+                    opt.addEventListener('click', (e) => {
+                        const idx = parseInt(e.currentTarget.dataset.optIndex, 10);
+                        userAnswers[currentIndex] = idx;
+                        renderQuestion();
+                    });
+                });
+            }
+
+            function goToPrev() {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    renderQuestion();
+                }
+            }
+
+            function goToNext() {
+                if (currentIndex < currentQuestions.length - 1) {
+                    currentIndex++;
+                    renderQuestion();
+                }
+            }
+
+            function skipQuestion() {
+                if (currentIndex < currentQuestions.length - 1) {
+                    currentIndex++;
+                    renderQuestion();
+                } else {
+                    alert('This is the last question. Start a new test?');
+                }
+            }
+
+            // Build glossary HTML
+            function buildGlossary() {
+                let html = '';
+                glossaryData.forEach(cat => {
+                    html += `<div class="glossary-category"><h3>${cat.category}</h3>`;
+                    cat.terms.forEach(term => {
+                        html += `
+                            <div class="glossary-item">
+                                <span class="glossary-term">${term.term}</span>
+                                <span class="glossary-meaning">${term.meaning}</span>
+                                <span class="glossary-clue">${term.clue}</span>
+                            </div>
+                        `;
+                    });
+                    html += `</div>`;
+                });
+                glossaryContainer.innerHTML = html;
+            }
+
+            function showGlossary() {
+                questionArea.classList.add('hidden');
+                glossaryArea.classList.remove('hidden');
+                buildGlossary();
+            }
+
+            function backToPractice() {
+                glossaryArea.classList.add('hidden');
+                questionArea.classList.remove('hidden');
+                renderQuestion();
+            }
+
+            prevBtn.addEventListener('click', goToPrev);
+            nextBtn.addEventListener('click', goToNext);
+            skipBtn.addEventListener('click', skipQuestion);
+            newTestBtn.addEventListener('click', newRandomTest);
+            studyBtn.addEventListener('click', showGlossary);
+            backToPracticeBtn.addEventListener('click', backToPractice);
+
+            // initial load
+            newRandomTest();
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Sangam Age · Practice (Randomized)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', 'Poppins', 'Hiragino Maru Gothic', system-ui, sans-serif;
+        }
+
+        body {
+            background: #0f0a1a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 1.2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        #blackhole-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .master {
+            max-width: 950px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            background: rgba(30, 22, 40, 0.65);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(180, 150, 200, 0.3);
+            border-radius: 50px 50px 25px 25px;
+            padding: 1.2rem 1.8rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 500;
+            color: #f0d0ff;
+            text-shadow: 0 2px 12px #a07ac0;
+        }
+
+        .header h1 span {
+            background: rgba(60, 45, 75, 0.6);
+            color: #d8b8f0;
+            font-size: 1rem;
+            padding: 4px 16px;
+            border-radius: 40px;
+            margin-left: 10px;
+            border: 1px solid #b088c8;
+        }
+
+        .header p {
+            font-size: 1rem;
+            margin-top: 5px;
+            color: #c0a8d8;
+        }
+
+        .nav-bar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: rgba(45, 35, 55, 0.6);
+            backdrop-filter: blur(8px);
+            padding: 0.7rem 1.2rem;
+            border-radius: 50px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #6a5580;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: #d0b8e8;
+            text-decoration: none;
+            background: rgba(70, 52, 85, 0.6);
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            border: 1px solid #8a6fa0;
+            transition: 0.1s;
+        }
+
+        .nav-link:hover {
+            background: rgba(100, 75, 125, 0.7);
+        }
+
+        .nav-separator {
+            color: #8a6fa0;
+            font-size: 1.2rem;
+        }
+
+        .nav-current {
+            background: rgba(100, 75, 125, 0.7);
+            color: #f0e0ff;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            border: 1px solid #b090c8;
+        }
+
+        .spacer {
+            flex: 1;
+        }
+
+        .quiz-card {
+            background: rgba(32, 24, 42, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(170, 140, 200, 0.35);
+            border-radius: 50px;
+            padding: 2rem 2rem;
+            box-shadow: 0 20px 35px -8px #050208;
+            margin-bottom: 1.5rem;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed #7a6190;
+        }
+
+        .category-badge {
+            background: #6a4a7a;
+            color: #f0d0ff;
+            padding: 8px 22px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: 1px solid #b088c8;
+        }
+
+        .question-counter {
+            background: #3a2e4a;
+            color: #d8b8f0;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+        }
+
+        .question-text {
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #f0e0ff;
+            margin: 25px 0 30px;
+            line-height: 1.5;
+            text-shadow: 0 2px 10px #906db0;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin: 20px 0 30px;
+        }
+
+        .option-btn {
+            background: rgba(55, 45, 70, 0.7);
+            border: 1.5px solid #7a6a90;
+            border-radius: 40px;
+            padding: 14px 18px;
+            font-size: 1.1rem;
+            color: #e0d0f8;
+            cursor: pointer;
+            transition: 0.15s;
+            text-align: left;
+            backdrop-filter: blur(4px);
+        }
+
+        .option-btn:hover {
+            background: rgba(85, 70, 105, 0.8);
+            border-color: #b098c8;
+        }
+
+        .option-btn.selected {
+            background: #6a8a7a;
+            border-color: #a0d0b0;
+            color: #f0fff0;
+        }
+
+        .option-btn.correct {
+            background: #6a8a7a;
+            border-color: #a0d0b0;
+        }
+
+        .option-btn.wrong {
+            background: #9a6a7a;
+            border-color: #d0a0b0;
+        }
+
+        .explain-box {
+            background: rgba(45, 35, 60, 0.8);
+            backdrop-filter: blur(4px);
+            border-left: 8px solid #b090c8;
+            border-radius: 40px;
+            padding: 18px 24px;
+            font-size: 1.1rem;
+            color: #e0d0f0;
+            margin: 20px 0 20px;
+            line-height: 1.6;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0 10px;
+        }
+
+        .nav-btn {
+            background: #4a3a60;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 1rem;
+            color: #f0e0ff;
+            cursor: pointer;
+            transition: 0.1s;
+            border: 1px solid #8a78a0;
+            flex: 1 1 auto;
+        }
+
+        .nav-btn:hover {
+            background: #6a5a80;
+        }
+
+        .nav-btn.primary {
+            background: #7a68a0;
+            border-color: #b090c8;
+        }
+
+        .nav-btn.primary:hover {
+            background: #8a78b0;
+        }
+
+        .study-btn {
+            background: #5a6a8a;
+            border-color: #8a9ac0;
+        }
+
+        .study-btn:hover {
+            background: #7a8aa8;
+        }
+
+        .new-test-btn {
+            background: #9a7ab0;
+            border: 1px solid #d0a8e0;
+            color: #faf0ff;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            margin: 15px 0 5px;
+            transition: 0.15s;
+        }
+
+        .new-test-btn:hover {
+            background: #b090c8;
+        }
+
+        .glossary-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .glossary-category {
+            margin-bottom: 25px;
+        }
+
+        .glossary-category h3 {
+            color: #f0c0ff;
+            font-size: 1.4rem;
+            border-left: 6px solid #b090c8;
+            padding-left: 15px;
+            margin-bottom: 15px;
+        }
+
+        .glossary-item {
+            background: rgba(55, 45, 70, 0.5);
+            border-radius: 30px;
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            border: 1px solid #7a6a90;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+        }
+
+        .glossary-term {
+            font-weight: 600;
+            color: #ffd0ff;
+            font-size: 1.2rem;
+            min-width: 140px;
+        }
+
+        .glossary-meaning {
+            color: #d0c0e0;
+            flex: 2;
+            margin: 0 10px;
+        }
+
+        .glossary-clue {
+            color: #b0a0c0;
+            font-style: italic;
+            font-size: 0.9rem;
+            background: rgba(0,0,0,0.3);
+            padding: 4px 12px;
+            border-radius: 30px;
+            white-space: nowrap;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .footer-note {
+            text-align: center;
+            color: #8a78a0;
+            font-size: 0.9rem;
+            margin: 2rem 0 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="blackhole-canvas"></canvas>
+
+    <div class="master">
+        <div class="header">
+            <h1>📜 Sangam Age Terminologies <span>Practice + Glossary</span></h1>
+            <p>randomized tests · study mode · detailed option explanations</p>
+        </div>
+
+        <div class="nav-bar">
+            <a href="/Singularity/index.html" class="nav-link">🏠 Home</a>
+            <span class="nav-separator">›</span>
+            <a href="/Singularity/Ancient_History/" class="nav-link">📁 Sangam Age</a>
+            <span class="nav-separator">›</span>
+            <span class="nav-current">📝 Practice</span>
+            <span class="spacer"></span>
+            <a href="/Singularity/Ancient_History/Sangam.html" class="nav-link">📄 PYQs</a>
+        </div>
+
+        <div class="quiz-card" id="quizCard">
+            <!-- Practice mode (visible by default) -->
+            <div id="questionArea">
+                <div class="question-header">
+                    <span class="category-badge" id="categoryDisplay">Sangam Polity</span>
+                    <span class="question-counter" id="counterDisplay">Q.1 / 10</span>
+                </div>
+
+                <div class="question-text" id="questionText">Loading question...</div>
+
+                <div class="options-grid" id="optionsContainer"></div>
+
+                <div class="explain-box" id="explanationBox">
+                    👆 select an option to see detailed explanation for all choices
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-btn" id="prevBtn">◀ Previous</button>
+                    <button class="nav-btn" id="nextBtn">Next ▶</button>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+                    <button class="nav-btn" id="skipBtn">⏭️ Skip Question</button>
+                    <button class="nav-btn study-btn" id="studyBtn">📚 Study Glossary</button>
+                    <button class="nav-btn primary" id="newTestBtn">🔄 New Random Test</button>
+                </div>
+            </div>
+
+            <!-- Glossary mode (hidden initially) -->
+            <div id="glossaryArea" class="hidden">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color:#f0d0ff;">📖 Sangam Age Glossary</h2>
+                    <button class="nav-btn" id="backToPracticeBtn">◀ Back to Practice</button>
+                </div>
+                <div class="glossary-container" id="glossaryContainer">
+                    <!-- populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            ⚡ study first, then test yourself with random questions
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // --- subtle blackhole animation ---
+            const canvas = document.getElementById('blackhole-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
+            const PARTICLE_COUNT = 80;
+
+            function initCanvas() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+
+                particles = [];
+                for (let i = 0; i < PARTICLE_COUNT; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const radius = 60 + Math.random() * Math.min(width, height) * 0.5;
+                    const speed = 0.0004 + Math.random() * 0.001;
+                    const size = 1 + Math.random() * 2;
+                    particles.push({
+                        angle: angle,
+                        radius: radius,
+                        speed: speed,
+                        size: size,
+                        drift: Math.random() * 0.004 - 0.002,
+                        brightness: 0.3 + Math.random() * 0.4
+                    });
+                }
+            }
+
+            function drawBlackhole() {
+                ctx.clearRect(0, 0, width, height);
+                const centerX = width / 2;
+                const centerY = height / 2;
+
+                const gradient = ctx.createRadialGradient(centerX, centerY, 5, centerX, centerY, Math.min(width, height) * 0.5);
+                gradient.addColorStop(0, 'rgba(70, 30, 60, 0.2)');
+                gradient.addColorStop(0.4, 'rgba(35, 18, 35, 0.15)');
+                gradient.addColorStop(0.8, 'rgba(10, 5, 15, 0.05)');
+                gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, width, height);
+
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 25, 0, 2 * Math.PI);
+                ctx.fillStyle = 'rgba(10, 5, 15, 0.8)';
+                ctx.fill();
+
+                particles.forEach(p => {
+                    p.angle += p.speed * (1 - p.radius / (Math.min(width, height) * 0.4));
+                    p.radius += p.drift;
+                    if (p.radius < 25) p.radius = 80 + Math.random() * 150;
+                    if (p.radius > Math.min(width, height) * 0.5) p.radius = 70;
+
+                    const x = centerX + Math.cos(p.angle) * p.radius;
+                    const y = centerY + Math.sin(p.angle) * p.radius;
+
+                    const dist = Math.hypot(x - centerX, y - centerY);
+                    const brightness = Math.max(0.2, 1 - dist / (Math.min(width, height) * 0.35));
+                    ctx.fillStyle = `rgba(200, 150, 200, ${brightness * 0.25})`;
+                    ctx.shadowColor = '#b080b0';
+                    ctx.shadowBlur = 10 * brightness;
+                    ctx.beginPath();
+                    ctx.arc(x, y, p.size * brightness * 0.6, 0, 2 * Math.PI);
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(drawBlackhole);
+            }
+
+            window.addEventListener('resize', () => {
+                initCanvas();
+            });
+
+            initCanvas();
+            drawBlackhole();
+
+            // --- SANGAM AGE PRACTICE QUESTION BANK (expanded with 30 new questions) ---
+            const practiceBank = [
+                // (Existing 20 questions – keep them, but I'll list them concisely)
+                // 1
+                {
+                    q: "Under whose patronage were the three Sangams held?",
+                    options: ["Pallava Kings", "Chola Kings", "Pandya Kings", "Chera Kings"],
+                    correct: 2,
+                    category: "Sangam Polity",
+                    explain: "✅ <strong>Correct: Pandya Kings.</strong> The Sangam academies flourished under the royal patronage of the Pandya kings of Madurai [citation:7].\n\n❌ Pallava Kings: The Pallavas rose to power after the Sangam age.\n❌ Chola Kings: While powerful, the Sangams were specifically patronized by Pandyas.\n❌ Chera Kings: Cheras ruled western Tamilakam but did not patronize the Sangams."
+                },
+                // 2
+                {
+                    q: "Match the following dynasties with their royal insignia:\n1. Chera\n2. Chola\n3. Pandya\nOptions: Fish, Tiger, Bow",
+                    options: ["1-Fish, 2-Tiger, 3-Bow", "1-Bow, 2-Tiger, 3-Fish", "1-Tiger, 2-Fish, 3-Bow", "1-Bow, 2-Fish, 3-Tiger"],
+                    correct: 1,
+                    category: "Sangam Polity",
+                    explain: "✅ <strong>Correct: Chera-Bow, Chola-Tiger, Pandya-Fish.</strong> The Cheras had the bow as their emblem, Cholas the tiger, and Pandyas the fish [citation:5][citation:7].\n\n❌ Option A: Incorrect pairing.\n❌ Option C: Incorrect pairing.\n❌ Option D: Incorrect pairing."
+                },
+                // 3
+                {
+                    q: "Which Chera king is credited with starting the Kannagi worship (Pattini cult)?",
+                    options: ["Nedunjeral", "Senguttuvan", "Udiyanjeral", "Karikal"],
+                    correct: 1,
+                    category: "Sangam Polity",
+                    explain: "✅ <strong>Correct: Senguttuvan.</strong> The Chera king Senguttuvan started the Pattini cult (worship of Kannagi) as referenced in the Tamil epic Silappadigaram [citation:2][citation:4][citation:7].\n\n❌ Nedunjeral: A Chera ruler but not associated with Kannagi worship.\n❌ Udiyanjeral: Another Chera king, not the one who started the cult.\n❌ Karikal: Karikala was a Chola king, not Chera."
+                },
+                // 4
+                {
+                    q: "Who was the most popular Chola ruler of the Sangam age, known for his military conquests and building the Kaveri embankment?",
+                    options: ["Rajendra Chola", "Karikalan", "Vijayalaya", "Parantaka I"],
+                    correct: 1,
+                    category: "Sangam Polity",
+                    explain: "✅ <strong>Correct: Karikalan.</strong> Karikalan was the most popular Sangam Chola ruler, known as a great warrior, diplomat, and for encouraging agriculture and commerce [citation:4][citation:6]. He also built the Kaveri embankment.\n\n❌ Rajendra Chola: Later Chola ruler (11th century CE).\n❌ Vijayalaya: Founded the medieval Chola dynasty in 9th century.\n❌ Parantaka I: Medieval Chola ruler (10th century CE)."
+                },
+                // 5
+                {
+                    q: "The local chieftains who ruled in different parts of Tamil Nadu during the Sangam age were called:",
+                    options: ["Velirs", "Arasar", "Nadukal", "Enadi"],
+                    correct: 0,
+                    category: "Sangam Polity",
+                    explain: "✅ <strong>Correct: Velirs.</strong> The Velirs were local chieftains who ruled various parts of Tamil Nadu, often acting as patrons of poets [citation:4].\n\n❌ Arasar: This term refers to kings/rulers generally, not specifically the chieftains.\n❌ Nadukal: Memorial stones erected for heroes.\n❌ Enadi: Not a term for chieftains."
+                },
+                // 6
+                {
+                    q: "Korkai, a significant port during the Sangam age, was the coastal capital of which dynasty?",
+                    options: ["Cholas", "Cheras", "Pandyas", "Pallavas"],
+                    correct: 2,
+                    category: "Sangam Economy",
+                    explain: "✅ <strong>Correct: Pandyas.</strong> Korkai, in the Tirunelveli district, was a critical Pandya port famous for its pearls [citation:9][citation:10].\n\n❌ Cholas: Their main port was Puhar/Kaveripattinam.\n❌ Cheras: Their ports were Muziris and Thondi.\n❌ Pallavas: Rose to prominence after the Sangam age."
+                },
+                // 7
+                {
+                    q: "Puhar or Kaveripattinam was the most important port of which dynasty?",
+                    options: ["Cholas", "Cheras", "Pandyas", "Pallavas"],
+                    correct: 0,
+                    category: "Sangam Economy",
+                    explain: "✅ <strong>Correct: Cholas.</strong> Puhar (also called Kaveripattinam) was the most important port of the Chola kingdom, described vividly in the poem Pattinappalai [citation:9][citation:6].\n\n❌ Cheras: Their ports were Muziris and Thondi.\n❌ Pandyas: Their main port was Korkai.\n❌ Pallavas: Later dynasty."
+                },
+                // 8
+                {
+                    q: "Uraiyur, an important center of cotton trade during the Sangam age, was the capital of which dynasty?",
+                    options: ["Cholas", "Cheras", "Pandyas", "Pallavas"],
+                    correct: 0,
+                    category: "Sangam Economy",
+                    explain: "✅ <strong>Correct: Cholas.</strong> Uraiyur was an important center of cotton products and served as a political center for the Cholas [citation:9].\n\n❌ Cheras: Their capital was Vanji.\n❌ Pandyas: Their capital was Madurai.\n❌ Pallavas: Later dynasty."
+                },
+                // 9
+                {
+                    q: "What was the term used for a merchant guild during the Sangam period?",
+                    options: ["Manigramam", "Shreni", "Nigama", "Vanik Dhatru"],
+                    correct: 3,
+                    category: "Sangam Economy",
+                    explain: "✅ <strong>Correct: Vanik Dhatru.</strong> The trader guild during the Sangam period was called Vanik Dhatru [citation:4][citation:7].\n\n❌ Manigramam: This was a prominent merchant guild in South India, but from a slightly later period (mentioned in medieval inscriptions).\n❌ Shreni: This term was more common in North India.\n❌ Nigama: Refers to a market town or guild in North Indian context."
+                },
+                // 10
+                {
+                    q: "The Roman senate laid an embargo on which import from India, considering it a menace to the city's morals?",
+                    options: ["Pepper", "Muslin", "Pearls", "Spices"],
+                    correct: 1,
+                    category: "Sangam Economy",
+                    explain: "✅ <strong>Correct: Muslin.</strong> The Roman senate laid an embargo on muslin imports from India as it was considered a menace to the city's morals due to its transparency and luxury [citation:9].\n\n❌ Pepper: Called Yavanapriya, it was highly sought after, not embargoed.\n❌ Pearls: Highly valued imports.\n❌ Spices: Also highly valued."
+                },
+                // 11
+                {
+                    q: "Which port was a bustling center of Indo-Roman trade, mentioned in Sangam poems as 'Muchiri'?",
+                    options: ["Puhar", "Korkai", "Muziris", "Arikamedu"],
+                    correct: 2,
+                    category: "Sangam Economy",
+                    explain: "✅ <strong>Correct: Muziris.</strong> Muziris (Muchiri) was a famous port of the Chera kingdom and a bustling center of Indo-Roman trade [citation:2][citation:10].\n\n❌ Puhar: Chola port.\n❌ Korkai: Pandya port.\n❌ Arikamedu: An important Indo-Roman trading settlement, but not called Muchiri in Sangam poems."
+                },
+                // 12
+                {
+                    q: "What does the term 'Yavanapriya' mentioned in Sangam literature refer to?",
+                    options: ["Roman wine", "Pepper", "Gold coins", "Slaves"],
+                    correct: 1,
+                    category: "Sangam Economy",
+                    explain: "✅ <strong>Correct: Pepper.</strong> Yavanapriya, meaning 'dear to the Greeks/Romans', was a term for pepper, a major export from the Chera ports [citation:2].\n\n❌ Roman wine: Imports from Rome to India.\n❌ Gold coins: Romans imported gold coins to India for trade.\n❌ Slaves: There was a slave trade, but not called Yavanapriya."
+                },
+                // 13
+                {
+                    q: "Which Sangam ruler is credited with starting sugarcane cultivation?",
+                    options: ["Nedunjelian", "Senguttuvan", "Udiyanjeral", "Adigaiman"],
+                    correct: 3,
+                    category: "Sangam Economy",
+                    explain: "✅ <strong>Correct: Adigaiman.</strong> Adigaiman, a ruler of the Tagadur region, is credited with starting sugarcane cultivation [citation:4][citation:7].\n\n❌ Nedunjelian: A Pandya ruler.\n❌ Senguttuvan: Chera ruler.\n❌ Udiyanjeral: Chera ruler."
+                },
+                // 14
+                {
+                    q: "Which Sangam ruler is said to have started Sea-worship and brought the Pahruli river into existence?",
+                    options: ["Nedunjelian", "Senguttuvan", "Udiyanjeral", "Nediyan"],
+                    correct: 3,
+                    category: "Sangam Religion",
+                    explain: "✅ <strong>Correct: Nediyan.</strong> According to tradition, Nediyan started sea-worship and brought the Pahruli river into existence [citation:4][citation:7].\n\n❌ Nedunjelian: Pandya ruler.\n❌ Senguttuvan: Chera ruler known for Kannagi worship.\n❌ Udiyanjeral: Chera ruler."
+                },
+                // 15
+                {
+                    q: "Who wrote the Tamil epic Silappadikaram?",
+                    options: ["Tolkappiyar", "Ilango Adigal", "Sattanar", "Tiruvalluvar"],
+                    correct: 1,
+                    category: "Sangam Literature",
+                    explain: "✅ <strong>Correct: Ilango Adigal.</strong> Silappadikaram, one of the five great epics of Tamil literature, was written by Ilango Adigal, the brother of Chera king Senguttuvan [citation:4][citation:9].\n\n❌ Tolkappiyar: Wrote Tolkappiyam, a grammar text.\n❌ Sattanar: Wrote Manimekalai, another epic.\n❌ Tiruvalluvar: Wrote Tirukkural, a collection of couplets."
+                },
+                // 16
+                {
+                    q: "Tirukkural, a collection of Tamil couplets, is organized into how many chapters?",
+                    options: ["133", "134", "113", "143"],
+                    correct: 0,
+                    category: "Sangam Literature",
+                    explain: "✅ <strong>Correct: 133.</strong> Tirukkural, written by Tiruvalluvar, consists of 133 chapters (atthikaaram) [citation:4].\n\n❌ 134: Incorrect.\n❌ 113: Incorrect.\n❌ 143: Incorrect."
+                },
+                // 17
+                {
+                    q: "The word 'Sangam' literally means:",
+                    options: ["Association", "Kingdom", "Literature", "Poetry"],
+                    correct: 0,
+                    category: "Sangam Literature",
+                    explain: "✅ <strong>Correct: Association.</strong> The term 'Sangam' literally means association or confluence, referring to the assemblies of Tamil poets held under royal patronage [citation:4][citation:7].\n\n❌ Kingdom: That is 'Arasu'.\n❌ Literature: That is 'Ilakkiyam'.\n❌ Poetry: That is 'Kavithai'."
+                },
+                // 18
+                {
+                    q: "Where was the third Sangam held?",
+                    options: ["Thenmadurai", "Kabadapuram", "Madurai", "Vanji"],
+                    correct: 2,
+                    category: "Sangam Literature",
+                    explain: "✅ <strong>Correct: Madurai.</strong> The third Sangam was held at Madurai, the capital of the Pandya kingdom [citation:4].\n\n❌ Thenmadurai: Location of the first Sangam.\n❌ Kabadapuram: Location of the second Sangam.\n❌ Vanji: Capital of the Cheras."
+                },
+                // 19
+                {
+                    q: "Which Sangam is associated with the works Tolkappiyam, Ettutogai, and Pattuppattu?",
+                    options: ["First Sangam", "Second Sangam", "Third Sangam", "None of the above"],
+                    correct: 2,
+                    category: "Sangam Literature",
+                    explain: "✅ <strong>Correct: Third Sangam.</strong> The existing corpus of Sangam literature, including Tolkappiyam, Ettutogai (Eight Anthologies), and Pattuppattu (Ten Idylls), is attributed to the Third Sangam [citation:4].\n\n❌ First Sangam: Associated with works like Agathiyam (now lost).\n❌ Second Sangam: Associated with Tolkappiyam, Mapuranam, etc.\n❌ None of the above: Incorrect."
+                },
+                // 20
+                {
+                    q: "Who is credited with writing Tolkappiyam, the earliest extant Tamil grammar text?",
+                    options: ["Tolkappiyar", "Tiruvalluvar", "Ilango Adigal", "Sattanar"],
+                    correct: 0,
+                    category: "Sangam Literature",
+                    explain: "✅ <strong>Correct: Tolkappiyar.</strong> Tolkappiyam, the foundational Tamil grammar text, was written by Tolkappiyar [citation:4].\n\n❌ Tiruvalluvar: Wrote Tirukkural.\n❌ Ilango Adigal: Wrote Silappadikaram.\n❌ Sattanar: Wrote Manimekalai."
+                },
+                // 21
+                {
+                    q: "Which of the following correctly matches the five Tinais (eco-zones) with their associated deities? (Kurinji, Mullai, Marudam, Neydal, Palai)",
+                    options: ["Murugan, Vishnu, Indra, Varuna, Korravai", "Murugan, Indra, Vishnu, Varuna, Korravai", "Vishnu, Murugan, Indra, Varuna, Korravai", "Murugan, Vishnu, Varuna, Indra, Korravai"],
+                    correct: 0,
+                    category: "Sangam Society",
+                    explain: "✅ <strong>Correct: Murugan (Kurinji), Vishnu (Mullai), Indra (Marudam), Varuna (Neydal), Korravai (Palai).</strong> Each eco-zone had a presiding deity: Kurinji (hilly) – Murugan; Mullai (pastoral) – Vishnu; Marudam (wetlands) – Indra; Neydal (coastal) – Varuna; Palai (arid) – Korravai [citation:5][citation:10].\n\n❌ Options B, C, D: Incorrect pairings."
+                },
+                // 22
+                {
+                    q: "What was the term used for forced tax during the Sangam Age?",
+                    options: ["Tairave", "Karamai", "Pandu", "Pillai"],
+                    correct: 0,
+                    category: "Sangam Society",
+                    explain: "✅ <strong>Correct: Tairave.</strong> The term 'Tairave' referred to forced tax during the Sangam period [citation:7].\n\n❌ Karamai: Land tax.\n❌ Pandu: Not a tax term.\n❌ Pillai: Title or child, not tax."
+                },
+                // 23
+                {
+                    q: "Roaming groups of dancers and musicians visiting the royal court during the Sangam age were known as:",
+                    options: ["Vanik Dhatru and Vaani Mridul", "Dooter and Ulavar", "Natarkin and Agosa", "Panar and Vidailiyar"],
+                    correct: 3,
+                    category: "Sangam Society",
+                    explain: "✅ <strong>Correct: Panar and Vidailiyar.</strong> Panar and Vidailiyar were groups of wandering musicians and dancers who entertained royal courts [citation:4][citation:7].\n\n❌ Vanik Dhatru: Merchant guild.\n❌ Dooter: Envoys/messengers.\n❌ Ulavar: Ploughmen/farmers."
+                },
+                // 24
+                {
+                    q: "Which of the following statements about social life in the Sangam era is NOT correct?",
+                    options: ["Tolkappiyar calls the commercial community as Vaisigas", "Civil and military offices were held by the rich peasants called Velalas", "Caste distinction existed", "The widows had to cut off their hair, discard all ornaments and eat only the plainest food"],
+                    correct: 3,
+                    category: "Sangam Society",
+                    explain: "✅ <strong>Correct: The widows had to cut off their hair, discard ornaments, and eat plainest food – this is NOT correct.</strong> While widows faced some restrictions, the extreme practices described were not prevalent in the Sangam age; they became more common in later periods [citation:9].\n\n❌ Option A: Correct – Tolkappiyar mentions Vaisigas (Vaishyas).\n❌ Option B: Correct – Velalas held important positions.\n❌ Option C: Correct – caste distinctions existed."
+                },
+                // 25
+                {
+                    q: "In the context of Sangam age, what does 'Eripatti' refer to?",
+                    options: ["Land donated to temples", "Land whose revenue was set apart for village tank maintenance", "Land donated to Brahmins", "Land for military purposes"],
+                    correct: 1,
+                    category: "Sangam Terms",
+                    explain: "✅ <strong>Correct: Land whose revenue was set apart for village tank maintenance.</strong> Eripatti was land specifically earmarked for maintaining village irrigation tanks [citation:1][citation:8].\n\n❌ Land donated to temples: That was Devadana.\n❌ Land donated to Brahmins: That was Brahmadeya.\n❌ Land for military purposes: Not correct."
+                },
+                // 26
+                {
+                    q: "What were 'Ghatikas' in the context of ancient South India?",
+                    options: ["Market places", "Military barracks", "Centers of higher learning attached to temples", "Tax collection centers"],
+                    correct: 2,
+                    category: "Sangam Terms",
+                    explain: "✅ <strong>Correct: Centers of higher learning attached to temples.</strong> Ghatikas were renowned educational institutions, such as the one at Kanchi, where students from various regions studied [citation:1][citation:8].\n\n❌ Market places: Those were 'Nagaram'.\n❌ Military barracks: Incorrect.\n❌ Tax collection centers: Incorrect."
+                },
+                // 27
+                {
+                    q: "The Aham and Puram poems of the Padinen Kilukanakku group are classified as:",
+                    options: ["Sangam works proper", "Post-Sangam works", "Medieval works", "Modern works"],
+                    correct: 1,
+                    category: "Sangam Literature",
+                    explain: "✅ <strong>Correct: Post-Sangam works.</strong> The Aham and Puram poems in the Padinen Kilukanakku group are considered post-Sangam works, composed after the main Sangam corpus [citation:1].\n\n❌ Sangam works proper: They form a continuation but are classified separately.\n❌ Medieval works: They are much earlier.\n❌ Modern works: Incorrect."
+                },
+                // 28
+                {
+                    q: "Which Ashokan major rock edicts mention the southern kingdoms of Chola, Pandya, Satyaputra, and Keralaputra?",
+                    options: ["I and X", "I and XI", "II and XIII", "II and XIV"],
+                    correct: 2,
+                    category: "Sangam Polity",
+                    explain: "✅ <strong>Correct: II and XIII.</strong> Ashoka's Major Rock Edicts II and XIII mention the southern kingdoms of Chola, Pandya, Satyaputra, Keralaputra, and Tambapanni (Sri Lanka) [citation:1].\n\n❌ I and X: Edict I deals with prohibition of animal sacrifice.\n❌ I and XI: Not correct.\n❌ II and XIV: Edict XIV explains the purpose of the edicts."
+                },
+                // 29
+                {
+                    q: "What does the practice of 'Vattakirutal' mentioned in Sangam poems refer to?",
+                    options: ["A form of marriage", "A funerary practice", "A type of tax", "A trade guild"],
+                    correct: 1,
+                    category: "Sangam Society",
+                    explain: "✅ <strong>Correct: A funerary practice.</strong> Vattakirutal refers to the practice of a widow sitting fasting by the grave of her fallen husband, awaiting death [citation:8].\n\n❌ A form of marriage: That was Kalavu or Karpu.\n❌ A type of tax: Taxes were Tairave, Karamai.\n❌ A trade guild: Guilds were Vanik Dhatru, Manigramam."
+                },
+                // 30 NEW
+                {
+                    q: "Which Sangam anthology is dedicated to the theme of 'Puram' (external affairs) and contains poems on war, kings, and heroism?",
+                    options: ["Purananuru", "Akananuru", "Kuruntokai", "Narrinai"],
+                    correct: 0,
+                    category: "Sangam Literature",
+                    explain: "✅ <strong>Correct: Purananuru.</strong> Purananuru is an anthology of 400 poems dealing with Puram (external) themes such as war, kings, and heroism.\n\n❌ Akananuru: Deals with Akam (love) themes.\n❌ Kuruntokai: A collection of short love poems.\n❌ Narrinai: Another love anthology."
+                },
+                // 31 NEW
+                {
+                    q: "The term 'Muvendar' in Sangam literature refers to:",
+                    options: ["The three crowned kings (Chera, Chola, Pandya)", "Three-tiered tax system", "Three types of soldiers", "Three great poets"],
+                    correct: 0,
+                    category: "Sangam Polity",
+                    explain: "✅ <strong>Correct: The three crowned kings (Chera, Chola, Pandya).</strong> Muvendar literally means 'three kings' – the Cheras, Cholas, and Pandyas.\n\n❌ Three-tiered tax system: Not correct.\n❌ Three types of soldiers: Not correct.\n❌ Three great poets: Not correct."
+                },
+                // 32 NEW
+                {
+                    q: "Which of the following was a major export item from the Sangam ports to the Roman Empire?",
+                    options: ["Gold coins", "Wine", "Pepper", "Glassware"],
+                    correct: 2,
+                    category: "Sangam Economy",
+                    explain: "✅ <strong>Correct: Pepper.</strong> Pepper (Yavanapriya) was a major export from the Chera ports, highly prized in the Roman Empire.\n\n❌ Gold coins: Romans imported gold coins to India, not exported.\n❌ Wine: Imported from Rome.\n❌ Glassware: Found in excavations but not a major export."
+                },
+                // 33 NEW
+                {
+                    q: "What was the function of 'Kadalmallai' during the Sangam period?",
+                    options: ["A port", "A market", "A fort", "A temple"],
+                    correct: 0,
+                    category: "Sangam Economy",
+                    explain: "✅ <strong>Correct: A port.</strong> Kadalmallai (Mahabalipuram) was a port during the Sangam period, later developed by the Pallavas.\n\n❌ A market: Not its primary function.\n❌ A fort: Not correct.\n❌ A temple: Not correct (the shore temples are later Pallava)."
+                },
+                // 34 NEW
+                {
+                    q: "The term 'Kalam' in Sangam texts refers to:",
+                    options: ["A unit of measure", "A type of drum", "A tax", "A court"],
+                    correct: 0,
+                    category: "Sangam Economy",
+                    explain: "✅ <strong>Correct: A unit of measure.</strong> 'Kalam' was a measure of grain and other commodities in trade.\n\n❌ A type of drum: That is 'Parai'.\n❌ A tax: Not correct.\n❌ A court: Not correct."
+                },
+                // 35 NEW
+                {
+                    q: "Which Sangam poem describes the prosperity of the Chola port Puhar in great detail?",
+                    options: ["Pattinappalai", "Malaipadukadam", "Kurinjipattu", "Porunaratrupadai"],
+                    correct: 0,
+                    category: "Sangam Literature",
+                    explain: "✅ <strong>Correct: Pattinappalai.</strong> Pattinappalai vividly describes the bustling Chola port of Puhar (Kaveripattinam) and its trade.\n\n❌ Malaipadukadam: Describes the hill country.\n❌ Kurinjipattu: Describes the Kurinji landscape.\n❌ Porunaratrupadai: A guide for bards."
+                },
+                // 36 NEW
+                {
+                    q: "The 'Vellalar' community in the Sangam age were primarily:",
+                    options: ["Warriors", "Farmers and landowners", "Traders", "Priests"],
+                    correct: 1,
+                    category: "Sangam Society",
+                    explain: "✅ <strong>Correct: Farmers and landowners.</strong> Vellalars were the dominant agricultural community, owning land and often holding administrative positions.\n\n❌ Warriors: That was the Kalai or Maravar.\n❌ Traders: Vanigar.\n❌ Priests: Andanar."
+                },
+                // 37 NEW
+                {
+                    q: "Which of the following was a form of marriage in the Sangam age where love was expressed without parental consent?",
+                    options: ["Kalavu", "Karpu", "Tiravu", "Pulavan"],
+                    correct: 0,
+                    category: "Sangam Society",
+                    explain: "✅ <strong>Correct: Kalavu.</strong> Kalavu referred to love marriage (elopement) before marriage, often celebrated in Akam poetry.\n\n❌ Karpu: Chastity/wifely virtue after marriage.\n❌ Tiravu: Not a marriage term.\n❌ Pulavan: Poet."
+                },
+                // 38 NEW
+                {
+                    q: "What does 'Tolkappiyam' say about the four castes (varnas) in Tamil society?",
+                    options: ["It rejects the varna system entirely", "It mentions only Brahmins and Shudras", "It adapts the varna system to Tamil social realities", "It says varna was absent"],
+                    correct: 2,
+                    category: "Sangam Literature",
+                    explain: "✅ <strong>Correct: It adapts the varna system to Tamil social realities.</strong> Tolkappiyam mentions the four varnas but adapts them to the local context, with terms like Andanar (Brahmins), Arasar (Kshatriyas), Vaisigas (Vaishyas), and Vellalar (Shudras? but actually landowners).\n\n❌ It rejects the varna system entirely: No, it acknowledges it.\n❌ It mentions only Brahmins and Shudras: Not accurate.\n❌ It says varna was absent: Not correct."
+                },
+                // 39 NEW
+                {
+                    q: "The Sangam age chieftain 'Pari' is famous for:",
+                    options: ["His patronage of poets and generosity", "His naval conquests", "Building the Kaveri embankment", "Starting the Pattini cult"],
+                    correct: 0,
+                    category: "Sangam Polity",
+                    explain: "✅ <strong>Correct: His patronage of poets and generosity.</strong> Pari was one of the seven great patrons (Kadai ezhu vallal) known for his immense generosity to poets.\n\n❌ His naval conquests: Not associated.\n❌ Building the Kaveri embankment: That was Karikala.\n❌ Starting the Pattini cult: Senguttuvan."
+                },
+                // 40 NEW
+                {
+                    q: "Which of the following is NOT a Sangam work?",
+                    options: ["Akananuru", "Kural", "Purananuru", "Manimekalai"],
+                    correct: 3,
+                    category: "Sangam Literature",
+                    explain: "✅ <strong>Correct: Manimekalai.</strong> Manimekalai is a post-Sangam epic written by Sattanar, not part of the Sangam corpus.\n\n❌ Akananuru: A Sangam anthology.\n❌ Kural: Tirukkural, though slightly later, is often associated.\n❌ Purananuru: A Sangam anthology."
+                },
+                // 41 NEW
+                {
+                    q: "What was the primary deity worshipped in the coastal region (Neydal) during the Sangam age?",
+                    options: ["Varuna", "Murugan", "Korravai", "Indra"],
+                    correct: 0,
+                    category: "Sangam Religion",
+                    explain: "✅ <strong>Correct: Varuna.</strong> The coastal region (Neydal) was associated with the god Varuna, lord of the sea.\n\n❌ Murugan: Kurinji (hilly region).\n❌ Korravai: Palai (arid region).\n❌ Indra: Marudam (wetlands)."
+                },
+                // 42 NEW
+                {
+                    q: "The term 'Kadai ezhu vallal' refers to:",
+                    options: ["Seven great poets", "Seven great patrons", "Seven great battles", "Seven great ports"],
+                    correct: 1,
+                    category: "Sangam Polity",
+                    explain: "✅ <strong>Correct: Seven great patrons.</strong> The Kadai ezhu vallal were seven renowned chieftains who generously patronized poets.\n\n❌ Seven great poets: Not correct.\n❌ Seven great battles: Not correct.\n❌ Seven great ports: Not correct."
+                },
+                // 43 NEW
+                {
+                    q: "Which of these was a famous Pandya port during the Sangam age?",
+                    options: ["Muziris", "Korkai", "Puhar", "Thondi"],
+                    correct: 1,
+                    category: "Sangam Economy",
+                    explain: "✅ <strong>Correct: Korkai.</strong> Korkai was the principal Pandya port, known for pearl fishing.\n\n❌ Muziris: Chera port.\n❌ Puhar: Chola port.\n❌ Thondi: Chera port."
+                },
+                // 44 NEW
+                {
+                    q: "Who among the following Sangam poets is credited with composing the Tirukkural?",
+                    options: ["Tolkappiyar", "Tiruvalluvar", "Kapilar", "Auvaiyar"],
+                    correct: 1,
+                    category: "Sangam Literature",
+                    explain: "✅ <strong>Correct: Tiruvalluvar.</strong> Tiruvalluvar authored the Tirukkural, a classic of Tamil literature.\n\n❌ Tolkappiyar: Wrote Tolkappiyam.\n❌ Kapilar: A Sangam poet known for many poems.\n❌ Auvaiyar: A female poet of the Sangam age."
+                },
+                // 45 NEW
+                {
+                    q: "The 'Tinai' concept in Sangam literature primarily represents:",
+                    options: ["Poetic meters", "Landscape divisions with associated emotions", "Social classes", "Musical modes"],
+                    correct: 1,
+                    category: "Sangam Literature",
+                    explain: "✅ <strong>Correct: Landscape divisions with associated emotions.</strong> The five Tinais are eco-zones (Kurinji, Mullai, Marudam, Neydal, Palai) each with its own mood, flora, fauna, and human activities.\n\n❌ Poetic meters: Not correct.\n❌ Social classes: Not correct.\n❌ Musical modes: Not correct."
+                },
+                // 46 NEW
+                {
+                    q: "Which Roman emperor sent embassies to the Pandya king during the Sangam age?",
+                    options: ["Augustus", "Trajan", "Hadrian", "Nero"],
+                    correct: 0,
+                    category: "Sangam Polity",
+                    explain: "✅ <strong>Correct: Augustus.</strong> According to Strabo, embassies from Pandya kings were received by Augustus in 20 BCE.\n\n❌ Trajan: Later emperor.\n❌ Hadrian: Later.\n❌ Nero: Later."
+                },
+                // 47 NEW
+                {
+                    q: "What was the function of 'Manigramam' in the Sangam period?",
+                    options: ["A royal council", "A merchant guild", "A military unit", "A tax department"],
+                    correct: 1,
+                    category: "Sangam Economy",
+                    explain: "✅ <strong>Correct: A merchant guild.</strong> Manigramam was a prominent merchant guild involved in trade and commerce, especially in the early medieval period.\n\n❌ A royal council: Not correct.\n❌ A military unit: Not correct.\n❌ A tax department: Not correct."
+                },
+                // 48 NEW
+                {
+                    q: "Which of the following animals was NOT mentioned as a royal emblem of the three Tamil dynasties?",
+                    options: ["Fish", "Tiger", "Bow", "Lion"],
+                    correct: 3,
+                    category: "Sangam Polity",
+                    explain: "✅ <strong>Correct: Lion.</strong> The Cheras had the bow, Cholas the tiger, Pandyas the fish. Lion was not a Sangam royal emblem.\n\n❌ Fish: Pandya emblem.\n❌ Tiger: Chola emblem.\n❌ Bow: Chera emblem."
+                },
+                // 49 NEW
+                {
+                    q: "The Sangam age work 'Maduraikanchi' describes the prosperity of which city?",
+                    options: ["Madurai", "Kaveripattinam", "Vanji", "Korkai"],
+                    correct: 0,
+                    category: "Sangam Literature",
+                    explain: "✅ <strong>Correct: Madurai.</strong> Maduraikanchi is a poem that vividly describes the Pandya capital Madurai and its flourishing state.\n\n❌ Kaveripattinam: Described in Pattinappalai.\n❌ Vanji: Described in other works.\n❌ Korkai: Not the focus."
+                },
+                // 50 NEW
+                {
+                    q: "What does the term 'Karu' in Sangam poetry refer to?",
+                    options: ["The seed of love", "The hero", "The heroine", "The season"],
+                    correct: 0,
+                    category: "Sangam Literature",
+                    explain: "✅ <strong>Correct: The seed of love.</strong> In Akam poetry, 'Karu' refers to the initial stage of love or the season that sets the mood.\n\n❌ The hero: That is 'Talaivan'.\n❌ The heroine: That is 'Talaivi'.\n❌ The season: That is 'Perumpozhuthu'."
+                }
+            ];
+
+            // --- GLOSSARY DATA (expanded) ---
+            const glossaryData = [
+                {
+                    category: "Sangam Polity & Dynasties",
+                    terms: [
+                        { term: "Sangam", meaning: "Assembly/confluence of Tamil poets", clue: "Patronized by Pandya kings" },
+                        { term: "Cheras", meaning: "Ruled western Tamilakam (Kerala)", clue: "Emblem: Bow; Port: Muziris" },
+                        { term: "Cholas", meaning: "Ruled central/northern Tamil Nadu", clue: "Emblem: Tiger; Port: Puhar" },
+                        { term: "Pandyas", meaning: "Ruled southern Tamil Nadu", clue: "Emblem: Fish; Capital: Madurai" },
+                        { term: "Muvendar", meaning: "Three crowned kings (Chera, Chola, Pandya)", clue: "Literally 'three kings'" },
+                        { term: "Velirs", meaning: "Local chieftains", clue: "Patronized poets" },
+                        { term: "Kadai ezhu vallal", meaning: "Seven great patrons", clue: "Generous chieftains" },
+                        { term: "Karikalan", meaning: "Greatest Chola ruler of Sangam age", clue: "Built Kaveri embankment" },
+                        { term: "Senguttuvan", meaning: "Greatest Chera ruler", clue: "Started Pattini/Kannagi cult" },
+                        { term: "Pari", meaning: "A renowned chieftain and patron", clue: "One of the seven patrons" }
+                    ]
+                },
+                {
+                    category: "Sangam Economy & Trade",
+                    terms: [
+                        { term: "Vanik Dhatru", meaning: "Merchant guild", clue: "Trader association" },
+                        { term: "Manigramam", meaning: "Medieval merchant guild", clue: "Important in trade" },
+                        { term: "Yavanapriya", meaning: "Pepper", clue: "'Dear to Greeks'" },
+                        { term: "Muziris/Muchiri", meaning: "Chera port", clue: "Indo-Roman trade hub" },
+                        { term: "Puhar/Kaveripattinam", meaning: "Chola port", clue: "Described in Pattinappalai" },
+                        { term: "Korkai", meaning: "Pandya port", clue: "Famous for pearls" },
+                        { term: "Uraiyur", meaning: "Cotton trade center", clue: "Chola capital" },
+                        { term: "Kadalmallai", meaning: "Port (later Mahabalipuram)", clue: "Sangam port" },
+                        { term: "Kalam", meaning: "Unit of measure", clue: "For grain and commodities" }
+                    ]
+                },
+                {
+                    category: "Sangam Literature",
+                    terms: [
+                        { term: "Tolkappiyam", meaning: "Earliest Tamil grammar", clue: "Written by Tolkappiyar" },
+                        { term: "Silappadikaram", meaning: "Tamil epic", clue: "Written by Ilango Adigal" },
+                        { term: "Manimekalai", meaning: "Post-Sangam epic", clue: "Written by Sattanar" },
+                        { term: "Tirukkural", meaning: "Collection of couplets", clue: "133 chapters by Tiruvalluvar" },
+                        { term: "Ettutogai", meaning: "Eight Anthologies", clue: "Sangam poetry collection" },
+                        { term: "Pattuppattu", meaning: "Ten Idylls", clue: "Sangam poetry collection" },
+                        { term: "Purananuru", meaning: "Anthology on Puram (external) themes", clue: "War and heroism" },
+                        { term: "Akananuru", meaning: "Anthology on Akam (love) themes", clue: "Love poetry" },
+                        { term: "Kuruntokai", meaning: "Short love poems", clue: "One of Ettutogai" },
+                        { term: "Pattinappalai", meaning: "Poem describing Puhar port", clue: "Chola prosperity" },
+                        { term: "Maduraikanchi", meaning: "Poem describing Madurai", clue: "Pandya capital" },
+                        { term: "Aham", meaning: "Subjective love poetry", clue: "Internal/romantic themes" },
+                        { term: "Puram", meaning: "Objective heroic poetry", clue: "External/war themes" },
+                        { term: "Tinai", meaning: "Eco-zone division", clue: "Five regions with distinct emotions" },
+                        { term: "Karu", meaning: "Seed of love (initial stage)", clue: "In Akam poetry" }
+                    ]
+                },
+                {
+                    category: "Sangam Society & Culture",
+                    terms: [
+                        { term: "Tinai", meaning: "Eco-zone division", clue: "Five regions with distinct lifestyles" },
+                        { term: "Kurinji", meaning: "Hilly region", clue: "Deity: Murugan" },
+                        { term: "Mullai", meaning: "Pastoral region", clue: "Deity: Vishnu" },
+                        { term: "Marudam", meaning: "Wetland/agricultural", clue: "Deity: Indra" },
+                        { term: "Neydal", meaning: "Coastal region", clue: "Deity: Varuna" },
+                        { term: "Palai", meaning: "Arid region", clue: "Deity: Korravai" },
+                        { term: "Arasar", meaning: "Ruling class", clue: "Kings" },
+                        { term: "Andanar", meaning: "Brahmin priests", clue: "Learned community" },
+                        { term: "Vanigar", meaning: "Traders/merchants", clue: "Commercial class" },
+                        { term: "Vellalar", meaning: "Farmers/peasants", clue: "Rich landowners" },
+                        { term: "Panar", meaning: "Wandering musicians", clue: "Entertained royal courts" },
+                        { term: "Vidailiyar", meaning: "Wandering dancers", clue: "Entertainers" },
+                        { term: "Tairave", meaning: "Forced tax", clue: "Compulsory levy" },
+                        { term: "Kalam", meaning: "Unit of measure", clue: "Grain measure" },
+                        { term: "Kalavu", meaning: "Love marriage (elopement)", clue: "Pre-marital love" },
+                        { term: "Karpu", meaning: "Chastity/wifely virtue", clue: "Post-marital" },
+                        { term: "Vattakirutal", meaning: "Funerary practice", clue: "Widow fasting by grave" }
+                    ]
+                },
+                {
+                    category: "Archaeological Terms",
+                    terms: [
+                        { term: "Eripatti", meaning: "Land for tank maintenance", clue: "Irrigation fund" },
+                        { term: "Ghatikas", meaning: "Temple colleges", clue: "Centers of learning" },
+                        { term: "Nadukal/Virukkal", meaning: "Hero stones", clue: "Memorials for warriors" },
+                        { term: "Arikamedu", meaning: "Indo-Roman trade settlement", clue: "Excavated site" }
+                    ]
+                }
+            ];
+
+            // state
+            let currentQuestions = [];
+            let currentIndex = 0;
+            let userAnswers = [];
+
+            // DOM elements
+            const questionArea = document.getElementById('questionArea');
+            const glossaryArea = document.getElementById('glossaryArea');
+            const categoryDisplay = document.getElementById('categoryDisplay');
+            const counterDisplay = document.getElementById('counterDisplay');
+            const questionText = document.getElementById('questionText');
+            const optionsContainer = document.getElementById('optionsContainer');
+            const explanationBox = document.getElementById('explanationBox');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const skipBtn = document.getElementById('skipBtn');
+            const newTestBtn = document.getElementById('newTestBtn');
+            const studyBtn = document.getElementById('studyBtn');
+            const backToPracticeBtn = document.getElementById('backToPracticeBtn');
+            const glossaryContainer = document.getElementById('glossaryContainer');
+
+            // Fisher-Yates shuffle
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            // create new test with 10 random questions
+            function newRandomTest() {
+                const shuffled = shuffleArray([...practiceBank]);
+                currentQuestions = shuffled.slice(0, 10);
+                currentIndex = 0;
+                userAnswers = new Array(currentQuestions.length).fill(null);
+                renderQuestion();
+            }
+
+            function renderQuestion() {
+                if (currentQuestions.length === 0) {
+                    newRandomTest();
+                    return;
+                }
+                const q = currentQuestions[currentIndex];
+                categoryDisplay.innerText = q.category || 'General';
+                counterDisplay.innerText = `Q.${currentIndex+1} / ${currentQuestions.length}`;
+                questionText.innerText = q.q;
+
+                let optsHtml = '';
+                const selectedIdx = userAnswers[currentIndex];
+
+                q.options.forEach((opt, idx) => {
+                    let cls = 'option-btn';
+                    if (selectedIdx !== null) {
+                        if (idx === q.correct) cls += ' correct';
+                        if (selectedIdx === idx && idx !== q.correct) cls += ' wrong';
+                        if (selectedIdx === idx && idx === q.correct) cls += ' correct selected';
+                    }
+                    optsHtml += `<div class="${cls}" data-opt-index="${idx}">${String.fromCharCode(65+idx)}. ${opt}</div>`;
+                });
+                optionsContainer.innerHTML = optsHtml;
+
+                if (selectedIdx !== null) {
+                    explanationBox.innerHTML = q.explain.replace(/\n/g, '<br>');
+                } else {
+                    explanationBox.innerHTML = '👆 select an option to see detailed explanation for all choices';
+                }
+
+                attachOptionListeners();
+            }
+
+            function attachOptionListeners() {
+                document.querySelectorAll('.option-btn').forEach(opt => {
+                    opt.addEventListener('click', (e) => {
+                        const idx = parseInt(e.currentTarget.dataset.optIndex, 10);
+                        userAnswers[currentIndex] = idx;
+                        renderQuestion();
+                    });
+                });
+            }
+
+            function goToPrev() {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    renderQuestion();
+                }
+            }
+
+            function goToNext() {
+                if (currentIndex < currentQuestions.length - 1) {
+                    currentIndex++;
+                    renderQuestion();
+                }
+            }
+
+            function skipQuestion() {
+                if (currentIndex < currentQuestions.length - 1) {
+                    currentIndex++;
+                    renderQuestion();
+                } else {
+                    alert('This is the last question. Start a new test?');
+                }
+            }
+
+            // Build glossary HTML
+            function buildGlossary() {
+                let html = '';
+                glossaryData.forEach(cat => {
+                    html += `<div class="glossary-category"><h3>${cat.category}</h3>`;
+                    cat.terms.forEach(term => {
+                        html += `
+                            <div class="glossary-item">
+                                <span class="glossary-term">${term.term}</span>
+                                <span class="glossary-meaning">${term.meaning}</span>
+                                <span class="glossary-clue">${term.clue}</span>
+                            </div>
+                        `;
+                    });
+                    html += `</div>`;
+                });
+                glossaryContainer.innerHTML = html;
+            }
+
+            // Switch to glossary mode
+            function showGlossary() {
+                questionArea.classList.add('hidden');
+                glossaryArea.classList.remove('hidden');
+                buildGlossary();
+            }
+
+            // Back to practice mode
+            function backToPractice() {
+                glossaryArea.classList.add('hidden');
+                questionArea.classList.remove('hidden');
+                // re-render current question in case it was lost
+                renderQuestion();
+            }
+
+            prevBtn.addEventListener('click', goToPrev);
+            nextBtn.addEventListener('click', goToNext);
+            skipBtn.addEventListener('click', skipQuestion);
+            newTestBtn.addEventListener('click', newRandomTest);
+            studyBtn.addEventListener('click', showGlossary);
+            backToPracticeBtn.addEventListener('click', backToPractice);
+
+            // initial load
+            newRandomTest();
+        })();
+    </script>
+</body>
+</html>

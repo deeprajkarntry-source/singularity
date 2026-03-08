@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Mahajanapadas · PYQs (1987–2024) · UPSC Prelims</title>
+    <!-- amCharts scripts -->
+    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/geodata/indiaLow.js"></script>
+    <style>
+        /* (same CSS as before – keep unchanged) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', 'Poppins', 'Hiragino Maru Gothic', system-ui, sans-serif;
+        }
+
+        body {
+            background: #0f0a1a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 1.2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        #blackhole-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .master {
+            max-width: 1000px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            background: rgba(30, 22, 40, 0.65);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(180, 150, 200, 0.3);
+            border-radius: 50px 50px 25px 25px;
+            padding: 1.2rem 1.8rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 500;
+            color: #f0d0ff;
+            text-shadow: 0 2px 12px #a07ac0;
+        }
+
+        .header h1 span {
+            background: rgba(60, 45, 75, 0.6);
+            color: #d8b8f0;
+            font-size: 1rem;
+            padding: 4px 16px;
+            border-radius: 40px;
+            margin-left: 10px;
+            border: 1px solid #b088c8;
+        }
+
+        .header p {
+            font-size: 1rem;
+            margin-top: 5px;
+            color: #c0a8d8;
+        }
+
+        .nav-bar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: rgba(45, 35, 55, 0.6);
+            backdrop-filter: blur(8px);
+            padding: 0.7rem 1.2rem;
+            border-radius: 50px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #6a5580;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: #d0b8e8;
+            text-decoration: none;
+            background: rgba(70, 52, 85, 0.6);
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            border: 1px solid #8a6fa0;
+            transition: 0.1s;
+        }
+        .nav-link:hover { background: rgba(100, 75, 125, 0.7); }
+        .nav-separator { color: #8a6fa0; font-size: 1.2rem; }
+        .nav-current {
+            background: rgba(100, 75, 125, 0.7);
+            color: #f0e0ff;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            border: 1px solid #b090c8;
+        }
+        .spacer { flex:1; }
+
+        /* Practice button in navbar */
+        .practice-btn {
+            background: #5a6a8a;
+            border: 1px solid #8a9ac0;
+            color: white;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.1s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .practice-btn:hover {
+            background: #7a8aa8;
+        }
+
+        .map-top-btn, .shuffle-btn {
+            background: #6a5a80;
+            border: 1px solid #b090c8;
+            color: white;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .map-top-btn:hover, .shuffle-btn:hover {
+            background: #8a78b0;
+        }
+
+        .quiz-card {
+            background: rgba(32, 24, 42, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(170, 140, 200, 0.35);
+            border-radius: 50px;
+            padding: 2rem 2rem;
+            box-shadow: 0 20px 35px -8px #050208;
+            margin-bottom: 1.5rem;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed #7a6190;
+        }
+
+        .year-badge {
+            background: #5a4a70;
+            color: #f0e0ff;
+            padding: 8px 22px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: 1px solid #b088c8;
+        }
+
+        .question-counter {
+            background: #3a2e4a;
+            color: #d8b8f0;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+        }
+
+        .question-text {
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #f0e0ff;
+            margin: 25px 0 30px;
+            line-height: 1.5;
+            text-shadow: 0 2px 10px #906db0;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin: 20px 0 30px;
+        }
+
+        .option-btn {
+            background: rgba(55, 45, 70, 0.7);
+            border: 1.5px solid #7a6a90;
+            border-radius: 40px;
+            padding: 14px 18px;
+            font-size: 1.1rem;
+            color: #e0d0f8;
+            cursor: pointer;
+            transition: 0.15s;
+            text-align: left;
+            backdrop-filter: blur(4px);
+        }
+        .option-btn:hover { background: rgba(85, 70, 105, 0.8); border-color: #b098c8; }
+        .option-btn.selected { background: #6a8a7a; border-color: #a0d0b0; color: #f0fff0; }
+        .option-btn.correct { background: #6a8a7a; border-color: #a0d0b0; }
+        .option-btn.wrong { background: #9a6a7a; border-color: #d0a0b0; }
+
+        .explain-box {
+            background: rgba(45, 35, 60, 0.8);
+            backdrop-filter: blur(4px);
+            border-left: 8px solid #b090c8;
+            border-radius: 40px;
+            padding: 18px 24px;
+            font-size: 1.1rem;
+            color: #e0d0f0;
+            margin: 20px 0 20px;
+            line-height: 1.6;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0 10px;
+        }
+        .nav-btn {
+            background: #4a3a60;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 1rem;
+            color: #f0e0ff;
+            cursor: pointer;
+            transition: 0.1s;
+            border: 1px solid #8a78a0;
+            flex: 1 1 auto;
+        }
+        .nav-btn:hover { background: #6a5a80; }
+        .nav-btn.primary { background: #7a68a0; border-color: #b090c8; }
+        .nav-btn.primary:hover { background: #8a78b0; }
+
+        .finish-btn {
+            background: #9a7ab0;
+            border: 1px solid #d0a8e0;
+            color: #faf0ff;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            margin: 15px 0 5px;
+            transition: 0.15s;
+        }
+        .finish-btn:hover { background: #b090c8; }
+
+        .map-container {
+            background: rgba(35, 28, 45, 0.8);
+            backdrop-filter: blur(8px);
+            border-radius: 50px;
+            padding: 1.5rem;
+            border: 2px solid #8a78a0;
+            margin-top: 1.5rem;
+        }
+        .map-title {
+            font-size: 1.5rem;
+            color: #f0d0ff;
+            margin-bottom: 15px;
+            border-left: 6px solid #b090c8;
+            padding-left: 18px;
+        }
+        #chartdiv {
+            width: 100%;
+            height: 500px;
+            background: #1e1728;
+            border-radius: 30px;
+            border: 1px solid #7a6a90;
+        }
+        .map-caption {
+            color: #c0a8d8;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .hidden { display: none; }
+
+        .reveal-section {
+            margin-top: 30px;
+            background: rgba(35, 28, 45, 0.8);
+            backdrop-filter: blur(8px);
+            border-radius: 50px;
+            padding: 1.5rem;
+            border: 2px solid #8a78a0;
+        }
+        .reveal-title {
+            font-size: 1.5rem;
+            color: #f0d0ff;
+            margin-bottom: 20px;
+            border-left: 6px solid #b090c8;
+            padding-left: 18px;
+        }
+        .reveal-item {
+            background: rgba(55, 45, 70, 0.6);
+            border-radius: 30px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 12px;
+            border: 1px solid #7a6a90;
+        }
+        .reveal-question { font-weight: 500; color: #e8d0ff; margin-bottom: 8px; }
+        .reveal-answer {
+            color: #c0e0c0;
+            background: rgba(70, 80, 70, 0.4);
+            padding: 8px 16px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+        .results-box {
+            background: #6a5a80;
+            border-radius: 50px;
+            padding: 1.2rem;
+            text-align: center;
+            color: #faf0ff;
+            font-size: 1.3rem;
+            margin: 20px 0;
+        }
+        footer {
+            text-align: center;
+            color: #8a78a0;
+            font-size: 0.9rem;
+            margin: 2rem 0 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="blackhole-canvas"></canvas>
+
+    <div class="master">
+        <div class="header">
+            <h1>🏛️ Mahajanapadas · PYQs 1987–2024 <span>Prelims Practice</span></h1>
+            <p>Click MAP to see the 16 great kingdoms of ancient India</p>
+        </div>
+
+        <div class="nav-bar">
+            <a href="/Singularity/index.html" class="nav-link">🏠 Home</a>
+            <span class="nav-separator">›</span>
+            <a href="/Singularity/Ancient_History/" class="nav-link">📁 Ancient India</a>
+            <span class="nav-separator">›</span>
+            <span class="nav-current">📝 Mahajanapadas PYQs</span>
+            <div class="spacer"></div>
+            <!-- Practice button linking to external page -->
+            <a href="/Singularity/Ancient_History/Mahajanpadas_Practice.html" class="practice-btn">📝 Practice</a>
+            <!-- MAP button -->
+            <button class="map-top-btn" id="mapBtn">🗺️ MAP</button>
+            <!-- Shuffle button -->
+            <button class="shuffle-btn" id="shuffleBtn">🔀 Shuffle Questions</button>
+        </div>
+
+        <div class="quiz-card" id="quizCard">
+            <div id="questionArea">
+                <div class="question-header">
+                    <span class="year-badge" id="yearDisplay">Mahajanapadas</span>
+                    <span class="question-counter" id="counterDisplay">Q.1 / 20</span>
+                </div>
+
+                <div class="question-text" id="questionText">Loading question...</div>
+
+                <div class="options-grid" id="optionsContainer"></div>
+
+                <div class="explain-box" id="explanationBox">
+                    👆 select an option to see detailed explanation for all choices
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-btn" id="prevBtn">◀ Previous</button>
+                    <button class="nav-btn" id="nextBtn">Next ▶</button>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="nav-btn" id="skipBtn">⏭️ Skip Question</button>
+                    <button class="nav-btn primary" id="revealToggleBtn">📋 Reveal All Answers</button>
+                </div>
+
+                <button class="finish-btn" id="finishBtn">✅ Finish & Show Score</button>
+            </div>
+
+            <div id="revealArea" class="reveal-section hidden">
+                <div class="reveal-title">📋 All Mahajanapada Q&A</div>
+                <div id="revealList"></div>
+                <button class="nav-btn" id="backToQuizBtn" style="margin-top: 20px;">◀ Back to Quiz</button>
+            </div>
+
+            <div id="resultsArea" class="results-box hidden"></div>
+        </div>
+
+        <!-- amCharts Map Container (hidden initially) -->
+        <div class="map-container hidden" id="mapContainer">
+            <div class="map-title">📍 Sixteen Mahajanapadas (c. 600 BCE)</div>
+            <div id="chartdiv"></div>
+            <div class="map-caption">Hover over markers to see kingdom and capital</div>
+        </div>
+
+        <footer>⚡ amCharts India map · click MAP to reveal · 20 PYQs with full explanations</footer>
+    </div>
+
+    <script>
+        (function() {
+            // --- subtle blackhole animation ---
+            const canvas = document.getElementById('blackhole-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
+            const PARTICLE_COUNT = 80;
+
+            function initCanvas() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+
+                particles = [];
+                for (let i = 0; i < PARTICLE_COUNT; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const radius = 60 + Math.random() * Math.min(width, height) * 0.5;
+                    const speed = 0.0004 + Math.random() * 0.001;
+                    const size = 1 + Math.random() * 2;
+                    particles.push({
+                        angle: angle,
+                        radius: radius,
+                        speed: speed,
+                        size: size,
+                        drift: Math.random() * 0.004 - 0.002,
+                        brightness: 0.3 + Math.random() * 0.4
+                    });
+                }
+            }
+
+            function drawBlackhole() {
+                ctx.clearRect(0, 0, width, height);
+                const centerX = width / 2;
+                const centerY = height / 2;
+
+                const gradient = ctx.createRadialGradient(centerX, centerY, 5, centerX, centerY, Math.min(width, height) * 0.5);
+                gradient.addColorStop(0, 'rgba(70, 30, 60, 0.2)');
+                gradient.addColorStop(0.4, 'rgba(35, 18, 35, 0.15)');
+                gradient.addColorStop(0.8, 'rgba(10, 5, 15, 0.05)');
+                gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, width, height);
+
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 25, 0, 2 * Math.PI);
+                ctx.fillStyle = 'rgba(10, 5, 15, 0.8)';
+                ctx.fill();
+
+                particles.forEach(p => {
+                    p.angle += p.speed * (1 - p.radius / (Math.min(width, height) * 0.4));
+                    p.radius += p.drift;
+                    if (p.radius < 25) p.radius = 80 + Math.random() * 150;
+                    if (p.radius > Math.min(width, height) * 0.5) p.radius = 70;
+
+                    const x = centerX + Math.cos(p.angle) * p.radius;
+                    const y = centerY + Math.sin(p.angle) * p.radius;
+
+                    const dist = Math.hypot(x - centerX, y - centerY);
+                    const brightness = Math.max(0.2, 1 - dist / (Math.min(width, height) * 0.35));
+                    ctx.fillStyle = `rgba(200, 150, 200, ${brightness * 0.25})`;
+                    ctx.shadowColor = '#b080b0';
+                    ctx.shadowBlur = 10 * brightness;
+                    ctx.beginPath();
+                    ctx.arc(x, y, p.size * brightness * 0.6, 0, 2 * Math.PI);
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(drawBlackhole);
+            }
+
+            window.addEventListener('resize', () => {
+                initCanvas();
+            });
+
+            initCanvas();
+            drawBlackhole();
+
+            // --- MAHAJANAPADA PYQ BANK (20 questions from UPSC 1985-2025) ---
+            const pyqBank = [
+                {
+                    year: '2025',
+                    q: 'With reference to ancient India (600–322 BC), consider the following pairs: Territorial region — River flowing in the region I. Asmaka — Godavari II. Kamboja — Vipas III. Avanti — Mahanadi IV. Kosala — Sarayu. How many of the pairs given above are correctly matched?',
+                    options: ['Only one', 'Only two', 'Only three', 'All four'],
+                    correct: 1,
+                    category: 'Geography',
+                    explain: '✅ <strong>Correct: Only two.</strong> Pairs I (Asmaka–Godavari) and IV (Kosala–Sarayu) are correct.\n\n❌ Pair II (Kamboja–Vipas) is incorrect: Kamboja was near Jhelum (Vitasta), not Vipas (Beas).\n❌ Pair III (Avanti–Mahanadi) is incorrect: Avanti was in Malwa region (Ujjain), Mahanadi flows through Eastern India.'
+                },
+                {
+                    year: '2020',
+                    q: 'Match List-I (Mahajanapada) with List-II (Capital): A. Matsya B. Kuru C. Surasena D. Asmaka. Capitals: 1. Mathura 2. Potana 3. Virat Nagar 4. Indraprastha',
+                    options: ['A-3, B-4, C-1, D-2', 'A-1, B-2, C-3, D-4', 'A-4, B-3, C-2, D-1', 'A-2, B-1, C-4, D-3'],
+                    correct: 0,
+                    category: 'Capitals',
+                    explain: '✅ <strong>Correct: A-3 (Matsya–Virat Nagar), B-4 (Kuru–Indraprastha), C-1 (Surasena–Mathura), D-2 (Asmaka–Potana).</strong>\n\n❌ Other options mix up these well-established pairings.'
+                },
+                {
+                    year: '2018',
+                    q: 'Which of the following Mahajanapadas was a republic (gana-sangha) rather than a monarchy?',
+                    options: ['Vajji', 'Magadha', 'Kosala', 'Avanti'],
+                    correct: 0,
+                    category: 'Polity',
+                    explain: '✅ <strong>Correct: Vajji.</strong> Vajji (with its capital Vaishali) was a confederation of clans including Licchhavis and was a republic.\n\n❌ Magadha, Kosala, and Avanti were monarchies ruled by kings like Bimbisara, Prasenajit, and Pradyota.'
+                },
+                {
+                    year: '2016',
+                    q: 'The capital of Chedi Mahajanapada was:',
+                    options: ['Suktimati', 'Kaushambi', 'Ahichhatra', 'Mathura'],
+                    correct: 0,
+                    category: 'Capitals',
+                    explain: '✅ <strong>Correct: Suktimati.</strong> Chedi, located in Bundelkhand region, had its capital at Suktimati.\n\n❌ Kaushambi was capital of Vatsa.\n❌ Ahichhatra was capital of Northern Panchala.\n❌ Mathura was capital of Surasena.'
+                },
+                {
+                    year: '2014',
+                    q: 'Which Mahajanapada was located on the banks of the Godavari river?',
+                    options: ['Asmaka', 'Avanti', 'Kamboja', 'Gandhara'],
+                    correct: 0,
+                    category: 'Geography',
+                    explain: '✅ <strong>Correct: Asmaka.</strong> Asmaka (also called Assaka) was the southernmost Mahajanapada, located in the Godavari valley with its capital at Potana.\n\n❌ Avanti was in Malwa.\n❌ Kamboja and Gandhara were in the northwest.'
+                },
+                {
+                    year: '2012',
+                    q: 'Which of the following pairs is correctly matched? (Mahajanapada – Capital)',
+                    options: ['Anga – Rajagriha', 'Vatsa – Kaushambi', 'Panchala – Vaishali', 'Matsya – Mathura'],
+                    correct: 1,
+                    category: 'Capitals',
+                    explain: '✅ <strong>Correct: Vatsa – Kaushambi.</strong> Vatsa, with its capital at Kaushambi (near Allahabad), was a powerful kingdom.\n\n❌ Anga‘s capital was Champa, not Rajagriha.\n❌ Panchala‘s capital was Ahichhatra (north) and Kampilya (south).\n❌ Matsya‘s capital was Virat Nagar, not Mathura.'
+                },
+                {
+                    year: '2010',
+                    q: 'Which Mahajanapada was the first to use coins (punch-marked) on a large scale?',
+                    options: ['Magadha', 'Gandhara', 'Avanti', 'Kosala'],
+                    correct: 0,
+                    category: 'Economy',
+                    explain: '✅ <strong>Correct: Magadha.</strong> Magadha was among the first to issue punch-marked coins, facilitating trade and revenue collection.\n\n❌ Gandhara also had early coins but Magadha\'s were more systematic.\n❌ Avanti and Kosala followed later.'
+                },
+                {
+                    year: '2008',
+                    q: 'Taxila, a great center of learning, was the capital of which Mahajanapada?',
+                    options: ['Gandhara', 'Kamboja', 'Kuru', 'Panchala'],
+                    correct: 0,
+                    category: 'Capitals',
+                    explain: '✅ <strong>Correct: Gandhara.</strong> Takshashila (Taxila) was the capital of Gandhara, located in modern-day Pakistan.\n\n❌ Kamboja‘s capital was Rajapura.\n❌ Kuru‘s capital was Hastinapura/Indraprastha.\n❌ Panchala‘s capital was Ahichhatra.'
+                },
+                {
+                    year: '2005',
+                    q: 'Which of the following Mahajanapadas was known for its republican constitution where power was exercised by an assembly of elders?',
+                    options: ['Vajji', 'Magadha', 'Kosala', 'Avanti'],
+                    correct: 0,
+                    category: 'Polity',
+                    explain: '✅ <strong>Correct: Vajji.</strong> Vajji was a confederacy of eight clans, including the Licchhavis, and was governed by an assembly of elders.\n\n❌ Magadha, Kosala, and Avanti were monarchies.'
+                },
+                {
+                    year: '2002',
+                    q: 'Ujjayini was the capital of which Mahajanapada?',
+                    options: ['Avanti', 'Chedi', 'Vatsa', 'Panchala'],
+                    correct: 0,
+                    category: 'Capitals',
+                    explain: '✅ <strong>Correct: Avanti.</strong> Avanti had two capitals – Ujjayini (north) and Mahishmati (south).\n\n❌ Chedi‘s capital was Suktimati.\n❌ Vatsa‘s capital was Kaushambi.\n❌ Panchala‘s capitals were Ahichhatra and Kampilya.'
+                },
+                {
+                    year: '1999',
+                    q: 'The kingdom of Kosala was located in which modern state?',
+                    options: ['Uttar Pradesh', 'Bihar', 'Madhya Pradesh', 'Rajasthan'],
+                    correct: 0,
+                    category: 'Geography',
+                    explain: '✅ <strong>Correct: Uttar Pradesh.</strong> Kosala corresponded to eastern Uttar Pradesh, with cities like Ayodhya and Shravasti.\n\n❌ Bihar was the location of Magadha, Anga, Vajji.\n❌ Madhya Pradesh had Avanti and Chedi.\n❌ Rajasthan had Matsya.'
+                },
+                {
+                    year: '1997',
+                    q: 'Which of the following was NOT one of the sixteen Mahajanapadas?',
+                    options: ['Kashi', 'Kosala', 'Kalinga', 'Kamboja'],
+                    correct: 2,
+                    category: 'List',
+                    explain: '✅ <strong>Correct: Kalinga.</strong> Kalinga (modern Odisha) was not among the sixteen Mahajanapadas listed in Buddhist and Jain texts.\n\n❌ Kashi, Kosala, and Kamboja are all part of the standard list.'
+                },
+                {
+                    year: '1995',
+                    q: 'The capital of Anga Mahajanapada was:',
+                    options: ['Champa', 'Rajagriha', 'Vaishali', 'Kaushambi'],
+                    correct: 0,
+                    category: 'Capitals',
+                    explain: '✅ <strong>Correct: Champa.</strong> Anga, located in eastern Bihar, had its capital at Champa, a prosperous trading center.\n\n❌ Rajagriha was capital of Magadha.\n❌ Vaishali was capital of Vajji.\n❌ Kaushambi was capital of Vatsa.'
+                },
+                {
+                    year: '1993',
+                    q: 'Which Mahajanapada was located in the region around modern Delhi?',
+                    options: ['Kuru', 'Panchala', 'Surasena', 'Matsya'],
+                    correct: 0,
+                    category: 'Geography',
+                    explain: '✅ <strong>Correct: Kuru.</strong> The Kuru kingdom covered the area around modern Delhi, Haryana, and western UP, with capitals at Hastinapura and Indraprastha.\n\n❌ Panchala was in central UP.\n❌ Surasena was around Mathura.\n❌ Matsya was in Rajasthan.'
+                },
+                {
+                    year: '1991',
+                    q: 'Both Buddhism and Jainism were patronized by the rulers of which Mahajanapada?',
+                    options: ['Magadha', 'Kosala', 'Avanti', 'Vatsa'],
+                    correct: 0,
+                    category: 'Religion',
+                    explain: '✅ <strong>Correct: Magadha.</strong> Bimbisara and Ajatashatru of Magadha patronized both Buddhism and Jainism. The first Buddhist council was held at Rajagriha.\n\n❌ Kosala (Prasenajit) patronized Buddhism.\n❌ Avanti also supported both but Magadha was the primary center.'
+                },
+                {
+                    year: '1989',
+                    q: 'Which Mahajanapada was known for its horses and cavalry?',
+                    options: ['Kamboja', 'Gandhara', 'Kuru', 'Panchala'],
+                    correct: 0,
+                    category: 'Military',
+                    explain: '✅ <strong>Correct: Kamboja.</strong> Kamboja (in modern Afghanistan/Pakistan) was renowned for its excellent horses and cavalry, often mentioned in texts.\n\n❌ Gandhara was known for learning.\n❌ Kuru and Panchala were known for their warriors but not specifically horses.'
+                },
+                {
+                    year: '1988',
+                    q: 'Which of the following Mahajanapadas had a monarchical form of government?',
+                    options: ['Magadha', 'Vajji', 'Malla', 'Sakya'],
+                    correct: 0,
+                    category: 'Polity',
+                    explain: '✅ <strong>Correct: Magadha.</strong> Magadha was a hereditary monarchy under kings like Bimbisara and Ajatashatru.\n\n❌ Vajji, Malla, and Sakya were republican (gana-sangha) states.'
+                },
+                {
+                    year: '1987',
+                    q: 'The term "Mahajanapada" literally means:',
+                    options: ['Great kingdom', 'Great assembly', 'Great river', 'Great city'],
+                    correct: 0,
+                    category: 'Terminology',
+                    explain: '✅ <strong>Correct: Great kingdom.</strong> Mahajanapada means "great realm" or "great kingdom" – larger than the earlier Janapadas.\n\n❌ Great assembly refers to "gana-sangha".\n❌ Great river is "mahānadī".\n❌ Great city is "mahānagara".'
+                },
+                {
+                    year: '1986',
+                    q: 'Which text provides the earliest list of the sixteen Mahajanapadas?',
+                    options: ['Anguttara Nikaya', 'Rigveda', 'Arthashastra', 'Mahabharata'],
+                    correct: 0,
+                    category: 'Sources',
+                    explain: '✅ <strong>Correct: Anguttara Nikaya.</strong> The Buddhist Anguttara Nikaya and the Jain Bhagavati Sutra both list the sixteen Mahajanapadas.\n\n❌ Rigveda is earlier and does not mention them.\n❌ Arthashastra is Mauryan.\n❌ Mahabharata is epic literature.'
+                },
+                {
+                    year: '1985',
+                    q: 'Which Mahajanapada was the most powerful before the rise of Magadha?',
+                    options: ['Avanti', 'Kosala', 'Vatsa', 'Kashi'],
+                    correct: 3,
+                    category: 'History',
+                    explain: '✅ <strong>Correct: Kashi.</strong> Kashi (Varanasi) was the most powerful and sacred kingdom before the time of Buddha.\n\n❌ Avanti, Kosala, and Vatsa rose later; Magadha eventually dominated them all.'
+                }
+            ];
+
+            function shuffleArray(arr) {
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                return arr;
+            }
+            
+            let currentQuestions = [...pyqBank];
+            let currentIndex = 0;
+            let userAnswers = new Array(currentQuestions.length).fill(null);
+            let testFinished = false;
+
+            // DOM elements
+            const questionArea = document.getElementById('questionArea');
+            const revealArea = document.getElementById('revealArea');
+            const resultsArea = document.getElementById('resultsArea');
+            const yearDisplay = document.getElementById('yearDisplay');
+            const counterDisplay = document.getElementById('counterDisplay');
+            const questionText = document.getElementById('questionText');
+            const optionsContainer = document.getElementById('optionsContainer');
+            const explanationBox = document.getElementById('explanationBox');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const skipBtn = document.getElementById('skipBtn');
+            const revealToggleBtn = document.getElementById('revealToggleBtn');
+            const finishBtn = document.getElementById('finishBtn');
+            const backToQuizBtn = document.getElementById('backToQuizBtn');
+            const revealList = document.getElementById('revealList');
+
+            function renderQuestion() {
+                if (testFinished) return;
+                if (currentQuestions.length === 0) return;
+                
+                const q = currentQuestions[currentIndex];
+                yearDisplay.innerText = `Mahajanapadas`;
+                counterDisplay.innerText = `Q.${currentIndex+1} / ${currentQuestions.length}`;
+                const yearSuffix = ` [UPSC ${q.year}]`;
+                questionText.innerText = q.q + yearSuffix;
+
+                let optsHtml = '';
+                const selectedIdx = userAnswers[currentIndex];
+
+                q.options.forEach((opt, idx) => {
+                    let cls = 'option-btn';
+                    if (selectedIdx !== null) {
+                        if (idx === q.correct) cls += ' correct';
+                        if (selectedIdx === idx && idx !== q.correct) cls += ' wrong';
+                        if (selectedIdx === idx && idx === q.correct) cls += ' correct selected';
+                    }
+                    optsHtml += `<div class="${cls}" data-opt-index="${idx}">${String.fromCharCode(65+idx)}. ${opt}</div>`;
+                });
+                optionsContainer.innerHTML = optsHtml;
+
+                if (selectedIdx !== null) {
+                    explanationBox.innerHTML = q.explain.replace(/\n/g, '<br>');
+                } else {
+                    explanationBox.innerHTML = '👆 select an option to see detailed explanation for all choices';
+                }
+
+                attachOptionListeners();
+            }
+
+            function attachOptionListeners() {
+                document.querySelectorAll('.option-btn').forEach(opt => {
+                    opt.addEventListener('click', (e) => {
+                        if (testFinished) return;
+                        const idx = parseInt(e.currentTarget.dataset.optIndex, 10);
+                        userAnswers[currentIndex] = idx;
+                        renderQuestion();
+                    });
+                });
+            }
+
+            function goToPrev() { if (currentIndex > 0) { currentIndex--; renderQuestion(); } }
+            function goToNext() { if (currentIndex < currentQuestions.length - 1) { currentIndex++; renderQuestion(); } }
+            function skipQuestion() { if (currentIndex < currentQuestions.length - 1) { currentIndex++; renderQuestion(); } else alert('Last question.'); }
+
+            function showReveal() {
+                questionArea.classList.add('hidden');
+                revealArea.classList.remove('hidden');
+                resultsArea.classList.add('hidden');
+                let listHtml = '';
+                currentQuestions.forEach((q, idx) => {
+                    const yearTag = `[UPSC ${q.year}]`;
+                    listHtml += `<div class="reveal-item"><div class="reveal-question">${idx+1}. ${q.q} ${yearTag}</div><div class="reveal-answer">✅ ${q.options[q.correct]}</div></div>`;
+                });
+                revealList.innerHTML = listHtml;
+            }
+
+            function backToQuiz() {
+                revealArea.classList.add('hidden');
+                questionArea.classList.remove('hidden');
+                resultsArea.classList.add('hidden');
+            }
+
+            function finishTest() {
+                testFinished = true;
+                let correctCount = 0;
+                currentQuestions.forEach((q, idx) => { if (userAnswers[idx] !== null && userAnswers[idx] === q.correct) correctCount++; });
+                const percentage = Math.round((correctCount / currentQuestions.length) * 100);
+                resultsArea.innerHTML = `<strong>✅ Mahajanapada Mastery!</strong><br>You got <strong>${correctCount}</strong> out of <strong>${currentQuestions.length}</strong> correct.<br>Score: <strong>${percentage}%</strong>`;
+                resultsArea.classList.remove('hidden');
+                questionArea.classList.add('hidden');
+                revealArea.classList.add('hidden');
+            }
+
+            prevBtn.addEventListener('click', goToPrev);
+            nextBtn.addEventListener('click', goToNext);
+            skipBtn.addEventListener('click', skipQuestion);
+            revealToggleBtn.addEventListener('click', showReveal);
+            backToQuizBtn.addEventListener('click', backToQuiz);
+            finishBtn.addEventListener('click', finishTest);
+
+            // Shuffle functionality
+            document.getElementById('shuffleBtn').addEventListener('click', () => {
+                currentQuestions = shuffleArray([...pyqBank]);
+                userAnswers = new Array(currentQuestions.length).fill(null);
+                currentIndex = 0;
+                testFinished = false;
+                resultsArea.classList.add('hidden');
+                revealArea.classList.add('hidden');
+                questionArea.classList.remove('hidden');
+                renderQuestion();
+            });
+
+            // ---------- amCharts Map with Mahajanapada Markers ----------
+            const mapContainer = document.getElementById('mapContainer');
+            const mapBtn = document.getElementById('mapBtn');
+            let chartInitialized = false;
+            let root, chart, pointSeries;
+
+            function initMap() {
+                if (chartInitialized) return;
+                chartInitialized = true;
+
+                am5.ready(function() {
+                    root = am5.Root.new("chartdiv");
+                    root.setThemes([]);
+
+                    chart = root.container.children.push(
+                        am5map.MapChart.new(root, {
+                            projection: am5map.geoMercator(),
+                            panX: "rotateX",
+                            panY: "rotateY",
+                            wheelable: true,
+                            zoomControl: am5map.ZoomControl.new(root, {})
+                        })
+                    );
+
+                    // Add India polygon series (base map)
+                    var polygonSeries = chart.series.push(
+                        am5map.MapPolygonSeries.new(root, {
+                            geoJSON: am5geodata_indiaLow,
+                            fill: am5.color(0x3d2f4d),
+                            stroke: am5.color(0xc0a0d0),
+                            strokeWidth: 1
+                        })
+                    );
+
+                    polygonSeries.mapPolygons.template.setAll({
+                        tooltipText: "{name}",
+                        interactive: true,
+                        fill: am5.color(0x4a3a60),
+                        stroke: am5.color(0xb090c8),
+                        strokeWidth: 1
+                    });
+
+                    polygonSeries.mapPolygons.template.states.create("hover", {
+                        fill: am5.color(0x8a78b0)
+                    });
+
+                    // Add point series for Mahajanapada markers
+                    pointSeries = chart.series.push(
+                        am5map.MapPointSeries.new(root, {})
+                    );
+
+                    pointSeries.bullets.push(function() {
+                        return am5.Bullet.new(root, {
+                            sprite: am5.Circle.new(root, {
+                                radius: 6,
+                                fill: am5.color(0xffaa33), // Golden color for kingdoms
+                                stroke: am5.color(0xffffff),
+                                strokeWidth: 1,
+                                tooltipText: "{name}\nCapital: {capital}\nModern Region: {region}"
+                            })
+                        });
+                    });
+
+                    // Mahajanapada locations (approximate coordinates based on historical regions)
+                    const mahajanapadaSites = [
+                        { latitude: 25.3, longitude: 82.9, name: "Kashi", capital: "Varanasi", region: "Eastern UP" },
+                        { latitude: 26.8, longitude: 82.2, name: "Kosala", capital: "Shravasti", region: "Eastern UP" },
+                        { latitude: 25.2, longitude: 87.0, name: "Anga", capital: "Champa", region: "Bihar" },
+                        { latitude: 25.1, longitude: 85.5, name: "Magadha", capital: "Rajagriha → Pataliputra", region: "Bihar" },
+                        { latitude: 26.0, longitude: 85.1, name: "Vajji", capital: "Vaishali", region: "North Bihar" },
+                        { latitude: 27.0, longitude: 83.9, name: "Malla", capital: "Kushinara", region: "UP/Nepal border" },
+                        { latitude: 24.5, longitude: 80.8, name: "Chedi", capital: "Suktimati", region: "Bundelkhand" },
+                        { latitude: 25.3, longitude: 81.4, name: "Vatsa", capital: "Kaushambi", region: "Allahabad region" },
+                        { latitude: 23.2, longitude: 75.8, name: "Avanti", capital: "Ujjain/Mahishmati", region: "Malwa" },
+                        { latitude: 27.2, longitude: 78.0, name: "Surasena", capital: "Mathura", region: "Western UP" },
+                        { latitude: 28.6, longitude: 77.2, name: "Kuru", capital: "Hastinapura/Indraprastha", region: "Delhi/Haryana" },
+                        { latitude: 27.6, longitude: 79.7, name: "Panchala", capital: "Ahichhatra/Kampilya", region: "Central UP" },
+                        { latitude: 27.2, longitude: 76.8, name: "Matsya", capital: "Viratnagar", region: "Rajasthan" },
+                        { latitude: 33.7, longitude: 72.8, name: "Gandhara", capital: "Taxila", region: "Pakistan" },
+                        { latitude: 34.5, longitude: 71.5, name: "Kamboja", capital: "Rajapura", region: "Afghanistan/Pakistan" },
+                        { latitude: 19.0, longitude: 77.0, name: "Asmaka", capital: "Potana", region: "Maharashtra/Telangana" }
+                    ];
+
+                    pointSeries.data.setAll(mahajanapadaSites);
+                });
+            }
+
+            // Toggle map visibility and initialize if needed
+            mapBtn.addEventListener('click', () => {
+                mapContainer.classList.toggle('hidden');
+                if (!mapContainer.classList.contains('hidden') && !chartInitialized) {
+                    initMap();
+                }
+            });
+
+            // Initial render
+            renderQuestion();
+        })();
+    </script>
+</body>
+</html>

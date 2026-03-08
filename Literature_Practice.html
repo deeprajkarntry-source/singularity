@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Ancient Literature · UPSC Complete Practice (50+ Q)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', 'Poppins', 'Hiragino Maru Gothic', system-ui, sans-serif;
+        }
+
+        body {
+            background: #0f0a1a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 1.2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        #blackhole-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .master {
+            max-width: 950px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            background: rgba(30, 22, 40, 0.65);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(180, 150, 200, 0.3);
+            border-radius: 50px 50px 25px 25px;
+            padding: 1.2rem 1.8rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 500;
+            color: #f0d0ff;
+            text-shadow: 0 2px 12px #a07ac0;
+        }
+
+        .header h1 span {
+            background: rgba(60, 45, 75, 0.6);
+            color: #d8b8f0;
+            font-size: 1rem;
+            padding: 4px 16px;
+            border-radius: 40px;
+            margin-left: 10px;
+            border: 1px solid #b088c8;
+        }
+
+        .header p {
+            font-size: 1rem;
+            margin-top: 5px;
+            color: #c0a8d8;
+        }
+
+        .nav-bar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: rgba(45, 35, 55, 0.6);
+            backdrop-filter: blur(8px);
+            padding: 0.7rem 1.2rem;
+            border-radius: 50px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #6a5580;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: #d0b8e8;
+            text-decoration: none;
+            background: rgba(70, 52, 85, 0.6);
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            border: 1px solid #8a6fa0;
+            transition: 0.1s;
+        }
+
+        .nav-link:hover {
+            background: rgba(100, 75, 125, 0.7);
+        }
+
+        .nav-separator {
+            color: #8a6fa0;
+            font-size: 1.2rem;
+        }
+
+        .nav-current {
+            background: rgba(100, 75, 125, 0.7);
+            color: #f0e0ff;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            border: 1px solid #b090c8;
+        }
+
+        .spacer {
+            flex: 1;
+        }
+
+        .quiz-card {
+            background: rgba(32, 24, 42, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(170, 140, 200, 0.35);
+            border-radius: 50px;
+            padding: 2rem 2rem;
+            box-shadow: 0 20px 35px -8px #050208;
+            margin-bottom: 1.5rem;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed #7a6190;
+        }
+
+        .category-badge {
+            background: #6a4a7a;
+            color: #f0d0ff;
+            padding: 8px 22px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: 1px solid #b088c8;
+        }
+
+        .question-counter {
+            background: #3a2e4a;
+            color: #d8b8f0;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+        }
+
+        .question-text {
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #f0e0ff;
+            margin: 25px 0 30px;
+            line-height: 1.5;
+            text-shadow: 0 2px 10px #906db0;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin: 20px 0 30px;
+        }
+
+        .option-btn {
+            background: rgba(55, 45, 70, 0.7);
+            border: 1.5px solid #7a6a90;
+            border-radius: 40px;
+            padding: 14px 18px;
+            font-size: 1.1rem;
+            color: #e0d0f8;
+            cursor: pointer;
+            transition: 0.15s;
+            text-align: left;
+            backdrop-filter: blur(4px);
+        }
+
+        .option-btn:hover {
+            background: rgba(85, 70, 105, 0.8);
+            border-color: #b098c8;
+        }
+
+        .option-btn.selected {
+            background: #6a8a7a;
+            border-color: #a0d0b0;
+            color: #f0fff0;
+        }
+
+        .option-btn.correct {
+            background: #6a8a7a;
+            border-color: #a0d0b0;
+        }
+
+        .option-btn.wrong {
+            background: #9a6a7a;
+            border-color: #d0a0b0;
+        }
+
+        .explain-box {
+            background: rgba(45, 35, 60, 0.8);
+            backdrop-filter: blur(4px);
+            border-left: 8px solid #b090c8;
+            border-radius: 40px;
+            padding: 18px 24px;
+            font-size: 1.1rem;
+            color: #e0d0f0;
+            margin: 20px 0 20px;
+            line-height: 1.6;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0 10px;
+        }
+
+        .nav-btn {
+            background: #4a3a60;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 1rem;
+            color: #f0e0ff;
+            cursor: pointer;
+            transition: 0.1s;
+            border: 1px solid #8a78a0;
+            flex: 1 1 auto;
+        }
+
+        .nav-btn:hover {
+            background: #6a5a80;
+        }
+
+        .nav-btn.primary {
+            background: #7a68a0;
+            border-color: #b090c8;
+        }
+
+        .nav-btn.primary:hover {
+            background: #8a78b0;
+        }
+
+        .study-btn {
+            background: #5a6a8a;
+            border-color: #8a9ac0;
+        }
+
+        .study-btn:hover {
+            background: #7a8aa8;
+        }
+
+        .new-test-btn {
+            background: #9a7ab0;
+            border: 1px solid #d0a8e0;
+            color: #faf0ff;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            margin: 15px 0 5px;
+            transition: 0.15s;
+        }
+
+        .new-test-btn:hover {
+            background: #b090c8;
+        }
+
+        .glossary-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .glossary-category {
+            margin-bottom: 25px;
+        }
+
+        .glossary-category h3 {
+            color: #f0c0ff;
+            font-size: 1.4rem;
+            border-left: 6px solid #b090c8;
+            padding-left: 15px;
+            margin-bottom: 15px;
+        }
+
+        .glossary-item {
+            background: rgba(55, 45, 70, 0.5);
+            border-radius: 30px;
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            border: 1px solid #7a6a90;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+        }
+
+        .glossary-term {
+            font-weight: 600;
+            color: #ffd0ff;
+            font-size: 1.2rem;
+            min-width: 140px;
+        }
+
+        .glossary-meaning {
+            color: #d0c0e0;
+            flex: 2;
+            margin: 0 10px;
+        }
+
+        .glossary-clue {
+            color: #b0a0c0;
+            font-style: italic;
+            font-size: 0.9rem;
+            background: rgba(0,0,0,0.3);
+            padding: 4px 12px;
+            border-radius: 30px;
+            white-space: nowrap;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .footer-note {
+            text-align: center;
+            color: #8a78a0;
+            font-size: 0.9rem;
+            margin: 2rem 0 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="blackhole-canvas"></canvas>
+
+    <div class="master">
+        <div class="header">
+            <h1>📚 Ancient Indian Literature <span>50+ UPSC Practice</span></h1>
+            <p>Vedas to Sangam · every option explained · book‑like progression</p>
+        </div>
+
+        <div class="nav-bar">
+            <a href="/Singularity/index.html" class="nav-link">🏠 Home</a>
+            <span class="nav-separator">›</span>
+            <a href="/Singularity/Ancient_History/Literature.html" class="nav-link">📁 Literature</a>
+            <span class="nav-separator">›</span>
+            <span class="nav-current">📝 Complete Set</span>
+            <span class="spacer"></span>
+            <a href="/Singularity/Ancient_History/Practice.html" class="nav-link">📄 More </a>
+        </div>
+
+        <div class="quiz-card" id="quizCard">
+            <div id="questionArea">
+                <div class="question-header">
+                    <span class="category-badge" id="categoryDisplay">Vedic Literature</span>
+                    <span class="question-counter" id="counterDisplay">Q.1 / 50</span>
+                </div>
+
+                <div class="question-text" id="questionText">Loading question...</div>
+
+                <div class="options-grid" id="optionsContainer"></div>
+
+                <div class="explain-box" id="explanationBox">
+                    👆 select an option to see detailed explanation for all choices
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-btn" id="prevBtn">◀ Previous</button>
+                    <button class="nav-btn" id="nextBtn">Next ▶</button>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+                    <button class="nav-btn" id="skipBtn">⏭️ Skip</button>
+                    <button class="nav-btn study-btn" id="studyBtn">📖 Glossary</button>
+                    <button class="nav-btn primary" id="resetBtn">🔄 Reset to First</button>
+                </div>
+            </div>
+
+            <div id="glossaryArea" class="hidden">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color:#f0d0ff;">📖 Literature Glossary</h2>
+                    <button class="nav-btn" id="backToPracticeBtn">◀ Back</button>
+                </div>
+                <div class="glossary-container" id="glossaryContainer"></div>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            ⚡ 50+ questions · Vedas, Brahmanas, Upanishads, Epics, Buddhist/Jain, Scientific texts · UPSC 2026 ready
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const canvas = document.getElementById('blackhole-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
+            const PARTICLE_COUNT = 80;
+
+            function initCanvas() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+
+                particles = [];
+                for (let i = 0; i < PARTICLE_COUNT; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const radius = 60 + Math.random() * Math.min(width, height) * 0.5;
+                    const speed = 0.0004 + Math.random() * 0.001;
+                    const size = 1 + Math.random() * 2;
+                    particles.push({
+                        angle: angle,
+                        radius: radius,
+                        speed: speed,
+                        size: size,
+                        drift: Math.random() * 0.004 - 0.002,
+                        brightness: 0.3 + Math.random() * 0.4
+                    });
+                }
+            }
+
+            function drawBlackhole() {
+                ctx.clearRect(0, 0, width, height);
+                const centerX = width / 2;
+                const centerY = height / 2;
+
+                const gradient = ctx.createRadialGradient(centerX, centerY, 5, centerX, centerY, Math.min(width, height) * 0.5);
+                gradient.addColorStop(0, 'rgba(70, 30, 60, 0.2)');
+                gradient.addColorStop(0.4, 'rgba(35, 18, 35, 0.15)');
+                gradient.addColorStop(0.8, 'rgba(10, 5, 15, 0.05)');
+                gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, width, height);
+
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 25, 0, 2 * Math.PI);
+                ctx.fillStyle = 'rgba(10, 5, 15, 0.8)';
+                ctx.fill();
+
+                particles.forEach(p => {
+                    p.angle += p.speed * (1 - p.radius / (Math.min(width, height) * 0.4));
+                    p.radius += p.drift;
+                    if (p.radius < 25) p.radius = 80 + Math.random() * 150;
+                    if (p.radius > Math.min(width, height) * 0.5) p.radius = 70;
+
+                    const x = centerX + Math.cos(p.angle) * p.radius;
+                    const y = centerY + Math.sin(p.angle) * p.radius;
+
+                    const dist = Math.hypot(x - centerX, y - centerY);
+                    const brightness = Math.max(0.2, 1 - dist / (Math.min(width, height) * 0.35));
+                    ctx.fillStyle = `rgba(200, 150, 200, ${brightness * 0.25})`;
+                    ctx.shadowColor = '#b080b0';
+                    ctx.shadowBlur = 10 * brightness;
+                    ctx.beginPath();
+                    ctx.arc(x, y, p.size * brightness * 0.6, 0, 2 * Math.PI);
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(drawBlackhole);
+            }
+
+            window.addEventListener('resize', () => {
+                initCanvas();
+            });
+
+            initCanvas();
+            drawBlackhole();
+
+            // ---------- LITERATURE QUESTION BANK (50+ questions, book order) ----------
+            const literatureBank = [
+                // Part 1: Vedic & associated
+                { q: "The term 'Veda' is derived from the Sanskrit root 'vid', which means:", options: ["to know", "to worship", "to sacrifice", "to chant"], correct: 0, category: "Vedic Literature", explain: "✅ <strong>to know</strong> – 'Vid' means knowledge. The Vedas are the foundational sacred texts of Hinduism, meaning 'books of knowledge'. ❌ Worship, sacrifice, chant are related but not the literal meaning." },
+                { q: "Which of the following is the correct chronological order of Vedic texts?", options: ["Samhitas → Brahmanas → Aranyakas → Upanishads", "Brahmanas → Samhitas → Aranyakas → Upanishads", "Samhitas → Aranyakas → Brahmanas → Upanishads", "Upanishads → Samhitas → Brahmanas → Aranyakas"], correct: 0, category: "Vedic Literature", explain: "✅ <strong>Samhitas (mantras) → Brahmanas (ritual manuals) → Aranyakas (forest treatises) → Upanishads (philosophy)</strong>. This is the widely accepted sequence of composition." },
+                { q: "Consider the following pairs: (Text – Content) 1. Rig Veda – Hymns to gods 2. Yajur Veda – Sacrificial formulas 3. Sama Veda – Musical chants 4. Atharva Veda – Magic & spells. Which pairs are correct?", options: ["1 and 2 only", "2 and 3 only", "1, 2 and 3 only", "1, 2, 3 and 4"], correct: 3, category: "Vedic Literature", explain: "✅ <strong>All four are correct</strong> – Rig Veda: hymns; Yajur Veda: prose mantras for sacrifices; Sama Veda: melodies for chanting; Atharva Veda: charms, spells, and daily life." },
+                { q: "The royal sacrifices like Rajasuya and Asvamedha are first detailed in which layer of Vedic literature?", options: ["Samhitas", "Brahmanas", "Aranyakas", "Upanishads"], correct: 1, category: "Vedic Literature", explain: "✅ <strong>Brahmanas</strong> – they are prose texts explaining the meaning and procedure of rituals, including great sacrifices. ❌ Samhitas contain hymns; Aranyakas & Upanishads are more philosophical." },
+                { q: "Which of the following is NOT a characteristic of the Upanishads?", options: ["Emphasis on rituals and sacrifices", "Concept of Atman and Brahman", "Belief in Karma and rebirth", "Jnana Marga (path of knowledge)"], correct: 0, category: "Vedic Literature", explain: "✅ <strong>Emphasis on rituals</strong> is a feature of the Brahmanas, not the Upanishads. The Upanishads focus on philosophical knowledge and inner realization. ❌ Atman/Brahman, Karma, and Jnana are central Upanishadic themes." },
+                { q: "The Brihadaranyaka Upanishad contains a famous philosophical debate between the sage Yajnavalkya and:", options: ["Gargi", "Maitreyi", "Janaka", "Ashtavakra"], correct: 0, category: "Vedic Literature", explain: "✅ <strong>Gargi</strong> – the scholarly woman philosopher who questions Yajnavalkya. Maitreyi is his wife; Janaka is the king; Ashtavakra is a sage of another Upanishad." },
+                { q: "The Aitareya and Shatapatha are famous texts belonging to which genre?", options: ["Upanishads", "Brahmanas", "Aranyakas", "Vedangas"], correct: 1, category: "Vedic Literature", explain: "✅ <strong>Brahmanas</strong> – Aitareya (associated with Rig Veda) and Shatapatha (Yajur Veda) are key Brahmana texts detailing rituals and mythology." },
+                { q: "Which Vedic text is partially a part of the Yajur Veda and contains the famous 'Rudram' hymn?", options: ["Taittiriya Samhita", "Kaushitaki Upanishad", "Shatapatha Brahmana", "Mundaka Upanishad"], correct: 0, category: "Vedic Literature", explain: "✅ <strong>Taittiriya Samhita</strong> of the Krishna Yajur Veda includes the Sri Rudram hymn. ❌ Shatapatha is a Brahmana; Kaushitaki is an Upanishad; Mundaka is an Upanishad." },
+                // Part 2: Vedangas & Upavedas
+                { q: "The 'Ashtadhyayi', a foundational text of Sanskrit grammar, was composed by:", options: ["Panini", "Patanjali", "Katyayana", "Yaska"], correct: 0, category: "Grammar", explain: "✅ <strong>Panini</strong> (c. 5th–4th century BCE) wrote the Ashtadhyayi, which systematised Sanskrit grammar. ❌ Patanjali wrote the Mahabhashya (commentary); Katyayana wrote varttikas; Yaska wrote Nirukta (etymology)." },
+                { q: "Patanjali's 'Mahabhashya' is a commentary on which earlier work?", options: ["Ashtadhyayi", "Nirukta", "Vedanta Sutras", "Arthashastra"], correct: 0, category: "Grammar", explain: "✅ <strong>Ashtadhyayi</strong> – Patanjali's Mahabhashya (2nd century BCE) is a detailed commentary on Panini's grammar. ❌ Nirukta is etymological; Vedanta Sutras are philosophical; Arthashastra is political." },
+                { q: "'Nirukta', one of the six Vedangas, deals with:", options: ["Etymology", "Astronomy", "Prosody", "Grammar"], correct: 0, category: "Vedangas", explain: "✅ <strong>Etymology</strong> – Nirukta, by Yaska, is the study of the origin and meaning of words, especially in the Vedic context. ❌ Astronomy: Jyotisha; Prosody: Chandas; Grammar: Vyakarana." },
+                { q: "Which Vedanga is associated with astronomy and the timing of sacrifices?", options: ["Jyotisha", "Kalpa", "Shiksha", "Nirukta"], correct: 0, category: "Vedangas", explain: "✅ <strong>Jyotisha</strong> – the auxiliary science of astronomy/astrology, crucial for determining auspicious times for rituals. ❌ Kalpa: ritual; Shiksha: phonetics; Nirukta: etymology." },
+                { q: "The 'Shulba Sutras', which contain geometric knowledge for altar construction, are part of which Vedanga?", options: ["Kalpa Sutras", "Shiksha", "Chandas", "Jyotisha"], correct: 0, category: "Vedangas", explain: "✅ <strong>Kalpa Sutras</strong> – the Shulba Sutras are appendices to the Kalpa Sutras, dealing with measurements and geometry of sacrificial altars. ❌ Shiksha (phonetics), Chandas (metre), Jyotisha (astronomy) are other Vedangas." },
+                // Part 3: Epics & Puranas
+                { q: "The 'Itihasa-Purana' tradition, considered the 'Fifth Veda', primarily includes:", options: ["Mahabharata, Ramayana, Puranas", "Vedas and Upanishads", "Buddhist Jatakas", "Dharmashastras"], correct: 0, category: "Epics", explain: "✅ <strong>Mahabharata, Ramayana, and Puranas</strong> – these texts were meant for the common people and contain mythology, history, and moral teachings. ❌ Vedas are Shruti; Jatakas are Buddhist; Dharmashastras are legal codes." },
+                { q: "The 'Bhagavad Gita' is a part of which of the following texts?", options: ["Mahabharata", "Ramayana", "Yoga Vasistha", "Upanishads"], correct: 0, category: "Epics", explain: "✅ <strong>Mahabharata</strong> – the Gita is a 700-verse dialogue in the Bhishma Parva of the Mahabharata. ❌ Ramayana doesn't contain it; Yoga Vasistha is a later text; Upanishads are earlier." },
+                { q: "Consider the following regional versions of Mahabharata: 1. Sarladasa – Odia 2. Kasirama – Bengali 3. Tikkana – Telugu 4. Pampa – Kannada. How many are correctly matched?", options: ["Only one", "Only two", "Only three", "All four"], correct: 3, category: "Epics", explain: "✅ <strong>Only three</strong> – Sarladasa wrote the Odia Mahabharata (correct); Kasirama Das wrote in Bengali (correct); Tikkana in Telugu (correct); but Pampa wrote in Kannada (Vikramarjuna Vijaya, a Jain Mahabharata), so all four are actually correct. Wait, check: Pampa is correct. All four are correct – answer should be 'All four'." },
+                { q: "The 'Vishnu Purana' primarily deals with:", options: ["Vaishnava theology and mythology", "Shaiva legends", "Cosmology", "Genealogies of kings"], correct: 0, category: "Puranas", explain: "✅ <strong>Vaishnava theology</strong> – Vishnu Purana is one of the most important Vaishnava Puranas, focusing on Vishnu's avatars and worship. ❌ Shaiva: Shiva Purana; Cosmology: all Puranas contain it; Genealogies: also present, but primary is theology." },
+                { q: "The 'Matsya Purana' contains the earliest known list of:", options: ["Dynasties and kings", "Tirthas (pilgrimages)", "Temples", "Yoga postures"], correct: 0, category: "Puranas", explain: "✅ <strong>Dynasties and kings</strong> – the Matsya Purana has a famous section listing future kings (from the Mahabharata war to the Guptas). ❌ Tirthas, temples, yoga are found elsewhere." },
+                // Part 4: Classical Sanskrit Literature
+                { q: "'Mrichchhakatika' (The Little Clay Cart) was written by:", options: ["Shudraka", "Kalidasa", "Bhasa", "Vishakhadatta"], correct: 0, category: "Drama", explain: "✅ <strong>Shudraka</strong> – a king and dramatist. The play is a romantic comedy with social themes. ❌ Kalidasa: Shakuntala; Bhasa: Svapnavasavadattam; Vishakhadatta: Mudrarakshasa." },
+                { q: "Kalidasa's 'Raghuvamsha' is an example of which genre?", options: ["Mahakavya (epic poem)", "Drama", "Lyric poetry", "Prose romance"], correct: 0, category: "Classical", explain: "✅ <strong>Mahakavya</strong> – a long epic poem narrating the lineage of the Raghu dynasty (including Rama). ❌ Drama: plays; Lyric: Meghaduta; Prose: Dashakumaracharita." },
+                { q: "The famous lyric poem 'Meghaduta' describes a message sent through a cloud by a:", options: ["Yaksha", "King", "Buddhist monk", "Brahmin"], correct: 0, category: "Classical", explain: "✅ <strong>Yaksha</strong> – a celestial being, separated from his beloved, asks a cloud to carry his message to her. ❌ Others are not the protagonist." },
+                { q: "Which of the following pairs (Author – Work) is INCORRECT?", options: ["Vishakhadatta – Mudrarakshasa", "Banabhatta – Harshacharita", "Bharavi – Kiratarjuniya", "Dandin – Gita Govinda"], correct: 3, category: "Classical", explain: "✅ <strong>Dandin – Gita Govinda is incorrect</strong> – Dandin wrote Kavyadarsha and Dashakumaracharita; Gita Govinda was written by Jayadeva. ❌ Other pairs are correct." },
+                { q: "The 'Harshacharita', the first historical biography in Sanskrit, was written by:", options: ["Banabhatta", "Harisena", "Ravikirti", "Kalhana"], correct: 0, category: "Biography", explain: "✅ <strong>Banabhatta</strong> – court poet of Harshavardhana, wrote his biography Harshacharita. ❌ Harisena: Allahabad prashasti; Ravikirti: Aihole inscription; Kalhana: Rajatarangini (12th century)." },
+                { q: "'Rajatarangini', a historical chronicle of the kings of Kashmir, was written by:", options: ["Kalhana", "Jonaraja", "Srivara", "Prakyabhatta"], correct: 0, category: "Chronicle", explain: "✅ <strong>Kalhana</strong> – 12th century CE, his work is considered a key historical text. ❌ Others were later continuators." },
+                // Part 5: Buddhist & Jain literature
+                { q: "The 'Tripitaka' (Three Baskets) of Buddhism does NOT include which of the following?", options: ["Sutta Pitaka", "Vinaya Pitaka", "Abhidhamma Pitaka", "Jataka Pitaka"], correct: 3, category: "Buddhist", explain: "✅ <strong>Jataka Pitaka</strong> – Jataka tales are actually part of the Khuddaka Nikaya, which is within the Sutta Pitaka. The three main baskets are Vinaya, Sutta, and Abhidhamma." },
+                { q: "The 'Milinda Panha' (Questions of Milinda) is a dialogue between King Menander and the Buddhist monk:", options: ["Nagasena", "Mahinda", "Bodhidharma", "Asanga"], correct: 0, category: "Buddhist", explain: "✅ <strong>Nagasena</strong> – the monk who explains Buddhist doctrines to the Indo-Greek king. ❌ Mahinda: Ashoka's son, went to Sri Lanka; Bodhidharma: Zen; Asanga: Mahayana philosopher." },
+                { q: "The 'Buddhacharita', an epic poem on the life of Buddha, was composed by:", options: ["Ashvaghosha", "Nagarjuna", "Vasubandhu", "Dignaga"], correct: 0, category: "Buddhist", explain: "✅ <strong>Ashvaghosha</strong> – a 1st-2nd century CE Buddhist philosopher and poet. ❌ Nagarjuna: Madhyamaka; Vasubandhu & Dignaga: logicians." },
+                { q: "The Jain text 'Kalpasutra' contains biographies of the Tirthankaras and is attributed to:", options: ["Bhadrabahu", "Sthulabhadra", "Hemachandra", "Haribhadra"], correct: 0, category: "Jain", explain: "✅ <strong>Bhadrabahu</strong> – traditionally considered its author. It is a sacred text for the Shvetambaras. ❌ Sthulabhadra: after Mauryan famine; Hemachandra: medieval scholar; Haribhadra: philosopher." },
+                { q: "The 'Dravya Sangraha', a key Digambara Jain text, was written by:", options: ["Acharya Nemichandra", "Kundakunda", "Umaswami", "Pujyapada"], correct: 0, category: "Jain", explain: "✅ <strong>Acharya Nemichandra</strong> – author of Dravya Sangraha. ❌ Kundakunda: Samayasara; Umaswami: Tattvartha Sutra; Pujyapada: Sarvarthasiddhi." },
+                // Part 6: Scientific & Technical
+                { q: "The 'Arthashastra', a treatise on statecraft, is attributed to:", options: ["Kautilya", "Manu", "Shukracharya", "Kamandaka"], correct: 0, category: "Polity", explain: "✅ <strong>Kautilya (Chanakya)</strong> – the prime minister of Chandragupta Maurya. ❌ Manu: Dharmashastra; Shukracharya: Sukra Nitisara; Kamandaka: Nitisara." },
+                { q: "The 'Charaka Samhita' and 'Sushruta Samhita' are foundational texts of:", options: ["Ayurveda", "Astronomy", "Grammar", "Mathematics"], correct: 0, category: "Science", explain: "✅ <strong>Ayurveda</strong> – Charaka on medicine, Sushruta on surgery. ❌ Astronomy: Aryabhatiya; Grammar: Ashtadhyayi; Mathematics: Lilavati." },
+                { q: "The 'Surya Siddhanta' is an ancient Indian text on:", options: ["Astronomy", "Mathematics", "Architecture", "Medicine"], correct: 0, category: "Science", explain: "✅ <strong>Astronomy</strong> – it is a treatise on planetary motions, eclipses, and time calculation. ❌ Mathematics: more specific works; Architecture: Shilpa Shastras; Medicine: Ayurveda." },
+                { q: "The 'Lilavati', a text on mathematics, was written by:", options: ["Bhaskaracharya II", "Aryabhata", "Brahmagupta", "Mahaviracharya"], correct: 0, category: "Science", explain: "✅ <strong>Bhaskaracharya II</strong> – 12th century CE, Lilavati is a section of his Siddhanta Shiromani. ❌ Aryabhata: Aryabhatiya; Brahmagupta: Brahmasphutasiddhanta; Mahavira: Ganita Sara Sangraha." },
+                // Part 7: Sangam & Regional
+                { q: "Sangam literature was composed in which ancient language?", options: ["Tamil", "Prakrit", "Pali", "Sanskrit"], correct: 0, category: "Sangam", explain: "✅ <strong>Tamil</strong> – Sangam poems are the earliest corpus of Tamil literature, dated between 300 BCE and 300 CE. ❌ Prakrit: Jain texts; Pali: Buddhist; Sanskrit: classical." },
+                { q: "The term 'Tinai' in Sangam literature refers to:", options: ["Landscape-based poetic themes", "Royal court", "Love poems", "War poems"], correct: 0, category: "Sangam", explain: "✅ <strong>Landscape-based poetic themes</strong> – five Tinais (Kurinji, Mullai, etc.) each associated with a mood, deity, and occupation. ❌ Akam (love) and Puram (war) are categories, not Tinai." },
+                { q: "The 'Silappadikaram' and 'Manimekalai' are twin epics of which language?", options: ["Tamil", "Telugu", "Kannada", "Malayalam"], correct: 0, category: "Sangam", explain: "✅ <strong>Tamil</strong> – Silappadikaram (by Ilango Adigal) and Manimekalai (by Sattanar) are post-Sangam Tamil epics. ❌ Others are Dravidian but not these epics." },
+                { q: "The 'Tolkappiyam' is the earliest extant Tamil text on:", options: ["Grammar and poetics", "Ethics", "Love poetry", "History"], correct: 0, category: "Sangam", explain: "✅ <strong>Grammar and poetics</strong> – Tolkappiyam is a comprehensive work on Tamil grammar, phonology, and literary conventions. ❌ Ethics: Tirukkural; Love poetry: Sangam anthologies." },
+                // Part 8: Foreign accounts & inscriptions
+                { q: "Megasthenes' 'Indica' provides valuable information about the reign of:", options: ["Chandragupta Maurya", "Ashoka", "Harsha", "Chandragupta II"], correct: 0, category: "Foreign", explain: "✅ <strong>Chandragupta Maurya</strong> – Megasthenes was a Seleucid ambassador to his court. ❌ Ashoka: later; Harsha: Hieun-Tsang; Chandragupta II: Fa-Hien." },
+                { q: "The 'Allahabad Pillar Inscription' (Prayag Prashasti) was composed by:", options: ["Harisena", "Ravikirti", "Banabhatta", "Veerasena"], correct: 0, category: "Epigraphy", explain: "✅ <strong>Harisena</strong> – court poet of Samudragupta. ❌ Ravikirti: Aihole; Banabhatta: Harshacharita; Veerasena: not." },
+                { q: "The Aihole inscription of Pulakeshin II (634 CE) was written by:", options: ["Ravikirti", "Harisena", "Kalhana", "Jinasena"], correct: 0, category: "Epigraphy", explain: "✅ <strong>Ravikirti</strong> – the court poet of the Chalukya king. ❌ Harisena: Gupta; Kalhana: Kashmir; Jinasena: Jain." },
+                // Part 9: More literature (extra to reach 50+)
+                { q: "The 'Kama Sutra', a text on human sexuality and relationships, was composed by:", options: ["Vatsyayana", "Kautilya", "Dandin", "Bharata Muni"], correct: 0, category: "Technical", explain: "✅ <strong>Vatsyayana</strong> – authored the Kama Sutra (c. 3rd-4th century CE). ❌ Kautilya: Arthashastra; Dandin: Dashakumaracharita; Bharata: Natyashastra." },
+                { q: "The 'Natyashastra', a foundational text on performing arts, was written by:", options: ["Bharata Muni", "Abhinavagupta", "Nandikeshwara", "Dhananjaya"], correct: 0, category: "Performing Arts", explain: "✅ <strong>Bharata Muni</strong> – Natyashastra is the earliest treatise on drama, dance, and music. ❌ Abhinavagupta: commentator; Nandikeshwara: Abhinaya Darpana; Dhananjaya: Dasarupa." },
+                { q: "The 'Gita Govinda', a lyrical poem depicting the love of Radha and Krishna, was written by Jayadeva in which language?", options: ["Sanskrit", "Bengali", "Maithili", "Prakrit"], correct: 0, category: "Classical", explain: "✅ <strong>Sanskrit</strong> – Jayadeva's Gita Govinda (12th century) is a masterpiece of Sanskrit literature. ❌ Bengali: later translations; Maithili: Vidyapati; Prakrit: Jain texts." },
+                { q: "The 'Yoga Sutras', the foundational text of classical Yoga, was composed by:", options: ["Patanjali", "Vyasa", "Shankaracharya", "Gorakhnath"], correct: 0, category: "Philosophy", explain: "✅ <strong>Patanjali</strong> – compiled the Yoga Sutras (c. 2nd-4th century CE). ❌ Vyasa: Mahabharata; Shankara: Advaita; Gorakhnath: Hatha Yoga." },
+                { q: "The 'Nyaya Sutras', a foundational text of Indian logic, is attributed to:", options: ["Gautama", "Kanada", "Jaimini", "Kapila"], correct: 0, category: "Philosophy", explain: "✅ <strong>Gautama</strong> – Akshapada Gautama authored the Nyaya Sutras. ❌ Kanada: Vaisheshika; Jaimini: Mimamsa; Kapila: Samkhya." },
+                { q: "The 'Vaisheshika Sutras', dealing with atomism and metaphysics, were composed by:", options: ["Kanada", "Gautama", "Patanjali", "Badarayana"], correct: 0, category: "Philosophy", explain: "✅ <strong>Kanada</strong> – founder of the Vaisheshika school. ❌ Gautama: Nyaya; Patanjali: Yoga; Badarayana: Brahma Sutras." },
+                { q: "The 'Mimamsa Sutras' of Jaimini primarily deal with:", options: ["Ritual interpretation and Vedic exegesis", "Logic", "Metaphysics", "Grammar"], correct: 0, category: "Philosophy", explain: "✅ <strong>Ritual interpretation</strong> – Mimamsa focuses on dharma and correct performance of Vedic rituals. ❌ Logic: Nyaya; Metaphysics: Vedanta; Grammar: Vyakarana." },
+                { q: "The 'Brahma Sutras' (Vedanta Sutras) are attributed to:", options: ["Badarayana", "Vyasa", "Shankara", "Ramanuja"], correct: 0, category: "Philosophy", explain: "✅ <strong>Badarayana</strong> – author of the Brahma Sutras, systematising Upanishadic teachings. ❌ Vyasa: also attributed to Badarayana; Shankara & Ramanuja are commentators." },
+                { q: "The 'Tirukkural', a classic Tamil text on ethics and morality, was composed by:", options: ["Tiruvalluvar", "Ilango Adigal", "Sattanar", "Kapilar"], correct: 0, category: "Sangam", explain: "✅ <strong>Tiruvalluvar</strong> – author of the Tirukkural, a revered text of Tamil literature. ❌ Ilango: Silappadikaram; Sattanar: Manimekalai; Kapilar: Sangam poet." },
+                { q: "The 'Manusmriti' is a text belonging to which genre?", options: ["Dharmashastra", "Arthashastra", "Kavya", "Purana"], correct: 0, category: "Legal", explain: "✅ <strong>Dharmashastra</strong> – it is a legal and ethical code (smriti). ❌ Arthashastra: statecraft; Kavya: poetry; Purana: mythology." }
+            ];
+
+            // Glossary data (abbreviated but useful)
+            const glossaryData = [
+                { category: "Vedic", terms: [{ term: "Shruti", meaning: "What is heard", clue: "Vedas, Upanishads" }, { term: "Smriti", meaning: "What is remembered", clue: "Puranas, Epics" }] },
+                { category: "Grammar", terms: [{ term: "Ashtadhyayi", meaning: "Panini's grammar", clue: "Sanskrit" }] },
+                { category: "Epics", terms: [{ term: "Itihasa", meaning: "History", clue: "Mahabharata, Ramayana" }] }
+            ];
+
+            // State
+            let currentQuestions = literatureBank; // Show all 50+ at once
+            let currentIndex = 0;
+            let userAnswers = new Array(literatureBank.length).fill(null);
+
+            // DOM elements
+            const questionArea = document.getElementById('questionArea');
+            const glossaryArea = document.getElementById('glossaryArea');
+            const categoryDisplay = document.getElementById('categoryDisplay');
+            const counterDisplay = document.getElementById('counterDisplay');
+            const questionText = document.getElementById('questionText');
+            const optionsContainer = document.getElementById('optionsContainer');
+            const explanationBox = document.getElementById('explanationBox');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const skipBtn = document.getElementById('skipBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const studyBtn = document.getElementById('studyBtn');
+            const backToPracticeBtn = document.getElementById('backToPracticeBtn');
+            const glossaryContainer = document.getElementById('glossaryContainer');
+
+            function renderQuestion() {
+                const q = currentQuestions[currentIndex];
+                categoryDisplay.innerText = q.category || 'Literature';
+                counterDisplay.innerText = `Q.${currentIndex+1} / ${currentQuestions.length}`;
+                questionText.innerText = q.q;
+
+                let optsHtml = '';
+                const selectedIdx = userAnswers[currentIndex];
+
+                q.options.forEach((opt, idx) => {
+                    let cls = 'option-btn';
+                    if (selectedIdx !== null) {
+                        if (idx === q.correct) cls += ' correct';
+                        if (selectedIdx === idx && idx !== q.correct) cls += ' wrong';
+                        if (selectedIdx === idx && idx === q.correct) cls += ' correct selected';
+                    }
+                    optsHtml += `<div class="${cls}" data-opt-index="${idx}">${String.fromCharCode(65+idx)}. ${opt}</div>`;
+                });
+                optionsContainer.innerHTML = optsHtml;
+
+                if (selectedIdx !== null) {
+                    explanationBox.innerHTML = q.explain.replace(/\n/g, '<br>');
+                } else {
+                    explanationBox.innerHTML = '👆 select an option to see detailed explanation for all choices';
+                }
+
+                attachOptionListeners();
+            }
+
+            function attachOptionListeners() {
+                document.querySelectorAll('.option-btn').forEach(opt => {
+                    opt.addEventListener('click', (e) => {
+                        const idx = parseInt(e.currentTarget.dataset.optIndex, 10);
+                        userAnswers[currentIndex] = idx;
+                        renderQuestion();
+                    });
+                });
+            }
+
+            function goToPrev() {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    renderQuestion();
+                }
+            }
+
+            function goToNext() {
+                if (currentIndex < currentQuestions.length - 1) {
+                    currentIndex++;
+                    renderQuestion();
+                }
+            }
+
+            function skipQuestion() {
+                if (currentIndex < currentQuestions.length - 1) {
+                    currentIndex++;
+                    renderQuestion();
+                } else {
+                    alert('You are at the last question.');
+                }
+            }
+
+            function resetToFirst() {
+                currentIndex = 0;
+                // optionally reset answers
+                // userAnswers = new Array(literatureBank.length).fill(null);
+                renderQuestion();
+            }
+
+            function buildGlossary() {
+                let html = '';
+                glossaryData.forEach(cat => {
+                    html += `<div class="glossary-category"><h3>${cat.category}</h3>`;
+                    cat.terms.forEach(term => {
+                        html += `<div class="glossary-item"><span class="glossary-term">${term.term}</span><span class="glossary-meaning">${term.meaning}</span><span class="glossary-clue">${term.clue}</span></div>`;
+                    });
+                    html += `</div>`;
+                });
+                glossaryContainer.innerHTML = html;
+            }
+
+            function showGlossary() {
+                questionArea.classList.add('hidden');
+                glossaryArea.classList.remove('hidden');
+                buildGlossary();
+            }
+
+            function backToPractice() {
+                glossaryArea.classList.add('hidden');
+                questionArea.classList.remove('hidden');
+                renderQuestion();
+            }
+
+            prevBtn.addEventListener('click', goToPrev);
+            nextBtn.addEventListener('click', goToNext);
+            skipBtn.addEventListener('click', skipQuestion);
+            resetBtn.addEventListener('click', resetToFirst);
+            studyBtn.addEventListener('click', showGlossary);
+            backToPracticeBtn.addEventListener('click', backToPractice);
+
+            renderQuestion();
+        })();
+    </script>
+</body>
+</html>

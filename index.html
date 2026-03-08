@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Pre Test · Made with Singularity</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', 'Poppins', 'Hiragino Maru Gothic', system-ui, sans-serif;
+        }
+
+        body {
+            background: #0f0a1f; /* deep cosmic base */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1.2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* blackhole canvas — now the star: bigger, denser, with visible pink accretion */
+        #blackhole-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.9; /* increased visibility */
+        }
+
+        .master {
+            max-width: 1300px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* header – dreamy anime/cosmic blend */
+        .hero {
+            background: rgba(25, 15, 35, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(255, 200, 220, 0.25);
+            color: #f0d0ff;
+            padding: 2rem 2rem;
+            border-radius: 70px 70px 30px 30px;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 35px -5px rgba(0,0,0,0.8), 0 0 40px rgba(180, 130, 220, 0.2);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 40%, rgba(255, 180, 210, 0.1), transparent 70%);
+            animation: rotateGlow 25s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotateGlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hero h1 {
+            font-size: 3.2rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #ffffff, #f0c0ff, #ffb6d1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 150, 200, 0.3);
+        }
+
+        .hero h1 span {
+            background: rgba(30, 20, 45, 0.7);
+            backdrop-filter: blur(4px);
+            color: #ffc0e0;
+            font-size: 1.3rem;
+            padding: 8px 28px;
+            border-radius: 60px;
+            display: inline-block;
+            margin-top: 15px;
+            border: 1.5px solid #ffb0d0;
+            -webkit-text-fill-color: #ffc0e0;
+            font-weight: 400;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-top: 18px;
+            opacity: 0.9;
+            color: #d8b0ff;
+        }
+
+        /* section title – soft */
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 400;
+            color: #ffc0e0;
+            margin: 15px 0 20px 10px;
+            border-left: 5px solid #ffa5c3;
+            padding-left: 20px;
+            text-shadow: 0 0 15px #ffa5c3a0;
+        }
+
+        /* grid – responsive, shows many at once */
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 in a row on desktop */
+            gap: 18px;
+            margin: 20px 0 40px;
+        }
+
+        /* all buttons identical – refined anime aesthetic */
+        .test-card {
+            background: rgba(28, 20, 38, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(255, 180, 210, 0.3);
+            border-radius: 40px;
+            padding: 1.5rem 1rem 1.2rem 1rem;
+            box-shadow: 0 12px 28px -8px #000000cc, 0 0 20px rgba(200, 130, 200, 0.15);
+            transition: 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            min-height: 190px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .test-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 70% 20%, rgba(255, 200, 230, 0.1), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .test-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 160, 200, 0.7);
+            background: rgba(38, 28, 52, 0.75);
+            box-shadow: 0 20px 32px -8px #000, 0 0 30px rgba(210, 130, 220, 0.3);
+        }
+
+        .test-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 4px 10px #b880c0);
+            opacity: 0.95;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: #f0d0ff;
+            margin-bottom: 6px;
+            line-height: 1.4;
+            text-shadow: 0 2px 8px #b070b0a0;
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            color: #c0a0d0;
+            margin-bottom: 14px;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1.5px dashed #8866a0;
+            padding-top: 10px;
+            font-weight: 400;
+        }
+
+        .q-count {
+            background: rgba(0,0,0,0.35);
+            backdrop-filter: blur(2px);
+            padding: 5px 14px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            color: #e0b0ff;
+            border: 1px solid #a070b0;
+        }
+
+        .play-badge {
+            background: #a06a9a;
+            border-radius: 40px;
+            padding: 6px 18px;
+            font-weight: 500;
+            color: #ffe0ff;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px #381c30;
+            transition: 0.2s;
+            border: none;
+        }
+
+        .test-card:hover .play-badge {
+            background: #b880b8;
+            box-shadow: 0 6px 14px #503850;
+        }
+
+        /* footer */
+        footer {
+            text-align: center;
+            margin: 2.5rem 0 0.8rem;
+            color: #b090c0;
+            font-weight: 400;
+            font-size: 1rem;
+            backdrop-filter: blur(4px);
+            padding: 1rem;
+            border-radius: 60px;
+            background: rgba(0,0,0,0.25);
+            border: 1px solid #8866a0;
+        }
+
+        /* responsive adjustments */
+        @media (max-width: 950px) {
+            .test-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 700px) {
+            .test-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .test-grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+            .test-card {
+                min-height: 160px;
+            }
+            .hero h1 span {
+                font-size: 1rem;
+                padding: 6px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- BLACKHOLE CANVAS: now with a distinct, visible core and spiral accretion disk -->
+    <canvas id="blackhole-canvas"></canvas>
+
+    <div class="master">
+        <!-- header with cosmic anime feel -->
+        <div class="hero">
+            <h1>⚫ Pre Test <span>Made with Singularity</span></h1>
+            <p>🌀 where blackholes meet sakura · calm, deep, infinite</p>
+        </div>
+
+        <!-- 4 compact, beautiful buttons -->
+        <div class="section-title">📋 Available Tests</div>
+        <div class="test-grid" id="testGrid">
+            <!-- 1. Ancient History Terminologies -->
+            <a href="/Singularity/Ancient_History_Terminologies/PYQs.html" class="test-card" id="ancientTermsCard">
+                <div class="card-icon">📜</div>
+                <div class="card-title">Ancient History Terminologies</div>
+                <div class="card-desc">Vedic, Mahajanapada, coins, political terms</div>
+                <div class="card-meta">
+                    <span class="q-count">128 q</span>
+                    <span class="play-badge">▶ start</span>
+                </div>
+            </a>
+
+            <!-- 2. Ancient India -->
+            <a href="/Singularity/Ancient_History/home.html" class="test-card" id="ancientIndiaCard">
+                <div class="card-icon">🏛️</div>
+                <div class="card-title">Ancient India</div>
+                <div class="card-desc">Indus, Vedic, Maurya, Gupta – full syllabus</div>
+                <div class="card-meta">
+                    <span class="q-count">200+ q</span>
+                    <span class="play-badge">▶ start</span>
+                </div>
+            </a>
+
+            <!-- 3. Art and Culture -->
+            <a href="/Singularity/Art&Culture/Art&Culture_PYQs.html" class="test-card" id="artCultureCard">
+                <div class="card-icon">🎨</div>
+                <div class="card-title">Art and Culture</div>
+                <div class="card-desc">Dance, music, painting, architecture</div>
+                <div class="card-meta">
+                    <span class="q-count">156 q</span>
+                    <span class="play-badge">▶ start</span>
+                </div>
+            </a>
+
+            <!-- 4. International Relations -->
+            <a href="#" class="test-card" id="internationalRelationsCard">
+                <div class="card-icon">🌐</div>
+                <div class="card-title">International Relations</div>
+                <div class="card-desc">Organizations, treaties, India’s foreign policy</div>
+                <div class="card-meta">
+                    <span class="q-count">180+ q</span>
+                    <span class="play-badge">▶ start</span>
+                </div>
+            </a>
+
+            <!-- 5. Indian Literatures -->
+            <a href="/Singularity/Indian_Literature/Literature_Practice.html" class="test-card" id="internationalRelationsCard">
+                <div class="card-icon">✍</div>
+                <div class="card-title">Indian Literature</div>
+                <div class="card-desc">Vedas, Upnishads, Kings and their contributions</div>
+                <div class="card-meta">
+                    <span class="q-count">50+ q</span>
+                    <span class="play-badge">▶ start</span>
+                </div>
+            </a>
+
+
+
+
+
+        </div>
+
+        <!-- subtle note for expansion -->
+        <div style="background: rgba(30,20,40,0.5); backdrop-filter: blur(8px); border-radius: 60px; padding: 1.2rem; margin: 20px 0; text-align: center; border: 1.5px solid #a070b0;">
+            <p style="font-size:1.2rem; color:#ffc0e0;">➕ copy a card to add more tests</p>
+        </div>
+
+        <footer>
+            ⚡ each test opens a separate MCQ page · place HTML files in same folder
+        </footer>
+    </div>
+
+    <script>
+(function() {
+    // --- DISTINCT BLACKHOLE with visible pink core and spiral accretion ---
+    const canvas = document.getElementById('blackhole-canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let particles = [];
+    const PARTICLE_COUNT = 240; // more particles = denser, visible hole
+
+    // additional core pulse variable
+    let corePulse = 0;
+
+    function initCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+
+        particles = [];
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            // create a more structured accretion disk: mix of tight orbits and outer haze
+            const angle = Math.random() * Math.PI * 2;
+            // cluster particles more densely near the "event horizon" (radius 40-120)
+            let radius;
+            if (Math.random() < 0.6) {
+                // inner bright region
+                radius = 30 + Math.random() * 100;
+            } else {
+                // outer faint spiral
+                radius = 130 + Math.random() * 220;
+            }
+            const speed = 0.0008 + Math.random() * 0.003; // variable speed
+            const size = 1.5 + Math.random() * 3.5; // larger particles
+            // slight color variation based on radius
+            const colorType = Math.random();
+            let color;
+            if (radius < 90) {
+                color = `rgba(255, 160, 210, ${0.5 + Math.random()*0.3})`; // hot pink
+            } else {
+                color = `rgba(210, 140, 230, ${0.3 + Math.random()*0.2})`; // lavender
+            }
+            particles.push({
+                angle: angle,
+                radius: radius,
+                baseRadius: radius,
+                speed: speed,
+                size: size,
+                drift: (Math.random() - 0.5) * 0.004,
+                color: color,
+                orbitOffset: Math.random() * 10
+            });
+        }
+    }
+
+    function drawBlackhole() {
+        ctx.clearRect(0, 0, width, height);
+        
+        // center of the blackhole (slightly off-center for dynamism? no, keep centered)
+        const centerX = width / 2;
+        const centerY = height / 2;
+
+        // ---- draw event horizon / core (visible dark circle with glowing rim) ----
+        corePulse = (corePulse + 0.01) % (Math.PI * 2);
+        const pulseGlow = 0.15 + Math.sin(corePulse) * 0.05; // subtle breathing
+
+        // outer glow (accretion disk inner edge)
+        ctx.shadowColor = "#ffa0d0";
+        ctx.shadowBlur = 40;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 32, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(30, 10, 20, 0.0)"; // transparent, just for shadow
+        ctx.fill();
+
+        // dark core (the blackhole itself)
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = "#b04080";
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 26, 0, Math.PI * 2);
+        ctx.fillStyle = "#0a0512";
+        ctx.fill();
+
+        // inner photon ring (thin bright ring)
+        ctx.shadowBlur = 30;
+        ctx.shadowColor = "#ffb0d0";
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 28, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(255, 200, 230, 0.7)";
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        // reset shadow for particles (avoid overglow)
+        ctx.shadowColor = "#ffb0d0";
+        ctx.shadowBlur = 16;
+
+        // ---- accretion disk particles (spiral & orbiting) ----
+        particles.forEach(p => {
+            // update angle (orbit)
+            p.angle += p.speed;
+
+            // slight radial drift, but keep within bounds
+            p.radius += p.drift;
+            if (p.radius < 28) p.radius = 30 + Math.random() * 30; // bounce out from core
+            if (p.radius > 360) p.radius = 200 + Math.random() * 80;
+
+            // compute position with slight vertical offset to simulate thin disk tilt? nah, just circle
+            const x = centerX + Math.cos(p.angle) * p.radius;
+            const y = centerY + Math.sin(p.angle) * p.radius * 0.9; // flatten slightly -> disk shape
+
+            // color based on radius with some pink hues
+            let opacity = 0.5;
+            if (p.radius < 70) opacity = 0.8;
+            else if (p.radius < 140) opacity = 0.55;
+            else opacity = 0.3;
+
+            // inner particles get pink/white, outer more purple
+            const r = (p.radius < 100) ? 255 : 210;
+            const g = (p.radius < 100) ? 170 : 140;
+            const b = (p.radius < 100) ? 210 : 230;
+            
+            ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+
+            // draw particle
+            ctx.beginPath();
+            ctx.arc(x, y, p.size * (1 + 0.2 * Math.sin(p.angle * 2)), 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        // ---- additional spiral streaks (to enhance visible blackhole structure) ----
+        ctx.shadowBlur = 24;
+        ctx.shadowColor = "#ffa0c0";
+        for (let i = 0; i < 4; i++) {
+            const spiralAngle = Date.now() * 0.0005 + i * 1.5;
+            for (let r = 40; r < 200; r += 35) {
+                const x = centerX + Math.cos(spiralAngle + r * 0.03) * r;
+                const y = centerY + Math.sin(spiralAngle + r * 0.03) * r * 0.9;
+                ctx.beginPath();
+                ctx.arc(x, y, 3.5 - r/150, 0, 2 * Math.PI);
+                ctx.fillStyle = `rgba(255, 180, 220, 0.15)`;
+                ctx.fill();
+            }
+        }
+
+        // ---- final touch: bright inner rim (singularity glow) ----
+        ctx.shadowBlur = 50;
+        ctx.shadowColor = "#ff70b0";
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 18, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(40, 10, 20, 0)"; // invisible, only shadow
+        ctx.fill();
+
+        requestAnimationFrame(drawBlackhole);
+    }
+
+    window.addEventListener('resize', initCanvas);
+    initCanvas();
+    drawBlackhole();
+
+    // --- keep placeholder alert for cards with href="#"
+    const cards = document.querySelectorAll('.test-card[href="#"]');
+    cards.forEach(card => {
+        card.addEventListener('click', (e) => {
+            e.preventDefault();
+            const title = card.querySelector('.card-title')?.innerText || 'this test';
+            alert(`🌀 "${title}" will open once you set the correct file link in the HTML.`);
+        });
+    });
+
+})();
+</script>
+</body>
+</html>
