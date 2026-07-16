@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHADOWS - A Limbo-inspired Platformer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #0a0a0a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Georgia', serif;
+            overflow: hidden;
+        }
+        
+        #game-container {
+            position: relative;
+            width: 960px;
+            height: 540px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+        }
+        
+        canvas {
+            display: block;
+            background: linear-gradient(to bottom, #1a1a1a 0%, #0d0d0d 100%);
+        }
+        
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #888;
+            font-size: 14px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+        
+        #instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #666;
+            font-size: 12px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+        
+        #death-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #aaa;
+        }
+        
+        #death-screen h2 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            letter-spacing: 8px;
+        }
+        
+        #death-screen p {
+            font-size: 16px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        #level-complete {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #ddd;
+        }
+        
+        #level-complete h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            letter-spacing: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas" width="960" height="540"></canvas>
+        <div id="ui">LEVEL 1: THE DESCENT</div>
+        <div id="instructions">ARROW KEYS / WASD to move • SPACE to jump • R to restart</div>
+        <div id="death-screen">
+            <h2>GONE</h2>
+            <p>Press R to try again</p>
+        </div>
+        <div id="level-complete">
+            <h2>ESCAPED</h2>
+            <p>Level Complete</p>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>
