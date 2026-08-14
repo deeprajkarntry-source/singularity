@@ -209,9 +209,9 @@ function update() {
     player.onGround = false;
     
     for (const platform of levelData.platforms) {
-        const collision = checkCollision(player, platform);
-        if (collision) {
-            resolveCollision(player, platform, collision);
+        const collisionData = getCollisionData(player, platform);
+        if (collisionData.overlapX > 0 && collisionData.overlapY > 0) {
+            resolveCollision(player, platform, collisionData);
         }
     }
     
